@@ -1,9 +1,13 @@
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
 import Login from "./pages/login";
 import Home from "./pages/home";
 import ErrorPage from "./pages/error";
+import ChangePassword from "./pages/change-password";
+import OTP_Verification from "./pages/otp-verification";
+import ForgotPassword from "./pages/forgot-password";
 
 import Listings from "./pages/listings"
 import Agents from "./pages/agents"
@@ -18,35 +22,43 @@ import Analytics from "./pages/analytics"
 import Ratings_reviews from "./pages/ratings-reviews"
 import Notifications from "./pages/notifications"
 import Coupons from "./pages/coupons"
+import { Toaster } from "sonner";
 
 
 export default function App() {
 	return (
-		<BrowserRouter>
-			<Routes>
-				{/* UNPROTECTED ROUTES */}
-				<Route path="/login" element={<Login />}></Route>
-                <Route path="*" element={<ErrorPage />} />
+		<React.Fragment>
+			<Toaster />
 
-				{/* PROTECTED ROUTES */}
-				<Route element={<ProtectedRoute />}>
-					<Route path="/" element={<Home />}></Route>
-					<Route path="/dashboard" element={<Home />}></Route>
-					<Route path="/dashboard/listings" element={<Listings />}></Route>
-					<Route path="/dashboard/agents" element={<Agents />}></Route>
-					<Route path="/dashboard/artisants" element={<Artisants />}></Route>
-					<Route path="/dashboard/inspection" element={<Inspection />}></Route>
-					<Route path="/dashboard/renters" element={<Renters />}></Route>
-					<Route path="/dashboard/payments" element={<Payments />}></Route>
-					<Route path="/dashboard/settings" element={<Settings />}></Route>
-					<Route path="/dashboard/support" element={<Support />}></Route>
-					<Route path="/dashboard/community" element={<Community />}></Route>
-					<Route path="/dashboard/analytics" element={<Analytics />}></Route>
-					<Route path="/dashboard/ratings-reviews" element={<Ratings_reviews />}></Route>
-					<Route path="/dashboard/notifications" element={<Notifications />}></Route>
-					<Route path="/dashboard/coupons" element={<Coupons />}></Route>
-				</Route>
-			</Routes>
-		</BrowserRouter>
+			<BrowserRouter>
+				<Routes>
+					{/* UNPROTECTED ROUTES */}
+					<Route path="/login" element={<Login />}></Route>
+					<Route path="/change-password" element={<ChangePassword />}></Route>
+					<Route path="/otp-verification" element={<OTP_Verification />}></Route>
+					<Route path="/forgot-password" element={<ForgotPassword />}></Route>
+					<Route path="*" element={<ErrorPage />} />
+
+					{/* PROTECTED ROUTES */}
+					<Route element={<ProtectedRoute />}>
+						<Route path="/" element={<Home />}></Route>
+						<Route path="/dashboard" element={<Home />}></Route>
+						<Route path="/dashboard/listings" element={<Listings />}></Route>
+						<Route path="/dashboard/agents" element={<Agents />}></Route>
+						<Route path="/dashboard/artisants" element={<Artisants />}></Route>
+						<Route path="/dashboard/inspection" element={<Inspection />}></Route>
+						<Route path="/dashboard/renters" element={<Renters />}></Route>
+						<Route path="/dashboard/payments" element={<Payments />}></Route>
+						<Route path="/dashboard/settings" element={<Settings />}></Route>
+						<Route path="/dashboard/support" element={<Support />}></Route>
+						<Route path="/dashboard/community" element={<Community />}></Route>
+						<Route path="/dashboard/analytics" element={<Analytics />}></Route>
+						<Route path="/dashboard/ratings-reviews" element={<Ratings_reviews />}></Route>
+						<Route path="/dashboard/notifications" element={<Notifications />}></Route>
+						<Route path="/dashboard/coupons" element={<Coupons />}></Route>
+					</Route>
+				</Routes>
+			</BrowserRouter>
+		</React.Fragment>
 	);
 }
