@@ -1,0 +1,196 @@
+body:has(.dashboard--base) {
+    overflow-x: hidden;
+}
+
+
+/* ========================================== */
+/* DASHBOARD HEAD */
+/* ========================================== */
+.dashboard--header {
+    height: 7rem;
+    padding: 0 3rem;
+    background-color: #fff;
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+.logo--container {
+    width: 7.5rem;
+}
+.logo--container img {
+    width: 100%;
+}
+
+.nav--container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    gap: 1.8rem;
+}
+
+.nav--input {
+    display: flex;
+    align-items: center;
+    padding-left: 0.8rem;
+    border: 1.4px solid #E8E8E8;
+    border-radius: 0.48rem;
+    overflow: hidden;
+    transition: all .3s;
+}
+.nav--input:hover {
+    border-color: var(--color-brand-primary);
+}
+
+.nav--input input {
+    border: none;
+    padding: 0.8rem 1rem;
+    font-size: 1.4rem;
+    font-family: inherit;
+}
+.nav--input input:focus,
+.nav--input input:focus-within {
+    border: none;
+    outline: none;
+}
+.nav--input svg {
+    color: #8C8C8C;
+    font-size: 1.8rem;
+}
+
+.nav--notification {
+    cursor: pointer;
+}
+.nav--notification svg {
+    font-size: 2.4rem;
+    color: #545454;
+}
+
+.nav--auth {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    cursor: pointer;
+    transition: all .35s;
+    position: relative;
+    background-color: transparent;
+    border: none;
+}
+.auth--info {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    color: var(--grey);
+}
+.auth--name {
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    color: #4C4C4C;
+}
+.auth--role {
+    font-size: 1rem;
+    color: #B4B4B4;
+}
+
+
+/* ========================================== */
+/* DASHBOARD BASE */
+/* ========================================== */
+.dashboard--base {
+    transition: all .3s ease;
+    padding-top: 7rem;
+}
+
+
+/* ========================================== */
+/* DASHBOARD SIDEBAR */
+/* ========================================== */
+.dashboard--menu {
+    width: 22rem;
+    padding: 2rem 1rem 10rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+    transition: all .3s ease;
+
+    height: 100vh;
+    position: fixed;
+    top: 7rem;
+    left: 0;
+    bottom: 0;
+}
+
+.menu--list {
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+}
+.menu--item {
+    width: 100%;
+    display: flex;
+    align-self: center;
+    align-items: center;
+    gap: .6rem;
+    color: var(--grey);
+    background-color: transparent;
+    padding: .8rem 1rem;
+
+    transition: 
+        color .35s,
+        background-color .35s,
+        border-color .35s
+    ;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: .2rem;
+    position: relative;
+}
+
+.menu--item:hover {
+    background-color: var(--white-2);
+    color: var(--grey);
+}
+.menu--item.is-active,
+.menu--item.is-active:hover {
+    background-color: var(--color-brand-primary);
+    color: var(--white);
+}
+
+.menu--icon svg {
+    font-size: 2rem;
+    align-self: center;
+}
+.menu--text {
+    font-size: 1.288rem;
+    font-weight: 500;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.15px;
+}
+
+.menu--arrow {
+    margin-left: auto;
+}
+
+
+/* ========================================== */
+/* CONTENT BLOCK */
+/* ========================================== */
+.content--block {
+    padding: 2.4rem;
+    overflow-x: hidden;
+    width: calc(100% - 22rem);
+    margin-left: auto;
+    transition: all .3s;
+    min-height: 100vh;
+    background-color: #F9FAFB;
+}

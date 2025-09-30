@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+*,
+*::before,
+*::after {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	-webkit-tap-highlight-color: transparent;
+}
+
+html {
+	font-size: 65%;
+}
+
+body {
+	font-family: "Urbanist", sans-serif;
+	background-color: #fff;
+	font-size: 1.6rem;
+	line-height: 1;
+	font-weight: 400;
+	color: #444;
+	width: 100%;
+	transition: none !important;
+}
+
+
+:root {
+    --border-color: #d4d7db;
+    --white: #fff;
+    --white-2: #f5f5f5;
+    --grey: #5c636d;
+
+    --color-brand-primary: #00419C;
+}
+
+ul, ol {
+	list-style: none;
+}
+
+a,
+a:link,
+a:visited {
+	text-decoration: none;
+	transition: all .3s;
+}
+
+a,
+form,
+input,
+button,
+textarea,
+select {
+	font-family: inherit;
+	color: inherit;
+}
+
+a:hover {
+	color: inherit;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+input::-webkit-input-placeholder {
+  color: #aaa;
+}
+
+button:has(svg) {
+	line-height: 0;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
+	hyphens: auto;
+	line-height: 1.2;
+}
+
+input[type="file"] {
+	display: none;
+}
+
+input[type="email"] {
+	text-transform: lowercase;
+}
+
+input:disabled {
+	opacity: 0.7;
+	cursor: help;
+}
+
+img {
+	max-width: 100%;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+	select, textarea, input {
+		font-size: 16px;
+	}
+}
+
+textarea {
+	height: 6rem;
+	resize: none;
+    scrollbar-width: none;
+}
+textarea::placeholder {
+	line-height: 1.4;
+	color: #aaa;
+}
+
+button {
+	border: none;
+	cursor: pointer;
+}
+
+
+body:has(.modal),
+body:has(.spinner--container),
+body:has(.global--overlay) {
+	height: 100vh;
+	overflow-y: hidden !important;
+	transition: all .3s !important;
+}
+
+
+
+
+
+
+
+
+.auth--img {
+    width: 3.4rem;
+    height: 3.4rem;
+    border-radius: 50%;
+}
+img.auth--img {
+    object-fit: 100%;
+    background-color: #eee;
+}
+span.auth--img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    background-color: var(--color-brand-primary);
+    color: #fff;
+    text-transform: uppercase;
+}
