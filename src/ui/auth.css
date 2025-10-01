@@ -111,9 +111,11 @@
     font-size: 1.6rem;
     color: #555;
 }
+.form--input {
+    width: 100%;
+}
 .form--input, .form--select {
     padding: 1.2rem;
-    width: 100%;
     border: 1.4px solid #eee;
     border-radius: .4rem;
     transition: all .35s;

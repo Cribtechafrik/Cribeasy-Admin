@@ -1,0 +1,39 @@
+.home--section .form--select {
+    align-self: flex-end;
+    padding: 0.6rem;
+}
+.home--top {
+    margin-bottom: 2rem;
+    gap: 0.8rem;
+}
+.home--top,
+.top--heading {
+    display: flex;
+    flex-direction: column;
+}
+
+.top--heading {
+    gap: 0.6rem;
+}
+.top--heading .title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #132B4B;
+}
+.top--heading .text {
+    color: #989898;
+}
+
+
+.home--grid {
+    margin-top: 1.8rem;
+    display: grid;
+    grid-template-columns: 4fr 1.8fr;
+    gap: 1rem;
+}
+.grid--left,
+.grid--right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+}
