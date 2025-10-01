@@ -136,6 +136,52 @@ body:has(.global--overlay) {
 	transition: all .3s !important;
 }
 
+.flex-align-cen {
+	display: flex;
+	align-items: center;
+	gap: 0.2rem;
+}
+
+.card {
+    border-radius: .7rem;
+    width: 100%;
+    padding: 2rem 1.8rem;
+    border: 1px solid #eff2f7;
+    min-height: 10rem;
+	background-color: #fff;
+}
+
+
+.section--top a {
+    font-size: 1.28rem;
+    font-weight: 500;
+    color: #444;
+    text-decoration: none;
+    color: var(--color-brand-primary);
+}
+.section--heading {
+    display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+    gap: 1rem;
+}
+.section--heading h2 {
+    font-weight: 600;
+    font-size: 1.68rem;
+    text-transform: capitalize;
+}
+.section--heading p {
+    font-size: 1.34rem;
+    line-height: 1.3;
+    color: #888;
+    font-weight: 500;
+}
+.section--heading p span {
+    font-weight: 700;
+    color: #555;
+}
+
 
 
 .spinner--container {
@@ -180,3 +226,88 @@ span.auth--img {
     color: #fff;
     text-transform: uppercase;
 }
+
+
+
+/* ==== */
+
+.insight--grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1.6rem;
+}
+
+.insight--card {
+	min-height: 5rem;
+	border: 1.4px solid #E8E8E8;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 1.8rem;
+	border-radius: 0.8rem;
+	background-color: #fff;
+	transition: all .3s;
+}
+.insight--card:hover {
+	transform: scale(1.05) translateY(-0.5rem);
+}
+.insight--top {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+}
+.insight--title {
+	font-size: 1.6rem;
+	font-weight: 500;
+	color: #696969;
+}
+.insight--icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 3.5rem;
+	height: 3.5rem;
+	border-radius: 0.48rem;
+}
+.insight--icon svg {
+	font-size: 2rem;
+}
+
+.insight--card:nth-child(1) .insight--icon {
+    background-color: #ECF3FF;
+}
+.insight--card:nth-child(1) .insight--icon svg {
+    color: #316DC0;
+}
+
+.insight--card:nth-child(2) .insight--icon {
+    background-color: #FFF9F9;
+}
+.insight--card:nth-child(2) .insight--icon svg {
+    color: #F56464;
+}
+
+.insight--card:nth-child(3) .insight--icon {
+    background-color: #F7EFFF;
+}
+.insight--card:nth-child(3) .insight--icon svg {
+    color: #A855F7;
+}
+
+.insight--card:nth-child(4) .insight--icon {
+    background-color: #E0FFEC;
+}
+.insight--card:nth-child(4) .insight--icon svg {
+    color: #22C55E;
+}
+
+
+.insight--value {
+	font-size: 2rem;
+	font-weight: 600;
+}
+.insight--extra {
+	font-size: 1.28rem;
+	color: #696969;
+}
+

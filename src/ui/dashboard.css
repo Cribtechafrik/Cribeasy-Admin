@@ -19,6 +19,16 @@ body:has(.dashboard--base) {
     align-items: center;
     gap: 2rem;
 }
+.hamburger--icon {
+    background-color: #ddd;
+    padding: 0.48rem;
+    border-radius: 0.2rem;
+    display: none;
+    cursor: pointer;
+}
+.hamburger--icon {
+    font-size: 2.4rem;
+}
 .logo--container {
     width: 7.5rem;
 }
@@ -112,13 +122,14 @@ body:has(.dashboard--base) {
 /* DASHBOARD SIDEBAR */
 /* ========================================== */
 .dashboard--menu {
-    width: 22rem;
+    width: 25rem;
     padding: 2rem 1rem 10rem;
     display: flex;
     flex-direction: column;
     gap: 1.4rem;
     overflow-y: auto;
     scrollbar-width: none;
+    scrollbar-width: auto;
     transition: all .3s ease;
 
     height: 100vh;
@@ -126,6 +137,21 @@ body:has(.dashboard--base) {
     top: 7rem;
     left: 0;
     bottom: 0;
+}
+
+.dashboard--menu::-webkit-scrollbar {
+	width: 0.4rem;
+	height: 0.4rem;
+}
+.dashboard--menu::-webkit-scrollbar-track {
+	background: none;
+	border: none;
+}
+.dashboard--menu::-webkit-scrollbar-thumb {
+	background: #ccc;
+}
+.dashboard--menu::-webkit-scrollbar-thumb:hover {
+	background: #aaa;
 }
 
 .menu--list {
@@ -141,7 +167,7 @@ body:has(.dashboard--base) {
     gap: .6rem;
     color: var(--grey);
     background-color: transparent;
-    padding: .8rem 1rem;
+    padding: 1rem;
 
     transition: 
         color .35s,
@@ -165,11 +191,11 @@ body:has(.dashboard--base) {
 }
 
 .menu--icon svg {
-    font-size: 2rem;
+    font-size: 2.1rem;
     align-self: center;
 }
 .menu--text {
-    font-size: 1.288rem;
+    font-size: 1.48rem;
     font-weight: 500;
     color: inherit;
     display: flex;
@@ -188,9 +214,35 @@ body:has(.dashboard--base) {
 .content--block {
     padding: 2.4rem;
     overflow-x: hidden;
-    width: calc(100% - 22rem);
+    width: calc(100% - 25rem);
     margin-left: auto;
     transition: all .3s;
     min-height: 100vh;
     background-color: #F9FAFB;
+}
+
+
+
+
+
+
+
+
+
+
+
+@media screen and (max-width: 900px) {
+    .dashboard--menu {
+        display: none;
+    }
+    .content--block {
+        width: 100%;
+    }
+
+    .hamburger--icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
 }

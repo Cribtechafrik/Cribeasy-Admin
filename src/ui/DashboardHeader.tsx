@@ -3,9 +3,14 @@ import { LuSearch } from "react-icons/lu";
 import IntialsImage from "../components/layout/IntialsImage";
 import Logo from "../assets/logo/logo.png"
 import { Link } from "react-router-dom";
+import { RiMenu3Fill } from "react-icons/ri";
 
 
 export default function DashboardHeader() {
+
+    const handleToggleSidemenu = function() {
+        
+    }
 
     const handleToggleDropdown = function() {
 
@@ -13,6 +18,9 @@ export default function DashboardHeader() {
 
     return (
         <header className='dashboard--header'>
+            <span className="hamburger--icon" onClick={handleToggleSidemenu}>
+                <RiMenu3Fill />
+            </span>
             <Link className="logo--container" to="/">
                 <img src={Logo} alt="CribEasy" className="logo--img" />
             </Link>
