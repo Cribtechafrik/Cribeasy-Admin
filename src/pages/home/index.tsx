@@ -9,16 +9,19 @@ import OccupancyRates from './components/OccupancyRates'
 import RecentLstings from './components/RecentListings'
 import RecentActivities from './components/RecentActivities'
 import RecentPayments from './components/RecentPayments'
-import "./home.css";
 import PropertyType from './components/PropertyTypes';
+import { useAuthContext } from '../../context/AuthContext';
+import "./home.css";
 
 
 export default function index() {
+    const { auth } = useAuthContext();
+
     return (
         <section className="home--section">
             <div className="home--top">
                 <div className="top--heading">
-                    <span className='title'>Welcome back, Alex!</span>
+                    <span className='title'>Welcome back, {auth?.first_name}!</span>
                     <p className='text'>Here's what's happeneing here today</p>
                 </div>
 

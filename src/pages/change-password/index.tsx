@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ImEye, ImEyeBlocked } from 'react-icons/im';
 import Asterisk from '../../components/elements/Asterisk';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Spinner from '../../components/elements/Spinner';
 import AuthImg from "../../assets/pngs/auth.png";
 import { toast } from 'sonner';
@@ -10,18 +10,17 @@ import Logo from "../../assets/logo/logo.png";
 
 export default function index() {
     const navigate = useNavigate();
-    const { token } = useParams();
-    const [searchParams] = useSearchParams();
-    const email = searchParams.get('email');
-
     const [formData, setFormData] = useState({
         password: "",
         password_confirmation: "",
+        identifier: localStorage.getItem("otp_identifier") || /* temp */ "cribeasyemailssetups@gmail.com",
+        otp: localStorage.getItem("otp_code"),
     });
+
+    console.log(formData)
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    // const [response, setResponse] = useState({ status: '', message: '' });
     const [loading, setLoading] = useState(false);
 
     const headers = {
@@ -37,47 +36,41 @@ export default function index() {
         });
     };
 
-    // const handleResetResponse = function () {
-    //     setResponse({ status: "", message: "" })
-    // }
-
 
     useEffect(function(): any {
         document.title = "Reset Password";
 
-        if(!email || !token) {
-            // return navigate('/')
+        if(!formData.identifier || !formData.otp) {
+            return navigate('/login')
         }
     }, []);
 
 
     async function handleChangePassword() {
         setLoading(true);
-        // handleResetResponse();
 
         try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/reset-password`, {
                 method: 'POST', headers,
-                body: JSON.stringify({ ...formData, email, token })
+                body: JSON.stringify({ ...formData })
             });
 
             const data = await res.json();
-            if (res.status !== 200) {
-                throw new Error(data?.message || data?.error);
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
             }
 
-            // // UPDATE THE RESPONSE STATE WITH THE NEW VALUE
-            // setResponse({ status: "success", message: data.message });
+
             toast.error(data?.message);
 
             setTimeout(function () {
-                localStorage.removeItem("otp_user");
+                localStorage.removeItem("otp_identifier");
+                localStorage.removeItem("otp_code");
                 navigate('/login');
             }, 1500);
 
         } catch (err: any) {
             const message = err?.message == "Failed to fetch" ? "Server or Connection Error!!" : err?.message
-            // setResponse({ status: "error", message });
 			toast.error(message);
         } finally {
             setLoading(false);

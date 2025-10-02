@@ -8,9 +8,8 @@ import Logo from "../../assets/logo/logo.png";
 
 
 export default function index() {
-    // const [response, setResponse] = useState({ status: '', message: '' });
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({ otp: "", email: JSON.parse(localStorage.getItem("otp_email")!)?.email || null });
+    const [formData, setFormData] = useState({ otp: "", identifier: localStorage.getItem("otp_identifier") || /* temp */ "cribeasyemailssetups@gmail.com" });
 
     const navigate = useNavigate();
 
@@ -23,45 +22,37 @@ export default function index() {
         setFormData({ ...formData, otp: value });
     }
 
-    // const handleResetResponse = function () {
-    //     setResponse({ status: "", message: "" })
-    // }
-
-    useEffect(function () {
+    useEffect(function (): any {
         document.title = "OTP Verification";
 
-        // if (!formData?.email) return navigate('/');
-
-        // handleRequestOtp()
+        if (!formData?.identifier) {
+            return navigate('/login');
+        }
     }, []);
 
 
     async function handleSubmitOtp() {
         setLoading(true);
-        // handleResetResponse()
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/verify-otp`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/verify-password-otp`, {
                 method: 'POST', headers,
-                body: JSON.stringify({ ...formData })
+                body: JSON.stringify({ otp: +formData.otp, identifier: formData.identifier })
             });
 
             const data = await res.json();
-            if (res.status !== 200) {
-                throw new Error(data?.message || data?.error);
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.validation_errors?.otp?.[0] || data?.error?.message);
             }
 
-            // // UPDATE THE RESPONSE STATE WITH THE NEW VALUE
-            // setResponse({ status: "success", message: data.message });
 			toast.error(data?.message);
 
             setTimeout(function () {
-                localStorage.removeItem("otp_user");
-                navigate('/login');
+                localStorage.setItem("otp_code", formData.otp);
+                navigate('/change-password');
             }, 1500);
 
         } catch (err: any) {
-            // setResponse({ status: 'error', message: err.message })
 			toast.error(err?.message);
         } finally {
             setLoading(false);
@@ -74,23 +65,19 @@ export default function index() {
         // handleResetResponse();
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/send-otp`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/resend-password-otp`, {
                 method: 'POST', headers,
-                body: JSON.stringify({ email: formData?.email }),
+                body: JSON.stringify({ identifier: formData?.identifier }),
             });
 
             const data = await res.json();
-            if (res.status !== 200) {
-                throw new Error(data?.message || data?.error);
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.validation_errors?.password?.[0] || data?.error?.message);
             }
 
-            // UPDATE THE RESPONSE STATE WITH THE NEW VALUE
-            // setResponse({ status: "success", message: data?.message });
 			toast.error(data?.message);
-
         } catch (err: any) {
             const message = err?.message == "Failed to fetch" ? "Server or Connection Error!!" : err?.message
-            // setResponse({ status: "error", message });
 			toast.error(message);
         } finally {
             setLoading(false);

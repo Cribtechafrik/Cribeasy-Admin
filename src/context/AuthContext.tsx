@@ -29,8 +29,8 @@ const AuthContext = createContext<AuthContextType>({
 
 export default AuthContext;
 
-const AUTH_KEY = import.meta.env.VITE_AUTH_KEY;
-const TOKEN_KEY = import.meta.env.VITE_AUTH_TOKEN_KEY;
+const AUTH_KEY = "Crib_Easy_Auth";
+const TOKEN_KEY = "Crib_Easy_Token";
 
 //////////////////////////////////////////////
 //// CREATING PROVIDER ////
@@ -58,6 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = function({ children }) 
     const formdataHeader = { Authorization: `Bearer ${token}` };
 
     const handleChange = function(auth: AuthType | null, token: string | null) {
+        console.log(auth, token)
         setAuth(auth);
         setToken(token);
     };

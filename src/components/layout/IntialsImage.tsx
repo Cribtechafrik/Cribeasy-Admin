@@ -9,10 +9,10 @@ export default function IntialsImage() {
     return (
         <React.Fragment>
             {/* @ts-ignore */}
-            {auth?.image?.url ? (
+            {(auth?.profile_image ? (
                 <img className='auth--img' src={""} alt={""} />
-            ) : (
-                <span className='auth--img'>{getInitials("Alex", "Ayo")}</span>
+            ) : (auth?.first_name) &&
+                <span className='auth--img'>{getInitials(auth?.first_name, auth?.last_name)}</span>
             )}
         </React.Fragment>
     )

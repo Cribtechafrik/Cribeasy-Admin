@@ -45,10 +45,6 @@ export default function index() {
 		});
 	};
 
-	// const handleResetResponse = function () {
-	// 	setResponse({ status: "", message: "" });
-	// };
-
 	async function handleSubmit(e: FormEvent) {
 		e.preventDefault();
         const newErrors = validateAuthForm(formData);
@@ -56,7 +52,6 @@ export default function index() {
         if (Object.keys(newErrors).length >= 1) return;
 
 		setLoading(true);
-		// setResponse({ status: "", message: "" });
 
 		const device_name = navigator.userAgent?.split(")")?.[0] + ")"
 		try {
@@ -68,15 +63,17 @@ export default function index() {
 			});
 
 			const data = await res.json();
+			if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.validation_errors?.email?.[0] || data?.error?.message);
+            }
+			console.log(data)
 			toast.success("Login Successful!");
-			// setResponse({ status: "success", message: "Login Successful" });
 
 			setTimeout(function () {
-				handleChange(data?.auth, data?.token);
-			}, 2000);
+				handleChange(data?.data?.user, data?.data?.token);
+			}, 1000);
 		} catch (err: any) {
 			const message = err?.message == "Failed to fetch" ? "Server or Connection Error!!" : err?.message;
-			// setResponse({ status: "error", message });
 			toast.error(message);
 		} finally {
 			setLoading(false);

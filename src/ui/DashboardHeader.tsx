@@ -4,9 +4,11 @@ import IntialsImage from "../components/layout/IntialsImage";
 import Logo from "../assets/logo/logo.png"
 import { Link } from "react-router-dom";
 import { RiMenu3Fill } from "react-icons/ri";
+import { useAuthContext } from "../context/AuthContext";
 
 
 export default function DashboardHeader() {
+    const { auth } = useAuthContext();
 
     const handleToggleSidemenu = function() {
         
@@ -43,8 +45,8 @@ export default function DashboardHeader() {
                         <IntialsImage />
                     </div>
                     <div className='auth--info'>
-                        <p className='auth--name'>Alex Ayo</p>
-                        <p className='auth--role'>Administrator</p>
+                        <p className='auth--name'>{`${auth?.first_name} ${auth?.last_name}`}</p>
+                        <p className='auth--role'>{auth?.role}</p>
                     </div>
                 </div>  
             </div> 
