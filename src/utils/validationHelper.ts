@@ -3,12 +3,12 @@
 export function validateAuthForm(data: any) {
 	const errors: any = {};
 
-    if (!data.email.trim()) {
-        errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(data.email)) {
-        errors.email = "Email is invalid";
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data.email)) {
-        errors.email = "Email is invalid";
+    if (!data.identifier.trim()) {
+        errors.identifier = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(data.identifier)) {
+        errors.identifier = "Email is invalid";
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data.identifier)) {
+        errors.identifier = "Email is invalid";
     }
 
     if (!data.password) {

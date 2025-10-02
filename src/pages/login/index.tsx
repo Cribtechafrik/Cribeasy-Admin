@@ -13,7 +13,7 @@ import { validateAuthForm } from "../../utils/validationHelper";
 
 
 type FormDataType = {
-    email: string;
+    identifier: string;
     password: string
 }
 
@@ -22,10 +22,10 @@ export default function index() {
 	const { auth, handleChange } = useAuthContext();
 
 	const [formData, setFormData] = useState({
-		email: "",
+		identifier: "",
 		password: "",
 	});
-    const [formErrors, setFormErrors] = useState<FormDataType>({ email: "", password: "" });
+    const [formErrors, setFormErrors] = useState<FormDataType>({ identifier: "", password: "" });
 
 	const [showPassword, setShowPassword] = useState(false);
 	const [isChecked, setIsChecked] = useState(false);
@@ -58,14 +58,14 @@ export default function index() {
 		setLoading(true);
 		// setResponse({ status: "", message: "" });
 
+		const device_name = navigator.userAgent?.split(")")?.[0] + ")"
 		try {
-			const { password, email } = formData;
-			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/login`, {
+			const { password, identifier } = formData;
+			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/admin/login`, {
 				method: "POST",
 				headers,
-				body: JSON.stringify({ identifier: email, password }),
+				body: JSON.stringify({ identifier, password, remember_me: isChecked, device_name }),
 			});
-
 
 			const data = await res.json();
 			toast.success("Login Successful!");
@@ -104,12 +104,12 @@ export default function index() {
                             </div>
 
 							<div className="form--item">
-								<label htmlFor="email" className="form--label">
-									Email <Asterisk />
+								<label htmlFor="identifier" className="form--label">
+									identifier <Asterisk />
 								</label>
-								<input type="email" className="form--input" placeholder="taiwo@gmail.com" onChange={handleFormChange} name="email" id="email" value={formData.email} />
+								<input type="identifier" className="form--input" placeholder="taiwo@gmail.com" onChange={handleFormChange} name="identifier" id="identifier" value={formData.identifier} />
                                 <span className="form--error-message">
-                                    {formErrors.email && formErrors.email}
+                                    {formErrors.identifier && formErrors.identifier}
                                 </span>
 							</div>
 							<div className="form--item">

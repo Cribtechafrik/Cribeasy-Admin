@@ -31,6 +31,9 @@ export default function DashboardHeader() {
                     <input type="text" placeholder="Search" />
                 </div>
 
+                <span className="nav--search">
+                    <LuSearch />
+                </span>
                 <span className="nav--notification">
                     <FiBell />
                 </span>

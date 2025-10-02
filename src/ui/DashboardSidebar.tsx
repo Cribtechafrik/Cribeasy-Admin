@@ -6,8 +6,6 @@ export default function DashboardSidebar() {
     const { pathname } = useLocation();
     const isHomeRoute = pathname === "/" || pathname === "/dashboard" || pathname === "/dashboard/"
 
-    console.log(pathname)
-
     return (
         <div className='dashboard--menu'>
             <ul className='menu--list'>

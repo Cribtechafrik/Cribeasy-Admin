@@ -5,12 +5,12 @@ import home_line from "../../assets/svgs/home-line.svg";
 import currency_naira from "../../assets/svgs/currency-naira.svg";
 import { MdOutlineRealEstateAgent } from 'react-icons/md';
 import RevenueOverview from './components/RevenueOverview'
-import PropertyTypes from './components/PropertyTypes'
 import OccupancyRates from './components/OccupancyRates'
-import RecentLstings from './components/RecentLstings'
+import RecentLstings from './components/RecentListings'
 import RecentActivities from './components/RecentActivities'
 import RecentPayments from './components/RecentPayments'
 import "./home.css";
+import PropertyType from './components/PropertyTypes';
 
 
 export default function index() {
@@ -67,7 +67,7 @@ export default function index() {
                 <div className='home--grid'>
                     <div className="grid--left">
                         <RevenueOverview />
-                        <div className="flex-align-cen" style={{ gap: "1rem" }}>
+                        <div className="home--flex">
                             <OccupancyRates />
                             <RecentLstings />
                         </div>
@@ -75,7 +75,7 @@ export default function index() {
                     </div>
 
                     <div className="grid--right">
-                        <PropertyTypes />
+                        <PropertyType />
                         <RecentPayments />
                     </div>
                 </div>
