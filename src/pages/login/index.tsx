@@ -101,10 +101,10 @@ export default function index() {
                             </div>
 
 							<div className="form--item">
-								<label htmlFor="identifier" className="form--label">
-									identifier <Asterisk />
+								<label htmlFor="email" className="form--label">
+									Email <Asterisk />
 								</label>
-								<input type="identifier" className="form--input" placeholder="taiwo@gmail.com" onChange={handleFormChange} name="identifier" id="identifier" value={formData.identifier} />
+								<input type="email" className="form--input" placeholder="taiwo@gmail.com" onChange={handleFormChange} name="identifier" id="identifier" value={formData.identifier} />
                                 <span className="form--error-message">
                                     {formErrors.identifier && formErrors.identifier}
                                 </span>
