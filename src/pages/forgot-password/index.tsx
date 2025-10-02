@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Asterisk from '../../components/elements/Asterisk';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // import { FiCheckCircle } from 'react-icons/fi';
 // import { createPortal } from 'react-dom';
 // import Modal from '../../components/modals/General';
@@ -11,9 +11,9 @@ import Logo from "../../assets/logo/logo.png";
 
 
 export default function index() {
-    // const [response, setResponse] = useState({ status: '', message: '' });
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({ email: "" });
+    const [formData, setFormData] = useState({ identifier: "" });
     const [showModal, setShowModal] = useState(false);
 
     const headers = {
@@ -29,13 +29,8 @@ export default function index() {
         });
     };
 
-    // const handleResetResponse = function () {
-    //     setResponse({ status: "", message: "" })
-    // }
-
     async function handleForgotPassword() {
         setLoading(true);
-        // handleResetResponse()
 
         try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/forgot-password`, {
@@ -45,18 +40,24 @@ export default function index() {
 
 
             const data = await res.json();
-            if (res.status !== 200) {
-                throw new Error(data?.message || data?.error);
+            if (res.status !== 200 || !data?.success) {
+                setTimeout(function () {
+                    localStorage.setItem("otp_identifier", formData.identifier);
+                    navigate("/otp-verification")
+                }, 1000);
+                throw new Error(data?.error?.message);
             }
             
-            // // UPDATE THE RESPONSE STATE WITH THE NEW VALUE
             toast.error(data?.message);
-            // setResponse({ status: "success", message: data.message });
             setShowModal(true)
 
+            setTimeout(function () {
+                localStorage.setItem("otp_identifier", formData.identifier);
+				navigate("/otp-verification")
+			}, 1000);
+
         } catch (err: any) {
-            const message = err?.message == "Failed to fetch" ? "Server or Connection Error!!" : err?.message
-            // setResponse({ status: "error", message });
+            const message = err?.message == "Failed to fetch" ? "Server or Connection Error!!" : err?.message || "Something went wrong!"
 			toast.error(message);
         } finally {
             setLoading(false);
@@ -93,7 +94,7 @@ export default function index() {
                             </span>
                             <div className="form--item">
                                 <label htmlFor="email" className="form--label">Email <Asterisk /></label>
-                                <input type="email" className="form--input" placeholder='taiwo@gmail.com' required onChange={handleFormChange} name="email" id='email' value={formData.email} />
+                                <input type="email" className="form--input" placeholder='taiwo@gmail.com' required onChange={handleFormChange} name="identifier" id='identifier' value={formData.identifier} />
                             </div>
 
                             <button type="submit" className='form--submit' onClick={handleForgotPassword}>Reset Password</button>
