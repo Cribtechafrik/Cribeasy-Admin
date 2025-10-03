@@ -125,7 +125,7 @@
 .listing--info .title,
 .payment--info .title {
     font-weight: 500;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
 }
 .listing--info .description,
 .payment--info .description,
@@ -135,7 +135,7 @@
 }
 .listing--info .value,
 .payment--info .value {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     color: #3B82F6;
 }
 .listing--info .period {

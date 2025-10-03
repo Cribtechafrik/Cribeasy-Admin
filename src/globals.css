@@ -225,6 +225,41 @@ body:has(.global--overlay) {
 }
 
 
+/* ========================================== */
+/*  */
+/* ========================================== */
+.dropdown {
+    min-width: 20rem;
+    padding: 1rem 0 0.8rem;
+    background-color: var(--white);
+    border-radius: .4rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    position: absolute;
+    top: 5rem;
+    right: -1rem;
+    box-shadow: 0 0 20px #0000000d;
+    z-index: 100;
+}
+
+.dropdown--item,
+a.dropdown--item {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 1rem 1.6rem;
+    font-weight: 500;
+    color: #515151;
+}
+.dropdown--item,
+.dropdown--item svg {
+    transition: all .35s;
+}
+
 
 
 .auth--img {
