@@ -16,3 +16,18 @@ export default function Spinner() {
         </div>
     )
 }
+
+export function SpinnerMini() {
+    return (
+        <div className="flex-align-justify-center">
+            <Ring2
+                size="30"
+                stroke="5"
+                strokeLength="0.25"
+                bgOpacity="0.1"
+                speed="0.8"
+                color="#00419C" 
+            />
+        </div>
+    )
+}

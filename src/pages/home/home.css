@@ -1,6 +1,5 @@
 .home--section .form--select {
     align-self: flex-end;
-    padding: 0.6rem;
 }
 .home--top {
     margin-bottom: 2rem;
@@ -18,7 +17,7 @@
 .top--heading .title {
     font-size: 2.2rem;
     font-weight: 600;
-    color: #132B4B;
+    color: var(--color-brand-primary);
 }
 .top--heading .text {
     color: #989898;

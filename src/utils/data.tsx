@@ -71,11 +71,11 @@ export const MENU_ITEMS = [
         link: "/dashboard/ratings-reviews",
         icon: <HiOutlineStar />
     },
-    {
-        title: "Notifications",
-        link: "/dashboard/notifications",
-        icon: <IoNotificationsOutline />
-    },
+    // {
+    //     title: "Notifications",
+    //     link: "/dashboard/notifications",
+    //     icon: <IoNotificationsOutline />
+    // },
     {
         title: "Coupons",
         link: "/dashboard/coupons",

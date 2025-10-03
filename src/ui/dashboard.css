@@ -144,21 +144,6 @@ body:has(.dashboard--base) {
     bottom: 0;
 }
 
-.dashboard--menu::-webkit-scrollbar {
-	width: 0.4rem;
-	height: 0.4rem;
-}
-.dashboard--menu::-webkit-scrollbar-track {
-	background: none;
-	border: none;
-}
-.dashboard--menu::-webkit-scrollbar-thumb {
-	background: #ccc;
-}
-.dashboard--menu::-webkit-scrollbar-thumb:hover {
-	background: #aaa;
-}
-
 .menu--list {
     display: flex;
     flex-direction: column;
