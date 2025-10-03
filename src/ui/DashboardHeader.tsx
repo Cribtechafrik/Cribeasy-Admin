@@ -9,19 +9,17 @@ import React, { useState } from "react";
 import Dropdown from "../components/layout/Dropdown";
 import { createPortal } from "react-dom";
 import Spinner from "../components/elements/Spinner";
+import { useDataContext } from "../context/DataContext";
 
 
 export default function DashboardHeader() {
     const { auth } = useAuthContext();
     const [loading, setLoading] = useState(false)
     const [isShownDropdown, setIsShownDropdown] = useState(false);
+    const { handleToggleSidemenu } = useDataContext();
 
     const handleToggleDropdown = function () {
         setIsShownDropdown(!isShownDropdown);
-    }
-
-    const handleToggleSidemenu = function() {
-        
     }
 
     return (
