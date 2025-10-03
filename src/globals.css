@@ -32,6 +32,7 @@ body {
     --grey: #5c636d;
 
     --color-brand-primary: #00419C;
+    --color-brand-dark: #132B4B;
 }
 
 ul, ol {
@@ -125,6 +126,7 @@ textarea::placeholder {
 button {
 	border: none;
 	cursor: pointer;
+	background-color: transparent;
 }
 
 
@@ -134,6 +136,21 @@ body:has(.global--overlay) {
 	height: 100vh;
 	overflow-y: hidden !important;
 	transition: all .3s !important;
+}
+
+::-webkit-scrollbar {
+	width: 0.4rem;
+	height: 0.4rem;
+}
+::-webkit-scrollbar-track {
+	background: none;
+	border: none;
+}
+::-webkit-scrollbar-thumb {
+	background: #ccc;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: #aaa;
 }
 
 #chart {
@@ -151,6 +168,12 @@ body:has(.global--overlay) {
 	display: flex;
 	align-items: center;
 	gap: 0.2rem;
+}
+
+.flex-align-justify-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .card {
@@ -222,6 +245,24 @@ body:has(.global--overlay) {
 	-webkit-backdrop-filter: blur(2px);
 	backdrop-filter: blur(2px);
 	transition: all 0.2s;
+}
+
+.breadcrums {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 1.4rem;
+	font-weight: 500;
+	color: #B4B4B4;
+	transition: all .3s;
+}
+
+.breadcrums a:hover {
+	color: #515151;
+	text-decoration: underline;
+}
+.breadcrums .current {
+	color: var(--color-brand-dark);
 }
 
 
@@ -407,13 +448,52 @@ span.auth--img {
 }
 
 
+
+
+.empty--box {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-direction: column;
+	gap: 1.2rem;
+	opacity: 0.85;
+	background-color: #F9FAFB;
+	color: #B4B4B4;
+	padding: 8rem 2rem;
+	text-align: center;
+}
+
+.empty--box p {
+	font-size: 1.48rem;
+	line-height: 1.4;
+}
+.empty--box svg {
+	font-size: 8rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ================================================== */
+/* MEDIA QUERIES */
+/* ================================================== */
+
 @media screen and (max-width: 825px) {
 	.insight--grid {
 		grid-template-columns: 1fr 1fr 1fr;
     }
 }
-
-
 
 @media screen and (max-width: 700px) {
    	.insight--grid {
@@ -421,10 +501,10 @@ span.auth--img {
     }
 }
 
-
 @media screen and (max-width: 500px) {
    	.insight--grid {
         grid-template-columns: 1fr;
+        gap: 1rem !important;
     }
 	.insight--card:hover {
 		transform: none;
