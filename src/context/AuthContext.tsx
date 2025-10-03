@@ -48,17 +48,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = function({ children }) 
     const [token, setToken] = useState<string | any>(Cookies.get(TOKEN_KEY) ? Cookies.get(TOKEN_KEY) : null);
 
     const headers: {
+        "Accept": string;
         "Content-Type": string;
         Authorization: string;
     } = {
+        "Accept": "application/json",
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`
     }
 
-    const formdataHeader = { Authorization: `Bearer ${token}` };
+    const formdataHeader = { "Accept": "application/json", Authorization: `Bearer ${token}` };
 
     const handleChange = function(auth: AuthType | null, token: string | null) {
-        console.log(auth, token)
         setAuth(auth);
         setToken(token);
     };
@@ -75,16 +76,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = function({ children }) 
 
     async function logout() {
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, { headers });
-            const data: any = res.json()
-            if(res.status === 429) throw new Error("Too Many Requests, Try again later")
-            if(data.status == "fail" || !res.ok) throw new Error(data?.message);
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user`, { headers, method: "GET" });
+            const data: any = await res.json()
+            console.log(data)
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
 
             setTimeout(function() {
                 handleChange(null, null);
-            }, 1000);
+            }, 500);
 
-            return "successful";
+            return data?.message;
         } catch(err: any) {
             return err?.message
         }
