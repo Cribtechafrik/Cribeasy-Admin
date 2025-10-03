@@ -214,10 +214,67 @@ body:has(.dashboard--base) {
 
 
 
+/* ========================================== */
+/*  */
+/* ========================================== */
+.dashboard--sidemenu {
+    min-width: 34rem;
+    height: 100vh;
+    background-color: #fff;
+
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    
+    padding: 3.8rem 1.8rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    border-right: 1.2px solid var(--border-color);
+
+    overflow-y: auto;
+    scrollbar-width: none;
+    z-index: 115;
+    transition: all .3s ease;
+    animation: menu-slide-in .25s ease-out both;
+    opacity: 1; 
+    transform: translateX(0);
+}
+
+@keyframes menu-slide-in {
+    0% {
+        opacity: 0.5; transform: translateX(-40rem);
+    }
+    100% {
+        opacity: 1; transform: translateX(0); 
+    }
+}
+@keyframes menu-slide-out {
+    0% { opacity: 1; transform: translateX(0); }
+    100% { transform: translateX(-40rem); }
+}
+  
+.dashboard--sidemenu.animate-out {
+    animation: menu-slide-out 0.25s ease-out forwards;
+}
+
+.dashboard--sidemenu .hamburger--icon {
+    position: absolute;
+    top: 1.6rem;
+    right: 2rem;
+}
 
 
 
 
+
+
+
+
+/* ========================================== */
+/* MEDIA QUERIES */
+/* ========================================== */
 @media screen and (max-width: 1050px) {
     .dashboard--menu {
         width: 20rem;
@@ -272,5 +329,9 @@ body:has(.dashboard--base) {
     }
     .nav--search {
         display: block;
+    }
+
+    .dashboard--sidemenu {
+        min-width: 100%;
     }
 }
