@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useLocation } from "react-use";
 
 
 //////////////////////////////////////////////
@@ -25,7 +26,7 @@ interface DataProviderType {
 }
 
 export const DataProvider: React.FC<DataProviderType> = function({ children }) {
-
+    const { pathname } = useLocation();
     const [animateOut, setAnimateOut] = useState(false);
     const [isShowSidemenu, setIsShowSidemenu] = useState(false);
 
@@ -45,6 +46,10 @@ export const DataProvider: React.FC<DataProviderType> = function({ children }) {
             handleRunCloseNanimate();
         }
     }
+
+    useEffect(function() {
+        handleRunCloseNanimate();
+    }, [pathname]);
 
 
     // CREATE CONTEXT DATA
