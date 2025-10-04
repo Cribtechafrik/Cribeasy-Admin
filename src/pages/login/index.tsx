@@ -66,7 +66,6 @@ export default function index() {
 			if (res.status !== 200 || !data?.success) {
                 throw new Error(data?.error?.validation_errors?.email?.[0] || data?.error?.message);
             }
-			console.log(data)
 			toast.success("Login Successful!");
 
 			setTimeout(function () {
