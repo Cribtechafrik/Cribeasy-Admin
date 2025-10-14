@@ -57,7 +57,7 @@ export default function index() {
 			}, 1000);
 
         } catch (err: any) {
-            const message = err?.message == "Failed to fetch" ? "Server or Connection Error!!" : err?.message || "Something went wrong!"
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message || "Something went wrong!"
 			toast.error(message);
         } finally {
             setLoading(false);

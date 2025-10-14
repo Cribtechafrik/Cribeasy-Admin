@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import Cookies from 'js-cookie';
-import type { AuthType } from "../utils/types";
+import type { AuthType, HeaderType } from "../utils/types";
 
 //////////////////////////////////////////////
 //// CREATING CONTEXT ////
@@ -47,11 +47,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = function({ children }) 
     const [auth, setAuth] = useState<AuthType | null>(Cookies.get(AUTH_KEY) ? JSON.parse(Cookies.get(AUTH_KEY)!) : null);
     const [token, setToken] = useState<string | any>(Cookies.get(TOKEN_KEY) ? Cookies.get(TOKEN_KEY) : null);
 
-    const headers: {
-        "Accept": string;
-        "Content-Type": string;
-        Authorization: string;
-    } = {
+    const headers: HeaderType = {
         "Accept": "application/json",
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`

@@ -11,10 +11,11 @@ import { Link } from "react-router-dom";
 import { HiOutlineUsers } from "react-icons/hi";
 import { FaUser, FaUsers } from "react-icons/fa6";
 import { FiCheckCircle } from "react-icons/fi";
+import FilterButton from "../../components/elements/FilterButton";
 
 
 const breadCrumbs = [
-    { name: "Agents", isCurrent: true },
+    { name: "Agents/Landloard", isCurrent: true },
 ];
 
 export default function index() {
@@ -23,12 +24,9 @@ export default function index() {
 
     const columns = [
         {
-            name: 'Agent ID',
+            name: "Agent/Landloard",
             selector: (row: any) => row?.name,
-        },
-        {
-            name: "Agent",
-            selector: (row: any) => row?.name,
+            minWidth: "16rem"
         },
         {
             name: "Email",
@@ -60,12 +58,12 @@ export default function index() {
 		<section className="section--page">
 			<div className="page--top">
 				<div className="page--heading">
-					<h4 className="title">Agents</h4>
+					<h4 className="title">Agents/Landloard</h4>
                     <Breadcrumbs breadcrumArr={breadCrumbs} />
 				</div>
 
                 <div className="flex-align-cen" style={{ flexWrap: "wrap", gap: "1rem" }}>
-                    <Link to="/dashboard/agents/create" className="page--btn filled"><AiOutlinePlus /> Add new agent</Link>
+                    <Link to="/dashboard/agents/create" className="page--btn filled"><AiOutlinePlus /> Add new Agents/Landloard</Link>
                     <button className="page--btn outline"><PiExport /> Export</button>
                 </div>
 			</div>
@@ -83,7 +81,7 @@ export default function index() {
                     <InsightCard title="New This Month" value="0" percentage="+0%" period="month" isIncrease={false} icon={<AiOutlinePlusCircle />} />
                 </div>
 
-                <div className="page--option"></div>
+                <FilterButton handleShowFilter={() => {}} />
 
                 <div className="page--table">
                     <div className="page--tabs">
@@ -92,7 +90,7 @@ export default function index() {
                         <span className={`page--tab ${activeTab == "free-plan" ? "active" : ""}`} onClick={() => setActiveTab("free-plan")}>Free Plan Agents (79)</span>
                         <span className={`page--tab ${activeTab == "inactive" ? "active" : ""}`} onClick={() => setActiveTab("inactive")}>Inactive Agents (0)</span>
                     </div>
-                    
+                        
                     <DataTable
                         data={data as any}
                         columns={columns as any}

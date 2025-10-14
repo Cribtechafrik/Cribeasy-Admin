@@ -5,10 +5,10 @@ import home_line from "../../assets/svgs/home-line.svg";
 import currency_naira from "../../assets/svgs/currency-naira.svg";
 import { MdOutlineRealEstateAgent } from 'react-icons/md';
 import RevenueOverview from './components/RevenueOverview'
-import OccupancyRates from './components/OccupancyRates'
+// import OccupancyRates from './components/OccupancyRates'
 import RecentLstings from './components/RecentListings'
 import RecentActivities from './components/RecentActivities'
-import RecentPayments from './components/RecentPayments'
+// import RecentPayments from './components/RecentPayments'
 import PropertyType from './components/PropertyTypes';
 import { useAuthContext } from '../../context/AuthContext';
 import "./home.css";
@@ -70,16 +70,19 @@ export default function index() {
                 <div className='home--grid'>
                     <div className="grid--left">
                         <RevenueOverview />
-                        <div className="home--flex">
+                        <RecentActivities />
+
+                        {/* <div className="home--flex">
                             <OccupancyRates />
                             <RecentLstings />
                         </div>
-                        <RecentActivities />
+                        <RecentActivities /> */}
                     </div>
 
                     <div className="grid--right">
                         <PropertyType />
-                        <RecentPayments />
+                        {/* <RecentPayments /> */}
+                        <RecentLstings />
                     </div>
                 </div>
             </main>

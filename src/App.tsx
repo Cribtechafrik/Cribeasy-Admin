@@ -1,4 +1,5 @@
 import React from "react";
+import { Toaster } from "sonner";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
@@ -10,8 +11,8 @@ import OTP_Verification from "./pages/otp-verification";
 import ForgotPassword from "./pages/forgot-password";
 
 import Listings from "./pages/listings"
-import Agents from "./pages/agents"
-import Artisants from "./pages/artisants"
+import Agents_Landloard from "./pages/agents_landloard"
+import Artisans from "./pages/artisants"
 import Inspection from "./pages/inspection"
 import Renters from "./pages/renters"
 import Payments from "./pages/payments"
@@ -22,7 +23,8 @@ import Analytics from "./pages/analytics"
 import Ratings_reviews from "./pages/ratings-reviews"
 import Notifications from "./pages/notifications"
 import Coupons from "./pages/coupons"
-import { Toaster } from "sonner";
+
+import CreateListing from "./pages/listings/sub_pages/CreateListing"
 
 
 export default function App() {
@@ -43,9 +45,12 @@ export default function App() {
 					<Route element={<ProtectedRoute />}>
 						<Route path="/" element={<Home />}></Route>
 						<Route path="/dashboard" element={<Home />}></Route>
+
 						<Route path="/dashboard/listings" element={<Listings />}></Route>
-						<Route path="/dashboard/agents" element={<Agents />}></Route>
-						<Route path="/dashboard/artisants" element={<Artisants />}></Route>
+						<Route path="/dashboard/listings/create" element={<CreateListing />}></Route>
+
+						<Route path="/dashboard/agents-landloard" element={<Agents_Landloard />}></Route>
+						<Route path="/dashboard/Artisans" element={<Artisans />}></Route>
 						<Route path="/dashboard/inspection" element={<Inspection />}></Route>
 						<Route path="/dashboard/renters" element={<Renters />}></Route>
 						<Route path="/dashboard/payments" element={<Payments />}></Route>

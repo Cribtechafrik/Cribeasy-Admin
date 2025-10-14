@@ -5,118 +5,394 @@ import InsightCard from "../../components/layout/InsightCard";
 import { IoList } from "react-icons/io5";
 import DataTable from 'react-data-table-component';
 import { custom_styles } from "../../utils/contants";
-import { SpinnerMini } from "../../components/elements/Spinner";
+import Spinner, { SpinnerMini } from "../../components/elements/Spinner";
 import EmptyTable from "../../components/layout/EmptyTable";
 import { GoListUnordered } from "react-icons/go";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import FilterButton from "../../components/elements/FilterButton";
+import { toast } from "sonner";
+import { useAuthContext } from "../../context/AuthContext";
+import type { Count, ListingType, Property_type } from "../../utils/types";
+import { BsEye } from 'react-icons/bs';
+import { formatNumber } from "../../utils/helper";
+import BasicModal from "../../components/modals/Basic";
+import ReactCurrencyInput from 'react-currency-input-field';
+import { useWindowSize } from "react-use";
+import ListingDetails from "./sub_pages/ListingDetails";
+import HalfScreen from "../../components/modals/HalfScreen";
+import { fetchPropertyCategories, fetchPropertyTypes } from "../../utils/fetch";
 
 
 const breadCrumbs = [
     { name: "Listings", isCurrent: true },
 ];
 
+type ListingAnalyticsType = {
+    published_properties: Count;
+    rented_properties: Count;
+    total_properties: Count;
+    unpublished_properties: Count;
+}
+type ListingSummaryType = {
+    published_properties: number;
+    rented_properties: number;
+    total_properties: number;
+    unpublished_properties: number;
+}
+
+type FilterDataType = {
+    property_type: string;
+    category: string;
+    max_price: string;
+    min_price: string;
+}
+
 export default function index() {
-    const [activeTab, setActiveTab] = useState("all");
-    const data: any = [];
+    const { width } = useWindowSize();
+    const { headers, shouldKick } = useAuthContext();
+    const [activeTab, setActiveTab] = useState("total_properties");
+    const [loading, setLoading] = useState({ main: false, table: false });
+    // const [error, setError] = useState("");
+    const [period, setPeriod] = useState("this_month");
+    const [analyticsSummary, setAnalyticsSummary] = useState<ListingAnalyticsType | null>(null);
+    
+    const [propertyTypesData, setPropertyTypesData] = useState<Property_type[] | []>([]);
+    const [propertyCategoryData, setPropertyCategoryData] = useState<Property_type[] | []>([]);
+    const [listingData, setListingData] = useState<ListingType[] | []>([]);
+    const [summary, setSummary] = useState<ListingSummaryType | null>(null);
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [showModal, setShowModal] = useState({ details: false, filters: false });
+
+    const [paginationDetails, setPaginationDetails] = useState({
+        currentPage: 1,
+        perPage: 10
+    });
+
+    const [filterUnsavedData, setFilterUnsavedData] = useState<FilterDataType>({
+        property_type: "",
+        category: "",
+        max_price: "",
+        min_price: "",
+    });
+    const [filterSavedData, setFilterSavedData] = useState<FilterDataType | null>(null)
+
+    // const getTableStatus = function(row: ListingType) {
+    //     const isBooked = row?.is_booked;
+    //     const isActive = row?.is_active;
+
+    //     if(isActive && isBooked) {}
+
+    //     isBooked == 0 ? "available" : isBooked == 1 ? "rented" : isActive == 1 ? "published" : isActive == 0 ? "unpublished" : ""
+    // }
 
     const columns = [
         {
             name: 'PROPERTY ID',
-            selector: (row: any) => row?.name,
+            selector: (row: ListingType) => row?.property_ref_id,
         },
         {
             name: "PROPERTY TITLE",
-            selector: (row: any) => row?.name,
-            minWidth: "16rem"
-        },
-        {
-            name: "AGENT NAME",
-            selector: (row: any) => row?.name
+            selector: (row: ListingType) => row?.property_title,
+            minWidth: "18rem"
         },
         {
             name: "LOCATION",
-            selector: (row: any) => row?.name
+            selector: (row: ListingType) => row?.property_detail?.property_address
         },
         {
             name: "PRICE",
-            selector: (row: any) => row?.name
+            selector: (row: ListingType) => formatNumber(+row?.property_detail?.rent_price, 2)
+        },
+        {
+            name: "PUBLISHED STATUS",
+            selector: (row: ListingType) => (
+                <span className={`status status--${row?.is_active == 1 ? "published" : row?.is_active == 0 ? "unpublished" : ""}`}>
+                    <p>{row?.is_active == 1 ? "published" : row?.is_active == 0 ? "unpublished" : ""}</p>
+                </span>
+            ),
+            minWidth: "12rem"
         },
         {
             name: "STATUS",
-            selector: (row: any) => row?.name
+            selector: (row: ListingType) => (
+                <span className={`status status--${row.is_booked == 0 ? "available" : row?.is_booked == 1 ? "rented" : ""}`}>
+                    <p>{row.is_booked == 0 ? "available" : row?.is_booked == 1 ? "rented" : ""}</p>
+                </span>
+            )
         },
         {
             name: "ACTIONS",
-            selector: (row: any) => row?.name
+            selector: (row: ListingType) => (
+                <div className="table--action" onClick={() => handleShowDetailsModal(row?.id)}>
+                    <BsEye />
+                </div>
+            ),
         },
     ];
 
+    const handleShowDetailsModal = function(id: number) {
+        if(id) {
+            setSelectedId(id);
+            setShowModal({ ...showModal, details: true });
+        }
+    }
+
+    const handleResetFilter = function() {
+        setFilterUnsavedData({
+            property_type: "",
+            category: "",
+            max_price: "",
+            min_price: "",
+        });
+        setFilterSavedData(null)
+    }
+
+    const handleSaveFilterData = function() {
+        setFilterSavedData(filterUnsavedData)
+        setShowModal({ ...showModal, filters: false });
+    }
+
+    async function handleFetchAnalytics() {
+        setLoading({ ...loading, main: true });
+        try {
+			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/analytics-cards?period=${period}`, {
+				method: "GET",
+				headers,
+			});
+            shouldKick(res);
+
+			const data = await res.json();
+            console.log(data)
+			if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            setAnalyticsSummary(data?.data?.summary)
+		} catch (err: any) {
+			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+			toast.error(message);
+		} finally {
+			setLoading({ ...loading, main: false });
+		}
+    }
+
+    // fetchAmenities
+    async function handleFetchListings() {
+        setLoading({ ...loading, table: true });
+        const status = activeTab == "total_properties" ? "available" : activeTab?.replace("_properties", "")
+
+        try {
+			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties?status=${status}`, {
+				method: "GET",
+				headers,
+			});
+            shouldKick(res);
+
+			const data = await res.json();
+            console.log(data)
+			if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            setSummary(data?.summary);
+            setListingData(data?.data);
+		} catch (err: any) {
+			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+			toast.error(message);
+		} finally {
+			setLoading({ ...loading, table: false });
+		}
+    }
+
+    useEffect(function() {
+        if(period) {
+            handleFetchAnalytics();
+        }
+    }, [period]);
+
+    useEffect(function() {
+        handleFetchListings();
+    }, [activeTab, filterSavedData]);
+
+    useEffect(function() {
+        if(showModal.filters) {
+            (async () => {
+                const propertyType = await fetchPropertyTypes(headers)
+                if(propertyType?.success) {
+                    setPropertyTypesData(propertyType?.data[0])
+                }
+            })();
+
+
+            // (async () => {
+            //     const categoryData = await fetchPropertyCategories(headers)
+            //     if(categoryData?.success) {
+            //         setPropertyCategoryData(categoryData?.data[0])
+            //     }
+            // })();
+        }
+    }, [showModal.filters])
+
 	return (
-		<section className="section--page">
-			<div className="page--top">
-				<div className="page--heading">
-					<h4 className="title">Listings</h4>
-                    <Breadcrumbs breadcrumArr={breadCrumbs} />
-				</div>
+        <React.Fragment>
+            {loading.main && <Spinner />}
 
-                <div className="flex-align-cen" style={{ flexWrap: "wrap", gap: "1rem" }}>
-                    <Link to="/dashboard/listings/create" className="page--btn filled"><AiOutlinePlus /> Add new agent</Link>
-                    <button className="page--btn outline"><PiExport /> Export</button>
-                </div>
-			</div>
+            {(selectedId && showModal.details) && (
+                <HalfScreen title="Listing Details" setClose={() => setShowModal({ ...showModal, details: false })}>
+                    <ListingDetails id={selectedId} />
+                </HalfScreen>
+            )}
 
-            <div className="page--bottom">
-                <select className="form--select">
-                    <option>This Month</option>
-                    <option>This Year</option>
-                </select>
+            {showModal.filters && (
+                <BasicModal title="Filter" setClose={() => setShowModal({ ...showModal, filters: false })}>
+                    <div className="modal--content">
+                        <div className="form--flex">
+                            <div className="form--item">
+                                <label htmlFor="category" className="form--label colored">Category</label>
+                                <select className="form--select" name="category" id="category">
+                                    <option selected value="">All</option>
+                                </select>
+                            </div>
 
-                <div className="insight--grid">
-                    <InsightCard title="Total Listings" value="0" percentage="+0%" period="month" isIncrease={true} icon={<IoList />} />
-                    <InsightCard title="Published Listings" value="0" percentage="+0%" period="month" isIncrease={false} icon={<IoList />} />
-                    <InsightCard title="Unpublished Listings" value="0" percentage="+0%" period="month" isIncrease={true} icon={<IoList />} />
-                    <InsightCard title="Rented Listings" value="0" percentage="+0%" period="month" isIncrease={false} icon={<IoList />} />
-                </div>
+                            <div className="form--item">
+                                <label htmlFor="property_type" className="form--label colored">Property Type</label>
+                                <select className="form--select" name="property_type" id="property_type">
+                                    <option selected value="">All</option>
+                                    {propertyTypesData && propertyTypesData?.map((type, i) => (
+                                        <option value={type?.name} key={i}>{type.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
 
-                <div className="page--option"></div>
+                        <div className="form--flex">
+                            <div className="form--item">
+                                <label htmlFor="min_price" className="form--label colored">Price Range</label>
+                                <div className="form--input-box">
+                                    <ReactCurrencyInput
+                                        id="min_price"
+                                        name="min_price"
+                                        className="form--input"
+                                        placeholder="Min Price"
+                                        prefix="₦"
+                                        value={filterUnsavedData.min_price}
+                                        onValueChange={(value) => setFilterUnsavedData({ ...filterUnsavedData, min_price: value ?? "" })}
+                                    />
+                                    <span className="form--input-icon">Min</span>
+                                </div>
+                            </div>
 
-                <div className="page--table">
-                    <div className="page--tabs">
-                        <span className={`page--tab ${activeTab == "all" ? "active" : ""}`} onClick={() => setActiveTab("all")}>All properties (0)</span>
-                        <span className={`page--tab ${activeTab == "published" ? "active" : ""}`} onClick={() => setActiveTab("published")}>published properties (0)</span>
-                        <span className={`page--tab ${activeTab == "unpublished" ? "active" : ""}`} onClick={() => setActiveTab("unpublished")}>unpublished properties (0)</span>
-                        <span className={`page--tab ${activeTab == "rented" ? "active" : ""}`} onClick={() => setActiveTab("rented")}>rented properties (0)</span>
+                            <div className="form--item">
+                                {width > 850 && <label htmlFor="max_price" className="form--label">&nbsp;</label>}
+                                <div className="form--input-box">
+                                    <ReactCurrencyInput
+                                        id="max_price"
+                                        name="max_price"
+                                        className="form--input"
+                                        placeholder="Max Price"
+                                        prefix="₦"
+                                        value={filterUnsavedData.max_price}
+                                        onValueChange={(value) => setFilterUnsavedData({ ...filterUnsavedData, max_price: value ?? "" })}
+                                    />
+                                    <span className="form--input-icon">Max</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="form--flex">
+                            <div className="form--item">
+                                <label htmlFor="bedrooms" className="form--label colored">Bedrooms</label>
+                                <select className="form--select" name="bedrooms" id="bedrooms">
+                                    <option selected value="">2+</option>
+                                </select>
+                            </div>
+
+                            <div className="form--item">
+                                <label htmlFor="community" className="form--label colored">Community</label>
+                                <select className="form--select" name="community" id="community">
+                                    <option selected value="">All</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <DataTable
-                        data={data as any}
-                        columns={columns as any}
-                        responsive
-                        pagination
-                        paginationServer
-                        persistTableHead
-                        noDataComponent={
-                            <EmptyTable
-                                icon={<GoListUnordered />}
-                                text="No listing yet. Click the “Add New” to create one and it will be displayed here"
-                            />
-                        }
-                        customStyles={custom_styles as any}
-                        pointerOnHover={false}
-                        selectableRows={true}
-                        progressPending={false}
-                        progressComponent={<SpinnerMini />}
-                        highlightOnHover={false}
-                        paginationRowsPerPageOptions={[10]}
-                        paginationComponentOptions={{
-                            rowsPerPageText: "Limit Per Page",
-                            rangeSeparatorText: 'Of',
-                            selectAllRowsItem: false,
-                        }}
-                    />
+
+                    <div className="modal--actions">
+                        <button className="modal--btn outline" onClick={handleResetFilter}>
+                            Reset
+                        </button>
+                        <button className="modal--btn filled" onClick={handleSaveFilterData}>
+                            Apply
+                        </button>
+                    </div>
+                </BasicModal>
+            )}
+            
+            <section className="section--page">
+                <div className="page--top">
+                    <div className="page--heading">
+                        <h4 className="title">Listings</h4>
+                        <Breadcrumbs breadcrumArr={breadCrumbs} />
+                    </div>
+
+                    <div className="flex-align-cen" style={{ flexWrap: "wrap", gap: "1rem" }}>
+                        <Link to="/dashboard/listings/create" className="page--btn filled"><AiOutlinePlus /> Add new Listing</Link>
+                        <button className="page--btn outline"><PiExport /> Export</button>
+                    </div>
                 </div>
-            </div>
-		</section>
+
+                <div className="page--bottom">
+                    <select className="form--select" value={period} onChange={(e) => setPeriod(e.target.value)}>
+                        <option value="this_month">This Month</option>
+                        <option value="this_year">This Year</option>
+                    </select>
+
+                    <div className="insight--grid">
+                        <InsightCard title="Total Listings" value={analyticsSummary?.total_properties?.count ?? 0} percentage="+0%" period={period?.split("_")?.[1]} isIncrease={true} icon={<IoList />} />
+                        <InsightCard title="Published Listings" value={analyticsSummary?.published_properties?.count ?? 0} percentage="+0%" period={period?.split("_")?.[1]} isIncrease={false} icon={<IoList />} />
+                        <InsightCard title="Unpublished Listings" value={analyticsSummary?.unpublished_properties?.count ?? 0} percentage="+0%" period={period?.split("_")?.[1]} isIncrease={true} icon={<IoList />} />
+                        <InsightCard title="Rented Listings" value={analyticsSummary?.rented_properties?.count ?? 0} percentage="+0%" period={period?.split("_")?.[1]} isIncrease={false} icon={<IoList />} />
+                    </div>
+
+                    <FilterButton handleShowFilter={() => setShowModal({ ...showModal, filters: true })} />
+
+                    <div className="page--table">
+                        <div className="page--tabs">
+                            <span className={`page--tab ${activeTab == "total_properties" ? "active" : ""}`} onClick={() => setActiveTab("total_properties")}>All properties ({summary?.total_properties ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "published_properties" ? "active" : ""}`} onClick={() => setActiveTab("published_properties")}>published properties ({summary?.published_properties ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "unpublished_properties" ? "active" : ""}`} onClick={() => setActiveTab("unpublished_properties")}>unpublished properties ({summary?.unpublished_properties ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "rented_properties" ? "active" : ""}`} onClick={() => setActiveTab("rented_properties")}>rented properties ({summary?.rented_properties ?? 0})</span>
+                        </div>
+                        
+                        <DataTable
+                            data={listingData as ListingType[]}
+                            columns={columns as any}
+                            responsive
+                            pagination
+                            paginationServer
+                            persistTableHead
+                            noDataComponent={
+                                <EmptyTable
+                                    icon={<GoListUnordered />}
+                                    text={`No ${activeTab == "total_properties" ? "listing" : activeTab?.replace("_", " ")} yet. Click the “Add New” to create one and it will be displayed here`}
+                                />
+                            }
+                            customStyles={custom_styles as any}
+                            pointerOnHover={false}
+                            selectableRows={true}
+                            progressPending={loading.main ? false : loading.table}
+                            progressComponent={<div className="table-spinner-container"><SpinnerMini /></div>}
+                            highlightOnHover={false}
+                            paginationRowsPerPageOptions={[10]}
+                            paginationComponentOptions={{
+                                rowsPerPageText: "Limit Per Page",
+                                rangeSeparatorText: 'Of',
+                                selectAllRowsItem: false,
+                            }}
+                        />
+                    </div>
+                </div>
+            </section>
+        </React.Fragment>
 	);
 }
