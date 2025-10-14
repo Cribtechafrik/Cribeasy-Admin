@@ -11,10 +11,11 @@ import { Link } from "react-router-dom";
 import { LuCrown } from "react-icons/lu";
 import { TiSpanner, TiUserOutline } from "react-icons/ti";
 import { FiCheckCircle } from "react-icons/fi";
+import FilterButton from "../../components/elements/FilterButton";
 
 
 const breadCrumbs = [
-    { name: "Artisants", isCurrent: true },
+    { name: "Artisans", isCurrent: true },
 ];
 
 export default function index() {
@@ -22,10 +23,6 @@ export default function index() {
     const data: any = [];
 
     const columns = [
-        {
-            name: 'Artisans ID',
-            selector: (row: any) => row?.name,
-        },
         {
             name: "Artisans",
             selector: (row: any) => row?.name,
@@ -37,14 +34,15 @@ export default function index() {
         },
         {
             name: "Completed Jobs",
-            selector: (row: any) => row?.name
+            selector: (row: any) => row?.name,
+            minWidth: "16rem"
         },
         {
             name: "Plan",
             selector: (row: any) => row?.name
         },
         {
-            name: "Location",
+            name: "COMMUNITY",
             selector: (row: any) => row?.name
         },
         {
@@ -61,12 +59,12 @@ export default function index() {
 		<section className="section--page">
 			<div className="page--top">
 				<div className="page--heading">
-					<h4 className="title">Artisants</h4>
+					<h4 className="title">Artisans</h4>
                     <Breadcrumbs breadcrumArr={breadCrumbs} />
 				</div>
 
                 <div className="flex-align-cen" style={{ flexWrap: "wrap", gap: "1rem" }}>
-                    <Link to="/dashboard/artisants/create" className="page--btn filled"><AiOutlinePlus /> Add new Artisants</Link>
+                    <Link to="/dashboard/Artisans/create" className="page--btn filled"><AiOutlinePlus /> Add new Artisans</Link>
                     <button className="page--btn outline"><PiExport /> Export</button>
                 </div>
 			</div>
@@ -78,13 +76,13 @@ export default function index() {
                 </select>
 
                 <div className="insight--grid">
-                    <InsightCard title="Total Artisants" value="0" percentage="+0%" period="month" isIncrease={true} icon={<TiSpanner />} />
-                    <InsightCard title="Premium Artisants" value="0" percentage="+0%" period="month" isIncrease={false} icon={<FiCheckCircle  />} />
-                    <InsightCard title="Free Plan Artisants" value="0" percentage="+0%" period="month" isIncrease={true} icon={<TiUserOutline />} />
+                    <InsightCard title="Total Artisans" value="0" percentage="+0%" period="month" isIncrease={true} icon={<TiSpanner />} />
+                    <InsightCard title="Premium Artisans" value="0" percentage="+0%" period="month" isIncrease={false} icon={<FiCheckCircle  />} />
+                    <InsightCard title="Free Plan Artisans" value="0" percentage="+0%" period="month" isIncrease={true} icon={<TiUserOutline />} />
                     <InsightCard title="New This Month" value="0" percentage="+0%" period="month" isIncrease={false} icon={<AiOutlinePlusCircle />} />
                 </div>
 
-                <div className="page--option"></div>
+                <FilterButton handleShowFilter={() => {}} />
 
                 <div className="page--table">
                     <div className="page--tabs">
@@ -104,7 +102,7 @@ export default function index() {
                         noDataComponent={
                             <EmptyTable
                                 icon={<LuCrown />}
-                                text="No artisants yet. Click the “Add New Artisants” to create one and it will be displayed here"
+                                text="No Artisans yet. Click the “Add New Artisans” to create one and it will be displayed here"
                             />
                         }
                         customStyles={custom_styles as any}

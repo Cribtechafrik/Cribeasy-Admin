@@ -77,7 +77,7 @@ export default function index() {
 
 			toast.error(data?.message);
         } catch (err: any) {
-            const message = err?.message == "Failed to fetch" ? "Server or Connection Error!!" : err?.message
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message
 			toast.error(message);
         } finally {
             setLoading(false);

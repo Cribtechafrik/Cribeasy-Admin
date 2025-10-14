@@ -1,5 +1,7 @@
 .home--section .form--select {
     align-self: flex-end;
+    width: fit-content;
+    padding: 0.6rem;
 }
 .home--top {
     margin-bottom: 2rem;
@@ -124,7 +126,7 @@
 .listing--info .title,
 .payment--info .title {
     font-weight: 500;
-    font-size: 1.5rem;
+    font-size: 1.45rem;
 }
 .listing--info .description,
 .payment--info .description,
@@ -134,7 +136,7 @@
 }
 .listing--info .value,
 .payment--info .value {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: #3B82F6;
 }
 .listing--info .period {
@@ -147,8 +149,10 @@
 
 
 
-
-@media screen and (max-width: 1050px) {
+/* ================================================== */
+/* MEDIA QUERIES */
+/* ================================================== */
+/* @media screen and (max-width: 1050px) {
     .home--flex {
         flex-direction: column;
     }
@@ -188,4 +192,4 @@
         gap: 2rem;
         margin-bottom: 1rem;
     }
-}
+} */

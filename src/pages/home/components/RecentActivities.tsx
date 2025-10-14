@@ -30,7 +30,8 @@ export default function RecentActivities() {
         <div className="card">
             <div className="section--top">
                 <div className="section--heading">
-                    <h2>Recent Activities</h2>
+                    {/* <h2>Recent Activities</h2> */}
+                    <h2>Activity Logs</h2>
                     <Link to="/">View all</Link>
                 </div>
 

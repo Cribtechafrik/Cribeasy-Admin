@@ -12,6 +12,7 @@ import Logo from "../assets/logo/logo.png"
 export default function DashboardSidebar() {
     const { width } = useWindowSize();
     const { pathname } = useLocation();
+    console.log(pathname)
     const { isShowSidemenu, animateOut, handleToggleSidemenu } = useDataContext();
 
     const isHomeRoute = pathname === "/" || pathname === "/dashboard" || pathname === "/dashboard/"
@@ -23,7 +24,7 @@ export default function DashboardSidebar() {
                 <div className='dashboard--menu'>
                     <ul className='menu--list'>
                         {MENU_ITEMS.map((item) => (
-                            <Link className={`menu--item ${item.link === pathname || (item.title === "Dashboard" && isHomeRoute) ? "is-active" : ""}`} to={item.link} key={item.title}>
+                            <Link className={`menu--item ${(item.title === "Dashboard" && isHomeRoute) || (item.title != "Dashboard" && pathname.includes(item.link)) ? "is-active" : ""}`} to={item.link} key={item.title}>
                                 <span className='menu--icon'>{item.icon}</span>
                                 <p className='menu--text'>{item.title}</p>
                                 <LuChevronRight className="menu--arrow" />

@@ -10,7 +10,6 @@ interface DataContextType {
     setIsShowSidemenu: (is: boolean) => void;
     handleToggleSidemenu: () => void;
     animateOut: boolean;
-
 }
 
 

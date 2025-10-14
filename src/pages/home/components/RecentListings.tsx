@@ -24,6 +24,13 @@ const data = [
         amount: "₦800,450.00",
         period: "Annual"
     },
+    {
+        img: dymmyImg,
+        title: "Chandelier Luxury",
+        location: "Victoria Island, Lagos.",
+        amount: "₦800,450.00",
+        period: "Annual"
+    },
 ]
 
 export default function RecentListings() {

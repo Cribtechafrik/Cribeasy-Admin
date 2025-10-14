@@ -2,7 +2,7 @@
 import moment from "moment";
 
 export function formatNumber(amount: number, dec: number = 0) {
-	return Number(amount)
+	return "₦" + Number(amount)
 		.toFixed(dec)
 		.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
 }
