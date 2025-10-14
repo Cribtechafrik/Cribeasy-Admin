@@ -21,7 +21,7 @@ import ReactCurrencyInput from 'react-currency-input-field';
 import { useWindowSize } from "react-use";
 import ListingDetails from "./sub_pages/ListingDetails";
 import HalfScreen from "../../components/modals/HalfScreen";
-import { fetchPropertyCategories, fetchPropertyTypes } from "../../utils/fetch";
+import {fetchPropertyTypes } from "../../utils/fetch";
 
 
 const breadCrumbs = [
@@ -58,16 +58,16 @@ export default function index() {
     const [analyticsSummary, setAnalyticsSummary] = useState<ListingAnalyticsType | null>(null);
     
     const [propertyTypesData, setPropertyTypesData] = useState<Property_type[] | []>([]);
-    const [propertyCategoryData, setPropertyCategoryData] = useState<Property_type[] | []>([]);
+    // const [propertyCategoryData, setPropertyCategoryData] = useState<Property_type[] | []>([]);
     const [listingData, setListingData] = useState<ListingType[] | []>([]);
     const [summary, setSummary] = useState<ListingSummaryType | null>(null);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [showModal, setShowModal] = useState({ details: false, filters: false });
 
-    const [paginationDetails, setPaginationDetails] = useState({
-        currentPage: 1,
-        perPage: 10
-    });
+    // const [paginationDetails, setPaginationDetails] = useState({
+    //     currentPage: 1,
+    //     perPage: 10
+    // });
 
     const [filterUnsavedData, setFilterUnsavedData] = useState<FilterDataType>({
         property_type: "",
