@@ -76,10 +76,10 @@ export default function index() {
                 </select>
 
                 <div className="insight--grid">
-                    <InsightCard title="Total Artisans" value="0" percentage="+0%" period="month" isIncrease={true} icon={<TiSpanner />} />
-                    <InsightCard title="Premium Artisans" value="0" percentage="+0%" period="month" isIncrease={false} icon={<FiCheckCircle  />} />
-                    <InsightCard title="Free Plan Artisans" value="0" percentage="+0%" period="month" isIncrease={true} icon={<TiUserOutline />} />
-                    <InsightCard title="New This Month" value="0" percentage="+0%" period="month" isIncrease={false} icon={<AiOutlinePlusCircle />} />
+                    <InsightCard title="Total Artisans" value="0" icon={<TiSpanner />} />
+                    <InsightCard title="Premium Artisans" value="0" icon={<FiCheckCircle  />} />
+                    <InsightCard title="Free Plan Artisans" value="0" icon={<TiUserOutline />} />
+                    <InsightCard title="New This Month" value="0" icon={<AiOutlinePlusCircle />} />
                 </div>
 
                 <FilterButton handleShowFilter={() => {}} />

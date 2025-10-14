@@ -27,7 +27,8 @@
 
 
 .home--grid {
-    margin-top: 1.8rem;
+    /* margin-top: 1.8rem; */
+    margin-top: 0.8rem;
     display: grid;
     grid-template-columns: 4fr 1.8fr;
     gap: 1rem;
@@ -44,6 +45,13 @@
     align-items: start;
     gap: 1rem;
     width: 100%;
+}
+
+.top--info {
+    font-size: 1.4rem;
+    font-weight: 500;
+    padding: 0.6rem 0.8rem;
+    border-radius: 10rem;
 }
 
 .chart-element {

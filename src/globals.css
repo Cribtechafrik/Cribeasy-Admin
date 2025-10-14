@@ -196,6 +196,12 @@ body:has(.global--overlay) {
 	background-color: #fff;
 }
 
+.no-data {
+	font-size: 1.4rem;
+	padding: 1rem 0;
+	color: #5c636d;
+}
+
 
 .section--top {
 	margin-bottom: 1rem;
@@ -457,10 +463,20 @@ span.auth--img {
 
 /* ==== */
 
+.home--content {
+	display: flex;
+	flex-direction: column;
+	gap: 1.6rem;
+}
+
 .insight--grid {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
 	gap: 1.6rem;
+}
+.insight--grid.grid-3 {
+	grid-template-columns: repeat(3, 1fr);
+	justify-content: space-between;
 }
 
 .insight--card {

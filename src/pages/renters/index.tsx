@@ -73,10 +73,10 @@ export default function index() {
                 </select>
 
                 <div className="insight--grid">
-                    <InsightCard title="Total Renters" value="0" percentage="+0%" period="month" isIncrease={true} icon={<IoList />} />
-                    <InsightCard title="Premium Renters" value="0" percentage="+0%" period="month" isIncrease={false} icon={<FaUsers />} />
-                    <InsightCard title="Free Plan Renter" value="0" percentage="+0%" period="month" isIncrease={true} icon={<IoList />} />
-                    <InsightCard title="New This Month" value="0" percentage="+0%" period="month" isIncrease={false} icon={<AiOutlinePlusCircle />} />
+                    <InsightCard title="Total Renters" value="0" icon={<IoList />} />
+                    <InsightCard title="Premium Renters" value="0" icon={<FaUsers />} />
+                    <InsightCard title="Free Plan Renter" value="0" icon={<IoList />} />
+                    <InsightCard title="New This Month" value="0" icon={<AiOutlinePlusCircle />} />
                 </div>
 
                 <div className="page--option"></div>
