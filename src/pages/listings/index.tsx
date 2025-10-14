@@ -348,10 +348,10 @@ export default function index() {
                     </select>
 
                     <div className="insight--grid">
-                        <InsightCard title="Total Listings" value={analyticsSummary?.total_properties?.count ?? 0} percentage="+0%" period={period?.split("_")?.[1]} isIncrease={true} icon={<IoList />} />
-                        <InsightCard title="Published Listings" value={analyticsSummary?.published_properties?.count ?? 0} percentage="+0%" period={period?.split("_")?.[1]} isIncrease={false} icon={<IoList />} />
-                        <InsightCard title="Unpublished Listings" value={analyticsSummary?.unpublished_properties?.count ?? 0} percentage="+0%" period={period?.split("_")?.[1]} isIncrease={true} icon={<IoList />} />
-                        <InsightCard title="Rented Listings" value={analyticsSummary?.rented_properties?.count ?? 0} percentage="+0%" period={period?.split("_")?.[1]} isIncrease={false} icon={<IoList />} />
+                        <InsightCard title="Total Listings" value={analyticsSummary?.total_properties?.count ?? 0} icon={<IoList />} /* percentage="+0%" period={period?.split("_")?.[1]} isIncrease={true} */ />
+                        <InsightCard title="Published Listings" value={analyticsSummary?.published_properties?.count ?? 0} icon={<IoList />} />
+                        <InsightCard title="Unpublished Listings" value={analyticsSummary?.unpublished_properties?.count ?? 0} icon={<IoList />} />
+                        <InsightCard title="Rented Listings" value={analyticsSummary?.rented_properties?.count ?? 0} icon={<IoList />} />
                     </div>
 
                     <FilterButton handleShowFilter={() => setShowModal({ ...showModal, filters: true })} />

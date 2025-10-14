@@ -75,10 +75,10 @@ export default function index() {
                 </select>
 
                 <div className="insight--grid">
-                    <InsightCard title="Total Agents" value="0" percentage="+0%" period="month" isIncrease={true} icon={<FaUsers />} />
-                    <InsightCard title="Premium Agents" value="0" percentage="+0%" period="month" isIncrease={false} icon={<FiCheckCircle  />} />
-                    <InsightCard title="Free Plan Agents" value="0" percentage="+0%" period="month" isIncrease={true} icon={<FaUser />} />
-                    <InsightCard title="New This Month" value="0" percentage="+0%" period="month" isIncrease={false} icon={<AiOutlinePlusCircle />} />
+                    <InsightCard title="Total Agents" value="0" icon={<FaUsers />} />
+                    <InsightCard title="Premium Agents" value="0" icon={<FiCheckCircle  />} />
+                    <InsightCard title="Free Plan Agents" value="0" icon={<FaUser />} />
+                    <InsightCard title="New This Month" value="0" icon={<AiOutlinePlusCircle />} />
                 </div>
 
                 <FilterButton handleShowFilter={() => {}} />
