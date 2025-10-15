@@ -64,10 +64,11 @@ export default function index() {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [showModal, setShowModal] = useState({ details: false, filters: false });
 
-    // const [paginationDetails, setPaginationDetails] = useState({
-    //     currentPage: 1,
-    //     perPage: 10
-    // });
+    const [paginationDetails, setPaginationDetails] = useState({
+        currentPage: 1,
+        perPage: 10,
+        totalCount: 0,
+    });
 
     const [filterUnsavedData, setFilterUnsavedData] = useState<FilterDataType>({
         property_type: "",
@@ -144,6 +145,14 @@ export default function index() {
         setShowModal({ ...showModal, filters: false });
     }
 
+    const handleChangePage = (page: number) => {
+        setPaginationDetails({ ...paginationDetails, currentPage: page });
+    };
+
+    const handleChangePerPage = (newPerPage: number) => {
+        setPaginationDetails({ ...paginationDetails, perPage: newPerPage });
+    };
+
     async function handleFetchAnalytics() {
         setLoading({ ...loading, main: true });
         try {
@@ -174,7 +183,7 @@ export default function index() {
         const status = activeTab == "total_properties" ? "available" : activeTab?.replace("_properties", "")
 
         try {
-			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties?status=${status}`, {
+			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties?page=${paginationDetails?.currentPage ?? 1}&status=${status}`, {
 				method: "GET",
 				headers,
 			});
@@ -188,6 +197,7 @@ export default function index() {
 
             setSummary(data?.summary);
             setListingData(data?.data);
+            setPaginationDetails({ ...paginationDetails, totalCount: data?.total })
 		} catch (err: any) {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			toast.error(message);
@@ -204,7 +214,7 @@ export default function index() {
 
     useEffect(function() {
         handleFetchListings();
-    }, [activeTab, filterSavedData, !showModal.details]);
+    }, [activeTab, filterSavedData, !showModal.details, paginationDetails?.currentPage, paginationDetails?.perPage ]);
 
     useEffect(function() {
         if(showModal.filters) {
@@ -375,6 +385,12 @@ export default function index() {
                             progressComponent={<div className="table-spinner-container"><SpinnerMini /></div>}
                             highlightOnHover={false}
                             paginationRowsPerPageOptions={[10]}
+
+                            paginationPerPage={paginationDetails?.perPage}
+                            paginationDefaultPage={paginationDetails?.currentPage}
+                            paginationTotalRows={paginationDetails?.totalCount}
+                            onChangePage={handleChangePage}
+                            onChangeRowsPerPage={handleChangePerPage}
                             paginationComponentOptions={{
                                 rowsPerPageText: "Limit Per Page",
                                 rangeSeparatorText: 'Of',
