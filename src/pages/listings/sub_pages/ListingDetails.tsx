@@ -1,40 +1,109 @@
-import React, { useEffect, useState } from 'react'
-import { toast } from 'sonner';
-import { useAuthContext } from '../../../context/AuthContext';
-import type { ListingType } from '../../../utils/types';
-import Spinner, { SpinnerMini } from '../../../components/elements/Spinner';
-import { Gallery, Item } from 'react-photoswipe-gallery'
-import { useNavigate } from 'react-router-dom';
-import { createPortal } from 'react-dom';
-import Confirm from '../../../components/modals/Confirm';
-import { IoCheckmarkCircle } from 'react-icons/io5';
-import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import React, { useEffect, useState } from "react"
+import { toast } from "sonner";
+import { useAuthContext } from "../../../context/AuthContext";
+import type { ListingType } from "../../../utils/types";
+import Spinner, { SpinnerMini } from "../../../components/elements/Spinner";
+import { Gallery, Item } from "react-photoswipe-gallery"
+import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
+import Confirm from "../../../components/modals/Confirm";
+import { IoCheckmarkCircle } from "react-icons/io5";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { formatNumber, formatTime } from "../../../utils/helper";
 
+
+type InspectionScheduleType = {
+    date: string;
+    day: string;
+    timeSlots: { start: string; end: string; }[];
+}
 
 export default function ListingDetails({ id }: { id: number }) {
     const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
     const [loading, setLoading] = useState({ modal: false, main: false })
-    const [listingData, setListingData] = useState<ListingType | null>(null);
     const [showModal, setShowModal] = useState({ confirm: false, completed: false });
+    const [listingData, setListingData] = useState<ListingType | null>(null);
+    const [inspectionSlots, setInspectionSlots] = useState<InspectionScheduleType[] | []>([]);
 
 
     async function handleFetchListing() {
         setLoading({ ...loading, modal: true });
 
         try {
-			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}?full=true`, {
-				method: "GET",
-				headers,
-			});
-            shouldKick(res);
+			// const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}?full=true`, {
+			// 	method: "GET",
+			// 	headers,
+			// });
 
-			const data = await res.json();
-			if (res.status !== 200 || !data?.success) {
+            const [listingRes, slotsRes] = await Promise.all([
+                fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}?full=true`, {
+                    method: "GET",
+                    headers,
+                }),
+                fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}/slots`, {
+                    method: "GET",
+                    headers,
+                }),
+            ]);
+
+            shouldKick(listingRes || slotsRes);
+
+			const data = await listingRes.json();
+			if (listingRes.status !== 200 || !data?.success) {
                 throw new Error(data?.error?.message);
             }
 
             setListingData(data?.data);
+            const slotsData = await slotsRes.json();
+            const slots = Object.entries(slotsData?.data);
+            console.log(slots)
+
+            for(const slot of slots) {
+                const dateObj = new Date(slot?.[0]);
+                const dayNames = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"];
+                const dayName = dayNames[dateObj.getDay()];
+
+                setInspectionSlots(prev => [
+                    ...prev,
+                    {
+                        date: slot?.[0],
+                        day: dayName,
+                        // @ts-ignore
+                        timeSlots: slot?.[1]?.map((timeSlots: { starts_at: string; ends_at: string; }) => {
+                            return {
+                                start: timeSlots?.starts_at?.split("T")?.[1],
+                                end: timeSlots?.ends_at?.split("T")?.[1]}
+                            }
+                        ),
+                    }
+                ]);
+
+                // setInspectionSlots(prev => {
+                //     const existingSlot = prev.find(s => s.date === slot?.[0]);
+                //     if (existingSlot) {
+                //         // @ts-ignore
+                //         existingSlot.timeSlots.push(...slot?.[1]?.map(timeSlot => ({
+                //             start: timeSlot?.starts_at?.split('T')[1],
+                //             end: timeSlot?.ends_at?.split('T')[1],
+                //         })));
+                //         return [...prev];
+                //     } else {
+                //         return [
+                //             ...prev,
+                //             {
+                //                 date: slot?.[0],
+                //                 day: dayName,
+                //                 // @ts-ignore
+                //                 timeSlots: slot?.[1]?.map(timeSlot => ({
+                //                     start: timeSlot?.starts_at?.split('T')[1],
+                //                     end: timeSlot?.ends_at?.split('T')[1],
+                //                 })),
+                //             },
+                //         ];
+                //     }
+                // });
+            }
 		} catch (err: any) {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			toast.error(message);
@@ -46,8 +115,9 @@ export default function ListingDetails({ id }: { id: number }) {
     useEffect(function() {
         handleFetchListing();
     }, [id]);
-
-
+    
+    
+    console.log(inspectionSlots)
     async function handleTogglePublication() {
         setLoading({ ...loading, main: true });
 
@@ -89,13 +159,13 @@ export default function ListingDetails({ id }: { id: number }) {
 
             {showModal.confirm && createPortal(
                 <Confirm setClose={() => setShowModal({ ...showModal, confirm: false })}>
-                    <div className='modal--body'>
-                        <span className='modal--icon warn'><HiOutlineExclamationCircle /> </span>
+                    <div className="modal--body">
+                        <span className="modal--icon warn"><HiOutlineExclamationCircle /> </span>
                         <h4 className="modal--title">{listingData?.is_active == 1 ? "Unpublish" : "Publish"} Property</h4>
-                        <p className='modal--subtext'>Are you sure you want to {listingData?.is_active == 1 ? "Unpublish" : "Publish"} this property? </p>
+                        <p className="modal--subtext">Are you sure you want to {listingData?.is_active == 1 ? "Unpublish" : "Publish"} this property? </p>
                         <div className="flex-col-1">
-                            <button className='modal--btn filled' onClick={() => setShowModal({ ...showModal, confirm: false })}>No, Cancel</button>
-                            <button className='modal--btn blured' onClick={handleTogglePublication}>Yes, {listingData?.is_active == 1 ? "Unpublish" : "Publish"}</button>
+                            <button className="modal--btn filled" onClick={() => setShowModal({ ...showModal, confirm: false })}>No, Cancel</button>
+                            <button className="modal--btn blured" onClick={handleTogglePublication}>Yes, {listingData?.is_active == 1 ? "Unpublish" : "Publish"}</button>
                         </div>
                     </div>
                 </Confirm>, document.body
@@ -103,11 +173,11 @@ export default function ListingDetails({ id }: { id: number }) {
 
             {showModal.completed && createPortal(
                 <Confirm setClose={() => setShowModal({ ...showModal, completed: false })}>
-                    <div className='modal--body'>
-                        <span className='modal--icon success'><IoCheckmarkCircle /> </span>
+                    <div className="modal--body">
+                        <span className="modal--icon success"><IoCheckmarkCircle /> </span>
                         <h4 className="modal--title">{listingData?.is_active == 1 ? "Unpublished" : "Published"} Listing Successfully</h4>
 
-                        <button className='modal--btn filled' onClick={() => navigate("/")}>Proceed To Dashboard</button>
+                        <button className="modal--btn filled" onClick={() => navigate("/")}>Proceed To Dashboard</button>
                     </div>
                 </Confirm>, document.body
             )}
@@ -122,7 +192,7 @@ export default function ListingDetails({ id }: { id: number }) {
                             height="auto"
                         >
                             {({ ref, open }) => (             
-                                <img ref={ref} onClick={open} className='details--cover-img' src={listingData?.property_cover} alt={listingData?.property_title} />
+                                <img ref={ref} onClick={open} className="details--cover-img" src={listingData?.property_cover} alt={listingData?.property_title} />
                             )}
                         </Item>
                     </Gallery>
@@ -156,7 +226,7 @@ export default function ListingDetails({ id }: { id: number }) {
 
                             <div className="details--info">
                                 <h5 className="title form--label">Property Ref. ID</h5>
-                                <p className="text">{listingData?.property_ref_id?.startsWith("#") ? "#" + listingData?.property_ref_id : listingData?.property_ref_id}</p>
+                                <p className="text">{!listingData?.property_ref_id?.startsWith("#") ? "#" + listingData?.property_ref_id : listingData?.property_ref_id}</p>
                             </div>
 
                             <div className="details--info">
@@ -214,12 +284,12 @@ export default function ListingDetails({ id }: { id: number }) {
 
                             <div className="details--info">
                                 <h5 className="title form--label">Rent Price</h5>
-                                <p className="text">{listingData?.property_detail?.rent_price}</p>
+                                <p className="text">{formatNumber(+listingData?.property_detail?.rent_price, 2)}</p>
                             </div>
 
                             <div className="details--info">
                                 <h5 className="title form--label">Service Charge</h5>
-                                <p className="text">{listingData?.property_detail?.service_charge}</p>
+                                <p className="text">{formatNumber(+listingData?.property_detail?.service_charge, 2)}</p>
                             </div>
 
                             <div className="details--info">
@@ -234,21 +304,30 @@ export default function ListingDetails({ id }: { id: number }) {
                                 </div>
                             </div>
 
-                            <div className="details--info">
+                            <div className="details--info" style={{ width: "100%" }}>
                                 <h5 className="title form--label">Inspection Slot</h5>
-                                <div className="">
-                                    
+                                <div className="slot--flex">
+                                    {inspectionSlots?.map((slot, i) => (
+                                        <div key={i} className="flex-align-justify-spabtw">
+                                            <p className="form--label">{slot?.day}: </p>
+                                            {slot?.timeSlots?.map((time, i) => (
+                                                <span className="text" key={i}>
+                                                    {formatTime(time?.start)} - {formatTime(time?.end)}{i < slot?.timeSlots?.length - 1 ? ", " : ""}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="modal--actions" style={{ maxWidth: "40rem" }}>
-                        <button className='modal--btn outline' onClick={() => navigate(`/dashboard/listings/${id}/edit`)}>Edit</button>
+                        <button className="modal--btn outline" onClick={() => navigate(`/dashboard/listings/${id}/edit`)}>Edit</button>
                         <button className={`modal--btn ${listingData?.is_active == 1 ? "remove" : "filled"}`} onClick={() => setShowModal({ ...showModal, confirm: true })}>
                             {listingData?.is_active == 1 ? "Unpublish" : "Publish"}
                         </button>
-                        {/* <button className='modal--btn remove'>Delete</button> */}
+                        {/* <button className="modal--btn remove">Delete</button> */}
                     </div>
                 </div>
             )}
