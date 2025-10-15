@@ -29,7 +29,7 @@ const endOfWeek = moment().endOf('isoWeek').format('YYYY-MM-DD');
 type InspectionScheduleType = {
     date: string;
     day: string;
-    timeSlots: { start: string; end: string; }[];
+    timeSlots: { start: string; end: string; slotId?: string | null; }[];
 }
 
 type AmenitiesType = {
@@ -87,7 +87,7 @@ export default function CreateListing() {
         date: "",
         day: "",
         timeSlots: [
-            { start: "", end: "" },
+            { start: "", end: "", slotId: null, },
         ]
     });
 
@@ -186,7 +186,7 @@ export default function CreateListing() {
             date: "",
             day: "",
             timeSlots: [
-                { start: "", end: "" }
+                { start: "", end: "", slotId: null }
             ]
         });
         
@@ -200,9 +200,68 @@ export default function CreateListing() {
         }
 
         // Here you would add logic to save the schedule
-        setInspectionSchedules(prev => [...prev, { ...schedule }]);
+        
+        if(!id) {
+            setInspectionSchedules(prev => [...prev, { ...schedule }]);
+            toast.success("Saved Schedule!");
+        } else if(id) {
+           const updatedSchedules = [...inspectionSchedules, schedule];
+
+            (async () => {
+                setLoading(true);
+                try {
+                    const formData = new FormData();
+
+                    const slots: any = [];
+                    updatedSchedules?.forEach((data, inspIndex) => {
+                        data.timeSlots.forEach((slot, slotIndex) => {
+                            const starts_at = `${data.date} ${slot.start}:00`;
+                            const ends_at = `${data.date} ${slot.end}:00`;
+                            console.log(inspIndex * data.timeSlots.length + slotIndex)
+                            formData.append(`slots[${inspIndex * data.timeSlots.length + slotIndex}][starts_at]`, starts_at);
+                            formData.append(`slots[${inspIndex * data.timeSlots.length + slotIndex}][ends_at]`, ends_at);
+                            console.log(starts_at, ends_at)
+                            slots.push({ starts_at, ends_at })
+                        });
+                    });
+                    formData.append("slots[]", slots);
+
+                    const formDataHeaders = {
+                        "Accept": "application/json",
+                        Authorization: `Bearer ${token}`
+                    }
+    
+                    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}/slots`, {
+                        method: "POST",
+                        headers: formDataHeaders,
+                        body: formData
+                    });
+                    shouldKick(res);
+
+                    const data = await res.json();
+                    if(data?.status) {
+                        const schedulesWithId = updatedSchedules.map(schedule => ({
+                            ...schedule,
+                            timeSlots: schedule.timeSlots.map((slot, index) => ({
+                                ...slot,
+                                slotId: data?.data?.[index]?.id
+                            }))
+                        }));
+                        setInspectionSchedules(schedulesWithId);
+                        toast.success("Saved Schedule!");
+                    } else {
+                        throw new Error(data?.error?.message)
+                    }
+                } catch(err: any) {
+                    const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+                    toast.error(message);
+                } finally {
+                    setLoading(false);
+                }
+            })();
+        }
+
         handleResetSchedule();
-        toast.success("Saved Schedule!");
     };
 
     const handleScheduleDateChange = function(e: React.ChangeEvent<HTMLInputElement>) {
@@ -214,9 +273,30 @@ export default function CreateListing() {
         setSchedule({ ...schedule, date: dateValue, day: dayName });
     };
 
-    const handleRemoveSchedule = function(index: number) {
-        const newSchedules = inspectionSchedules?.filter((_, i) => i !== index);
-        setInspectionSchedules(newSchedules);
+    const handleRemoveSchedule = function(index: number, slotId?: string | null) {
+        if(!id) {
+            const newSchedules = inspectionSchedules?.filter((_, i) => i !== index);
+            setInspectionSchedules(newSchedules);
+        } else if(id && inspectionSchedules?.length > 0) {
+            (async () => {
+                setLoading(true);
+                const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/slots/${slotId}`, {
+                    method: "DELETE",
+                    headers,
+                });
+
+                const data = await res.json()
+                if(data?.success) {
+                    const newSchedules = inspectionSchedules.map(schedule => ({
+                        ...schedule,
+                        timeSlots: schedule.timeSlots.filter(slot => slot.slotId !== slotId),
+                    }));
+                    setInspectionSchedules(newSchedules);
+                    toast.success("Slot Deleted!")
+                }
+                setLoading(false);
+            })();
+        }
     };
 
 
@@ -233,16 +313,22 @@ export default function CreateListing() {
     useEffect(function() {
         async function handleFetch() {
             setLoading(true);
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}?full=true`, {
-				method: "GET",
-				headers,
-			});
 
-            const data = await res.json();
+            const [listingRes, slotsRes] = await Promise.all([
+                fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}?full=true`, {
+                    method: "GET",
+                    headers,
+                }),
+                fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}/slots`, {
+                    method: "GET",
+                    headers,
+                }),
+            ]);
+
+            const data = await listingRes.json();
             
             if(id && data?.success) {
                 const listing: ListingType = data?.data;
-                console.log(listing)
                 setFormData({
                     property_title: listing?.property_title || "",
                     description: listing?.description || "",
@@ -268,6 +354,31 @@ export default function CreateListing() {
                     })
                 }
                 setGalleryImages(gallery_images)
+
+                const slotsData = await slotsRes.json();
+                const slots: any = Object.entries(slotsData?.data);
+
+                for(const slot of slots) {
+                    const dateObj = new Date(slot?.[0]);
+                    const dayNames = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"];
+                    const dayName = dayNames[dateObj.getDay()];
+                    console.log("293", slot)
+
+                    setInspectionSchedules(prev => [
+                        ...prev,
+                        {
+                            date: slot?.[0],
+                            day: dayName,
+                            timeSlots: slot?.[1]?.map((timeSlots: { starts_at: string; ends_at: string; id: string }) => {
+                                return {
+                                    start: timeSlots?.starts_at?.split("T")?.[1],
+                                    end: timeSlots?.ends_at?.split("T")?.[1],
+                                    slotId: timeSlots?.id,
+                                }
+                            }),
+                        }
+                    ]);
+                }
             }
             setLoading(false);
         };
@@ -572,6 +683,7 @@ export default function CreateListing() {
                         </div>
 
                         <ScheduleTable
+                            isEdit={!!id}
                             schedules={inspectionSchedules}
                             handleRemoveSchedule={handleRemoveSchedule}
                         />

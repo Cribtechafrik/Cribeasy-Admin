@@ -1,5 +1,6 @@
 import { BsClock } from "react-icons/bs";
 import { RiDeleteBin2Line } from "react-icons/ri";
+import { formatTime } from "../../utils/helper";
 
 type InspectionScheduleType = {
     date: string;
@@ -9,10 +10,11 @@ type InspectionScheduleType = {
 
 interface Props {
 	schedules: InspectionScheduleType[];
-    handleRemoveSchedule: (i: number) => void;
+    handleRemoveSchedule: (i: number, slotId?: string | null) => void;
+	isEdit?: boolean
 }
 
-export default function ScheduleTable({ schedules, handleRemoveSchedule }: Props) {
+export default function ScheduleTable({ schedules, handleRemoveSchedule, isEdit=false }: Props) {
 
     if (schedules.length === 0) {
         return <></>
@@ -21,10 +23,14 @@ export default function ScheduleTable({ schedules, handleRemoveSchedule }: Props
 	return (
         <div style={styles.grid}>
 			{schedules.map((schedule: InspectionScheduleType, index: number) => (
+				schedule?.timeSlots?.length > 0 && 
+
 				<div key={index} style={styles.dayColumn as React.CSSProperties}>
-					<button style={styles.removeButton as React.CSSProperties} onClick={() => handleRemoveSchedule(index)}>
-						<RiDeleteBin2Line style={styles.removeIcon} />
-					</button>
+					{!isEdit && (
+						<button style={styles.removeButton as React.CSSProperties} onClick={() => handleRemoveSchedule(index)}>
+							<RiDeleteBin2Line style={styles.removeIcon} />
+						</button>
+					)}
 
 					<div style={styles.headerRow}>
 						<div style={styles.dayLabel}>
@@ -37,19 +43,25 @@ export default function ScheduleTable({ schedules, handleRemoveSchedule }: Props
 					</div>
 
 					<div style={styles.slotsContainer as React.CSSProperties}>
-						{schedule.timeSlots.map((slot: { start: string; end: string }, slotIndex: number) => (
-							<div key={slotIndex} style={styles.timeRow}>
+						{schedule.timeSlots.map((slot: { start: string; end: string; slotId?: string | null; }, slotIndex: number) => (
+							<div key={slotIndex} style={styles.timeRow as React.CSSProperties}>
 								<div style={styles.timeSlot}>
 									<BsClock style={styles.icon} />
-									<span style={styles.timeText}>{slot.start}</span>
+									<span style={styles.timeText}>{formatTime(slot.start)}</span>
 								</div>
 
 								<span>-</span>
 
 								<div style={styles.timeSlot}>
 									<BsClock style={styles.icon} />
-									<span style={styles.timeText}>{slot.end}</span>
+									<span style={styles.timeText}>{formatTime(slot.end)}</span>
 								</div>
+
+								{isEdit && (
+									<button style={styles.removeButton as React.CSSProperties} onClick={() => handleRemoveSchedule(slotIndex, slot?.slotId)}>
+										<RiDeleteBin2Line style={styles.removeIcon} />
+									</button>
+								)}
 							</div>
 						))}
 					</div>
@@ -122,6 +134,7 @@ const styles = {
 		justifyContent: "center",
 		gap: "12px",
 		marginBottom: "8px",
+		position: "relative",
 	},
 	timeSlot: {
 		flex: 1,

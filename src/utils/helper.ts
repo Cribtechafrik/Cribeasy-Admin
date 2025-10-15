@@ -7,6 +7,10 @@ export function formatNumber(amount: number, dec: number = 0) {
 		.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
 }
 
+export function formatTime(time: string) {
+	return moment(time, 'H:mm').format('h:mm A')
+}
+
 export function todayDate() {
 	return moment().format("dddd, MMMM Do YYYY");
 }
