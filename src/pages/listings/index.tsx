@@ -77,15 +77,6 @@ export default function index() {
     });
     const [filterSavedData, setFilterSavedData] = useState<FilterDataType | null>(null)
 
-    // const getTableStatus = function(row: ListingType) {
-    //     const isBooked = row?.is_booked;
-    //     const isActive = row?.is_active;
-
-    //     if(isActive && isBooked) {}
-
-    //     isBooked == 0 ? "available" : isBooked == 1 ? "rented" : isActive == 1 ? "published" : isActive == 0 ? "unpublished" : ""
-    // }
-
     const columns = [
         {
             name: 'PROPERTY ID',
@@ -116,8 +107,8 @@ export default function index() {
         {
             name: "STATUS",
             selector: (row: ListingType) => (
-                <span className={`status status--${row.is_booked == 0 ? "available" : row?.is_booked == 1 ? "rented" : ""}`}>
-                    <p>{row.is_booked == 0 ? "available" : row?.is_booked == 1 ? "rented" : ""}</p>
+                <span className={`status status--${row?.is_booked == 0 ? "available" : row?.is_booked == 1 ? "rented" : ""}`}>
+                    <p>{row?.is_booked == 0 ? "available" : row?.is_booked == 1 ? "rented" : ""}</p>
                 </span>
             )
         },
@@ -213,7 +204,7 @@ export default function index() {
 
     useEffect(function() {
         handleFetchListings();
-    }, [activeTab, filterSavedData]);
+    }, [activeTab, filterSavedData, !showModal.details]);
 
     useEffect(function() {
         if(showModal.filters) {

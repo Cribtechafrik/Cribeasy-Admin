@@ -25,6 +25,7 @@ import Notifications from "./pages/notifications"
 import Coupons from "./pages/coupons"
 
 import CreateListing from "./pages/listings/sub_pages/CreateListing"
+import "photoswipe/dist/photoswipe.css";
 
 
 export default function App() {
@@ -48,6 +49,7 @@ export default function App() {
 
 						<Route path="/dashboard/listings" element={<Listings />}></Route>
 						<Route path="/dashboard/listings/create" element={<CreateListing />}></Route>
+						<Route path="/dashboard/listings/:id/edit" element={<CreateListing />}></Route>
 
 						<Route path="/dashboard/agents-landloard" element={<Agents_Landloard />}></Route>
 						<Route path="/dashboard/Artisans" element={<Artisans />}></Route>

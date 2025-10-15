@@ -12,12 +12,12 @@ import Asterisk from "../../../components/elements/Asterisk";
 import ScheduleTable from "../../../components/forms/ScheduleTable";
 import ImageUpload from "../../../components/layout/ImageUpload";
 import MultipleImageUpload from "../../../components/layout/MultipleImageUpload";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import moment from 'moment';
 import { customAlphabet } from 'nanoid';
 import { fetchPropertyTypes } from "../../../utils/fetch";
 import { useAuthContext } from "../../../context/AuthContext";
-import type { Property_type } from "../../../utils/types";
+import type { ListingType, Property_type } from "../../../utils/types";
 import Spinner from "../../../components/elements/Spinner";
 
 
@@ -25,11 +25,6 @@ const generateId = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 7);
 
 const startOfWeek = moment().startOf('isoWeek').format('YYYY-MM-DD');
 const endOfWeek = moment().endOf('isoWeek').format('YYYY-MM-DD');
-
-const breadCrumbs = [
-	{ name: "Listing", link: "/dashboard/listings" },
-	{ name: "Add New Listing", isCurrent: true },
-];
 
 type InspectionScheduleType = {
     date: string;
@@ -56,14 +51,22 @@ type FormDataType = {
 }
 
 export default function CreateListing() {
+    const { id } = useParams();
     const navigate = useNavigate();
+    console.log(id)
+
     const { headers, token, shouldKick } = useAuthContext();
 
     const [loading, setLoading] = useState(false);
     const [propertyTypeData, setPropertyTypeData] = useState<Property_type[] | []>([]);
     const [showScheduleModal, setShowScheduleModal] = useState(false);
     const [coverImage, setCoverImage] = useState({ preview: "", file: null });
-    const [galleryImages, setGalleryImages] = useState<{ preview: string; file: any | null }[]>([]);
+    const [galleryImages, setGalleryImages] = useState<{
+        preview: string;
+        file: any | null;
+        public_id?: string | null;
+    }[]>([]);
+
     const [formData, setFormData] = useState<FormDataType>({
         property_title: "",
         description: "",
@@ -87,6 +90,15 @@ export default function CreateListing() {
             { start: "", end: "" },
         ]
     });
+
+    // ONLY USED IN EDIT
+    const [removedImages, setRemovedImages] = useState<string[]>([])
+
+
+    const breadCrumbs = [
+        { name: "Listing", link: "/dashboard/listings" },
+        { name: `${id ? "Edit" : "Add New"} Listing`, isCurrent: true },
+    ];
 
 
     const handleShowScheduleModal = function() {
@@ -145,8 +157,13 @@ export default function CreateListing() {
     }
 
     // GALLERY IMAGES REMOVAL FUNCTION
-    const handleRemoveGalerryImages = function(index: number) {
+    const handleRemoveGalleryImages = function(index: number) {
         setGalleryImages(prev => prev.filter((_, i) => i !== index));
+        
+        const removedImage = galleryImages[index];
+        if(id) {
+            setRemovedImages(prev => [...prev, `${removedImage?.public_id}`])
+        }
     }
 
     const handleAddSlot = function() {
@@ -210,11 +227,59 @@ export default function CreateListing() {
                 setPropertyTypeData(propertyTypeData?.data[0])
             }
         })();
-    }, [])
+    }, []);
 
-    async function handleCreateListing() {
+
+    useEffect(function() {
+        async function handleFetch() {
+            setLoading(true);
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}?full=true`, {
+				method: "GET",
+				headers,
+			});
+
+            const data = await res.json();
+            
+            if(id && data?.success) {
+                const listing: ListingType = data?.data;
+                console.log(listing)
+                setFormData({
+                    property_title: listing?.property_title || "",
+                    description: listing?.description || "",
+                    rent_price: listing?.property_detail?.rent_price || "",
+                    property_size: listing?.property_detail?.property_size || "",
+                    property_address: listing?.property_detail?.property_address || "",
+                    property_type_id: `${listing?.property_detail?.property_type_id}` || "",
+                    service_charge: listing?.property_detail?.service_charge || "",
+                    agent: listing?.user_name || "",
+                    bedrooms: `${listing?.property_detail?.bedrooms}` || "",
+                    bathrooms: `${listing?.property_detail?.bathrooms}` || "",
+                });
+
+                setSelectedAmenities(listing?.property_detail?.amenities);
+                setCoverImage({ ...coverImage, preview: listing?.property_cover })
+
+                const gallery_images = []
+                for(const img of listing?.gallery?.images_url) {
+                    gallery_images?.push({ 
+                        preview: img?.cloudinary_url,
+                        public_id: img?.cloudinary_id,
+                        file: null
+                    })
+                }
+                setGalleryImages(gallery_images)
+            }
+            setLoading(false);
+        };
+
+        if(id) {
+            handleFetch();
+        }
+    }, [id]);
+
+    
+    async function handleSubmitListing() {
         setLoading(true);
-        console.log("Data:", formData)
 
         try {
             const FORM_DATA = new FormData();
@@ -237,7 +302,6 @@ export default function CreateListing() {
             FORM_DATA.append('property_category_id', "1");
             FORM_DATA.append('user_id', "1");
 
-            console.log(selectedAmenities)
             if(selectedAmenities?.length > 0) {
                 // FORM_DATA.append('amenities[]', JSON.stringify(selectedAmenities));
                 selectedAmenities.forEach((data, index) => {
@@ -249,22 +313,28 @@ export default function CreateListing() {
             if(coverImage?.file) {
                 FORM_DATA.append('property_cover', coverImage?.file);
             }
-                
-            if(galleryImages?.length > 0) {
+            if(galleryImages?.length > 0 && galleryImages?.every(img => img.file)) {
                 // FORM_DATA.append('media[]', JSON.stringify(galleryImages?.map(el => el.file)));
                 galleryImages.forEach((data, index) => {
                     FORM_DATA.append(`media[${index}]`, data.file);
                 });
-
             }
 
-            if(inspectionSchedules?.length > 0) {
+            // ONLY ON EDIT
+            if(id && removedImages?.length > 0) {
+                removedImages.forEach((public_id, index) => {
+                    FORM_DATA.append(`removed_media[${index}][resource_type]`, "image");
+                    FORM_DATA.append(`removed_media[${index}][cloudinary_id]`, public_id);
+                });
+            }
+
+            // NOT ON EDIT
+            if(!id && inspectionSchedules?.length > 0) {
                 const slots: any = [];
                 inspectionSchedules?.forEach((data, inspIndex) => {
                     data.timeSlots.forEach((slot, slotIndex) => {
                         const starts_at = `${data.date} ${slot.start}:00`;
                         const ends_at = `${data.date} ${slot.end}:00`;
-                        console.log(inspIndex, data.timeSlots.length, slotIndex, starts_at, ends_at)
 
                         FORM_DATA.append(`inspection_slots[${inspIndex * data.timeSlots.length + slotIndex}][starts_at]`, starts_at);
                         FORM_DATA.append(`inspection_slots[${inspIndex * data.timeSlots.length + slotIndex}][ends_at]`, ends_at);
@@ -280,7 +350,7 @@ export default function CreateListing() {
                 Authorization: `Bearer ${token}`
             }
 
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id ? id : ""}`, {
                 method: "POST",
                 headers: formDataHeaders,
                 body: FORM_DATA
@@ -288,12 +358,11 @@ export default function CreateListing() {
             shouldKick(res);
 
             const data = await res.json();
-            console.log(data)
-            if (res.status !== 201 || !data?.success) {
+            if (res.status !== (id ? 200 : 201) || !data?.success) {
                 throw new Error(data?.error?.message);
             }
 
-            toast.success("Property Created Successfully!");
+            toast.success(`Property ${id ? "Updated" : "Created"} Successfully!`);
             navigate("/dashboard/listings")
 
         } catch(err: any) {
@@ -378,7 +447,7 @@ export default function CreateListing() {
             <section className="">
                 <div className="page--top">
                     <div className="page--heading">
-                        <h4 className="title">Listings</h4>
+                        <h4 className="title">{id ? "Edit" : "New"} Listings</h4>
                         <Breadcrumbs breadcrumArr={breadCrumbs} />
                     </div>
                 </div>
@@ -488,7 +557,7 @@ export default function CreateListing() {
 
                         <div className="form--item">
                             <label htmlFor="" className="form--label">Gallery Images <Asterisk /></label>
-                            <MultipleImageUpload handleChange={handleGalleryImagesChange} name="gallery-images" preview={galleryImages?.length > 0 ? galleryImages?.map(img => img.preview) : ""} handleRemove={(i) => handleRemoveGalerryImages(i as number)} />
+                            <MultipleImageUpload handleChange={handleGalleryImagesChange} name="gallery-images" preview={galleryImages?.length > 0 ? galleryImages?.map(img => img.preview) : ""} handleRemove={(i) => handleRemoveGalleryImages(i as number)} />
                         </div>
                     </div>
 
@@ -498,7 +567,7 @@ export default function CreateListing() {
                         <h4 className="form--title">Inspection Slot (optional)</h4>
 
                         <div className="flex-align-cen">
-                            <p className="form--info" style={{ marginRight: "4rem" }}>Add New Time Slot</p>
+                            <p className="form--info" style={{ marginRight: "4rem" }}>{id ? "Edit" : "Add New"} Time Slot</p>
                             <button className="page--btn-sm" onClick={handleShowScheduleModal}><AiOutlinePlus /> Add</button>
                         </div>
 
@@ -509,7 +578,7 @@ export default function CreateListing() {
                     </div>
 
                     <div className="form--actions">
-                        <button className="form--submit filled" onClick={handleCreateListing}>Add New</button>
+                        <button className="form--submit filled" onClick={handleSubmitListing}>{id ? "Edit" : "Add New"}</button>
                         <button className="form--submit outline" onClick={() => navigate(-1)}>Cancel</button>
                     </div>
                 </div>
