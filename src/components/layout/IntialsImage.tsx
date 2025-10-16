@@ -19,14 +19,17 @@ export default function IntialsImage() {
 }
 
 
-export function Intials({ hasImage, imageUrl, names }: { hasImage?: boolean, imageUrl?: string, names: string[] }) {
+export function Intials({ hasImage, imageUrl, names, showOnline=false }: { hasImage?: boolean, imageUrl?: string, names: string[]; showOnline?: boolean }) {
     return (
-        <React.Fragment>
+        <div style={{ position: "relative" }}>
             {((hasImage && imageUrl) ? (
                 <img className='auth--img' src={imageUrl} alt={imageUrl} />
             ) : (!hasImage && names) && (
-                <span className='auth--img'>{getInitials(names?.[0], names?.[1])}</span>
+                <span className='auth--img'>
+                    {getInitials(names?.[0], names?.[1])}
+                </span>
             ))}
-        </React.Fragment>
+            {showOnline && <span className='show-online' />}
+        </div>
     )
 }

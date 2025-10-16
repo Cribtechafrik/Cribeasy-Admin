@@ -235,8 +235,8 @@
 }
 
 .deatils--container,
-.details--grid .left--side,
-.details--grid .right--side,
+.details--grid .left--side, .left--side,
+.details--grid .right--side, .right--side,
 .details--info {
     display: flex;
     flex-direction: column;
@@ -265,6 +265,10 @@
     font-weight: 500;
     color: #727272;
 }
+.details--info .info {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
 
 .details--info .amenities {
     display: grid;
@@ -292,23 +296,76 @@
 
 .table--profile {
 	display: grid;
-    grid-template-columns: 3rem 1fr;
+    grid-template-columns: 4rem 1fr;
 	align-items: center;
 	gap: 1rem;
 }
 .table--profile .table--info {
 	display: flex;
 	flex-direction: column;
-	gap: 0.4rem;
+	gap: 0.24rem;
 	align-items: flex-start;
 }
 .table--profile .table--info h3 {
 	font-size: 1.4rem;
-	font-weight: 500;
+	font-weight: 600;
 }
 .table--profile .table--info p {
-	font-size: 1.2rem;
+	font-size: 1.1rem;
+    color: #989898;
+}
+
+
+.details--info .status {
+    padding: 0.4rem 0.8rem;
+    border-radius: 2rem;
+}
+.details--info .status::before {
+    content: "";
+    display: inline-block;
+    width: 0.68rem;
+    height: 0.68rem;
+    border-radius: 50%;
+    margin-right: 0.48rem;
+}
+.details--info .status.status--success::before {
+    background-color: #067647;
+}
+.details--info .status.status--pending::before {
+	background-color: #B54708;
+}
+
+
+
+
+
+
+
+.user--details-top .heading {
+    font-size: 1.68rem;
+    font-weight: 600;
+}
+
+.user--details-top svg {
+    color: #bbb;
+}
+.user--details-top .info,
+.date--string {
+    font-size: 1.28rem;
+    font-weight: 500;
+}
+
+.date--string {
     color: #727272;
+    margin-top: 1rem;
+}
+
+.user--info-body {
+    max-width: 60rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8rem;
+    margin-top: 3rem;
 }
 
 

@@ -20,6 +20,7 @@ import { BsEye } from "react-icons/bs";
 import BasicModal from "../../components/modals/Basic";
 import ReactCurrencyInput from 'react-currency-input-field';
 import { Intials } from "../../components/layout/IntialsImage";
+import { capAllFirstLetters } from "../../utils/helper";
 
 
 const breadCrumbs = [
@@ -87,8 +88,8 @@ export default function index() {
             selector: (row: Agent_Landlord_Type) => (
                 <div className="table--profile">
                     <Intials
-                        hasImage={row?.profile_image}
-                        imageUrl={row?.profile_image}
+                        hasImage={!!row?.profile_image}
+                        imageUrl={row?.profile_image ?? ""}
                         names={[row?.first_name, row?.last_name]}
                     />
                     <span className='table--info'>
@@ -97,11 +98,11 @@ export default function index() {
                     </span>
                 </div>
             ),
-            minWidth: "20rem"
+            minWidth: "25rem"
         },
         {
             name: "User Type",
-            selector: (row: Agent_Landlord_Type) => row?.role
+            selector: (row: Agent_Landlord_Type) => capAllFirstLetters(row?.role)
         },
         {
             name: "Listings",
@@ -110,7 +111,9 @@ export default function index() {
         {
             name: "Plan",
             selector: (row: Agent_Landlord_Type) => (
-                <span className={`status status--${row?.plan}`}>Null</span>
+                <span className={`status status--${row?.plan !== 1 ? "free" : "premium"}`}>
+                    <p>{row?.plan !== 1 ? "free" : "premium"}</p>
+                </span>
             )
         },
         {
@@ -132,7 +135,7 @@ export default function index() {
     ];
 
 
-     const handleResetFilter = function() {
+    const handleResetFilter = function() {
         setFilterUnsavedData({
             plan: "",
             role: "",
@@ -188,7 +191,7 @@ export default function index() {
         setLoading({ ...loading, table: true });
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords?page=${paginationDetails?.currentPage ?? 1}${activeTab !== "total_users" && `&status=${activeTab == "active_users" ? 1 : 0}`}`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords?page=${paginationDetails?.currentPage ?? 1}${activeTab !== "total_users" ? `&status=${activeTab == "active_users" ? 1 : 0}` : ""}`, {
                 method: "GET",
                 headers,
             });
@@ -315,7 +318,7 @@ export default function index() {
                     </div>
 
                     <div className="flex-align-cen" style={{ flexWrap: "wrap", gap: "1rem" }}>
-                        <Link to="/dashboard/agents/create" className="page--btn filled"><AiOutlinePlus /> Add new Agents/Landloard</Link>
+                        <Link to="/dashboard/agents-landlords/create" className="page--btn filled"><AiOutlinePlus /> Add new Agents/Landloard</Link>
                         <button className="page--btn outline"><PiExport /> Export</button>
                     </div>
                 </div>

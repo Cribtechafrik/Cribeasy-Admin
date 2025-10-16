@@ -564,9 +564,10 @@ export default function CreateListing() {
                 </div>
 
                 <div className="card form">
+                    <h4 className="form--title">Property Description</h4>
+                    
                     <div className="form--section">
                         <div className="flex-col-gap">
-                            <h4 className="form--title">Property Description</h4>
 
                             <div className="form--item">
                                 <label htmlFor="property_title" className="form--label">Property Title <Asterisk /></label>
@@ -582,7 +583,7 @@ export default function CreateListing() {
 
                         <div className="form--item">
                             <label htmlFor="" className="form--label">Cover Image <Asterisk /></label>
-                            <ImageUpload handleChange={handleCoverImageChange} preview={coverImage.preview} handleRemove={handleRemoveCoverImage} />
+                            <ImageUpload handleChange={handleCoverImageChange} name="cover-image" preview={coverImage.preview} handleRemove={handleRemoveCoverImage} />
                         </div>
                     </div>
 
@@ -595,7 +596,7 @@ export default function CreateListing() {
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="property_type_id" className="form--label">Property Type <Asterisk /></label>
-                                    <select name="property_type_id" id="property_type_id" className="form--select" onChange={handleListingDataChange}>
+                                    <select name="property_type_id" id="property_type_id" className="form--select" value={formData?.property_type_id} onChange={handleListingDataChange}>
                                         <option hidden disabled selected>Property type</option>
                                         {propertyTypeData && propertyTypeData?.map((type, i) => (
                                             <option value={type?.id} key={i}>{type.name}</option>
