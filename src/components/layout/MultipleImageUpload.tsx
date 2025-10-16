@@ -63,8 +63,8 @@ export default function ImageUpload({ title, text, name, preview, handleChange, 
                 </span>
             )}
 
-            <input type='file' id='form-image-multiple' name={name} multiple accept="image/*" onChange={handleChange} />
-            <label htmlFor='form-image-multiple'>
+            <input type='file' id={name} name={name} multiple accept="image/*" onChange={handleChange} />
+            <label htmlFor={name}>
                 {!dragging ? (
                     <div className="form--item">
                         <h3>{title || `Drag & drop your images here, or click to browse`}</h3>

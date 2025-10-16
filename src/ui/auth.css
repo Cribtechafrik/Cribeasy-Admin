@@ -231,6 +231,14 @@
     justify-content: space-between;
     gap: 3rem;
 }
+.form--grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 3rem;
+}
+
+
 .form--flex,
 .form--info {
     font-size: 1.34rem;
@@ -408,6 +416,15 @@
     color: red;
 }
 
+
+.form--label.role,
+.form--select.role {
+    color: #D47C1D;
+}
+.form--select.role {
+    padding: 0.68rem;
+    max-width: fit-content;
+}
 
 
 

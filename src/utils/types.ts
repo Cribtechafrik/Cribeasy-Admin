@@ -93,11 +93,26 @@ export type Agent_Landlord_Type = {
     role: string;
     phone_number: string;
     email: string;
-    occupation: any;
-    profile_image: any;
-    community: any;
+    occupation: string | null;
+    profile_image: string | null;
+    community: string | null;
     is_active: number;
     has_verified_docs: number;
     properties_count: number;
-    plan: any;
+    plan: number | null;
+    company_name: string | null,
+    company_email: string | null,
+    company_phone: string | null,
+    company_address: string | null,
+    identity_type: string;
+    performance_overview: {
+        total_properties: number,
+        active_properties: number,
+        inspection_completed: number,
+        property_rating: number,
+        property_rating_is_based_on: number
+    },
+    last_active: string;
+    joined: string;
+    updated_at: string;
 }

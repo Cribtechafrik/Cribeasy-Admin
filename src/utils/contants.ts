@@ -57,3 +57,42 @@ export const custom_styles = {
         },
     }
 };
+
+
+export const custom_styles_sm = {
+    table: {
+        style: {
+            overflowX: 'auto',
+            fontFamily: "inherit",
+            color: "inherit",
+            scrollbarWidth: "none",
+        },
+    },
+    head: {
+        style: {
+            fontSize: "1.5rem",
+            fontWeight: "500",
+            height: "3.5rem",
+        },
+    },
+    rows: {
+        style: {
+            minHeight: "6rem",
+            fontSize: "1.34rem",
+            fontWeight: 500,
+            color: "#444444",
+        },
+    },
+    headCells: {
+        style: {
+            paddingRight: '0.5rem',
+            height: "3.5rem",
+        },
+    },
+    cells: {
+        style: {
+            textAlign: 'center',
+            scrollbarWidth: "none"
+        }
+    },
+}

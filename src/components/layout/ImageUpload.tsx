@@ -7,13 +7,14 @@ import { LuImagePlus } from 'react-icons/lu';
 
 interface Props {
     title?: string;
+    name?: string;
     text?: string | React.ReactNode;
     preview: string | string[];
     handleChange: (e: { target: { files: File } } | any) => void;
     handleRemove: (i?: number) => void;
 }
 
-export default function SingleImageUpload({ title, text, preview, handleChange, handleRemove }: Props) {
+export default function ImageUpload({ title, name, text, preview, handleChange, handleRemove }: Props) {
     const [dragging, setDragging] = useState(false);
 
     // WHEN DRAGGED OVER THE CONTAINER
@@ -58,8 +59,8 @@ export default function SingleImageUpload({ title, text, preview, handleChange, 
                 </span>
             )}
 
-            <input type='file' id='form-image' accept="image/*" onChange={handleChange} />
-            <label htmlFor='form-image'>
+            <input type='file' id={name} accept="image/*" onChange={handleChange} />
+            <label htmlFor={name}>
                 {!dragging ? (
                     <div className="form--item">
                         <h3>{title || `Drag & drop your image here, or click to browse`}</h3>
