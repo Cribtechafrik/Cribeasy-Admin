@@ -117,7 +117,6 @@ export default function ListingDetails({ id }: { id: number }) {
     }, [id]);
     
     
-    console.log(inspectionSlots)
     async function handleTogglePublication() {
         setLoading({ ...loading, main: true });
 

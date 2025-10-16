@@ -13,6 +13,10 @@ import { fetchIdentityTypes } from "../../../utils/fetch";
 import { FaWindowClose } from "react-icons/fa";
 import CheckBoxInput from "../../../components/forms/CheckBoxInput";
 import { capAllFirstLetters } from "../../../utils/helper";
+import { createPortal } from "react-dom";
+import Confirm from "../../../components/modals/Confirm";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { IoCheckmarkCircle } from "react-icons/io5";
 
 
 type FormDataType = {
@@ -41,6 +45,7 @@ export default function Create_Agents_Landloard() {
     const [identityTypes, setIdentityTypes] = useState<Identity_type_Type[]>([])
 	const [loading, setLoading] = useState(false);
     const [role, setRole] = useState("agent");
+    const [showModal, setShowModal] = useState({ confirm: false, completed: false });
 
     const [showPassword, setShowPassword] = useState(false);
     const [profileImage, setProfileImage] = useState({ preview: "", file: null });
@@ -153,7 +158,7 @@ export default function Create_Agents_Landloard() {
             const formData = new FormData();
             formData.append('role', role);
             formData.append('first_name', formdata.full_name?.split(" ")[0]);
-            formData.append('last_name', formdata.full_name?.split(" ")[0]);
+            formData.append('last_name', formdata.full_name?.split(" ")[1]);
             formData.append('phone_number', formdata.phone_number);
             formData.append('password', formdata.password);
             formData.append('email', formdata.email);
@@ -179,8 +184,8 @@ export default function Create_Agents_Landloard() {
                 Authorization: `Bearer ${token}`
             }
 
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords-create/${id ? id : ""}`, {
-                method: "POST",
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/${id ? `agents-landlords/${id}/profile-update` : "agents-landlords-create"}`, {
+                method: id ? "PUT" : "POST",
                 headers: formDataHeaders,
                 body: formData
             });
@@ -202,9 +207,61 @@ export default function Create_Agents_Landloard() {
         }
     }
 
+    async function handleToggleActivation() {
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/toggle-users-activation/${id}`, {
+                method: "PATCH",
+                headers,
+            });
+            shouldKick(res);
+
+            const data = await res.json();
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            setShowModal({ confirm: false, completed: true })
+            setFormdata({ ...formdata, is_active: formdata?.is_active == 0 ? 1 : 0 });
+
+        } catch (err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
 	return (
 		<React.Fragment>
 			{loading && <Spinner />}
+
+            {showModal.confirm && createPortal(
+                <Confirm setClose={() => setShowModal({ ...showModal, confirm: false })}>
+                    <div className="modal--body">
+                        <span className="modal--icon warn"><HiOutlineExclamationCircle /> </span>
+                        <h4 className="modal--title">{formdata?.is_active == 1 ? "Deactivate" : "Activate"} {capAllFirstLetters(role ?? "")}</h4>
+                        <p className="modal--subtext">Are you sure you want to {formdata?.is_active == 1 ? "Deactivate" : "Activate"} this {role}? </p>
+                        <div className="flex-col-1">
+                            <button className="modal--btn filled" onClick={() => setShowModal({ ...showModal, confirm: false })}>No, Cancel</button>
+                            <button className="modal--btn blured" onClick={handleToggleActivation}>Yes, {formdata?.is_active == 1 ? "Deactivate" : "Activate"}</button>
+                        </div>
+                    </div>
+                </Confirm>, document.body
+            )}
+
+            {showModal.completed && createPortal(
+                <Confirm setClose={() => setShowModal({ ...showModal, completed: false })}>
+                    <div className="modal--body">
+                        <span className="modal--icon success"><IoCheckmarkCircle /> </span>
+                        <h4 className="modal--title">{formdata?.is_active == 1 ? "Deactivate" : "Activate"} {capAllFirstLetters(role ?? "")} Successfully</h4>
+
+                        <button className="modal--btn filled" onClick={() => setShowModal({ ...showModal, completed: false })}>Completed</button>
+                    </div>
+                </Confirm>, document.body
+            )}
+
 			<section className="">
 				<div className="page--top">
 					<div className="page--heading">
@@ -248,7 +305,7 @@ export default function Create_Agents_Landloard() {
                                 <div className="form--item">
                                     <label htmlFor="password" className="form--label">Password <Asterisk /></label>
                                     <div className="form--input-box">
-                                        <input type={showPassword ? "text" : "password"} className="form--input" name="password" id="password" placeholder="**********" value={formdata.password} onChange={handleUserDataChange} />
+                                        <input type={showPassword ? "text" : "password"} className="form--input" name="password" id="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" value={formdata.password} onChange={handleUserDataChange} />
                                         <div className='form--input-icon' onClick={() => setShowPassword(!showPassword)}>
                                             {showPassword ? <ImEye /> : <ImEyeBlocked />}
                                         </div>
@@ -289,7 +346,7 @@ export default function Create_Agents_Landloard() {
                                     <div className="form--item">
                                         <label htmlFor="identity_type" className="form--label colored">ID Type <Asterisk /></label>
                                         <select name="identity_type" id="identity_type" className="form--select" value={formdata.identity_type} onChange={handleUserDataChange}>
-                                            <option hidden disabled selected>Id Type</option>
+                                            <option hidden selected>Id Type</option>
                                             {identityTypes && identityTypes?.map((type, i) => (
                                                 <option value={type?.id} key={i}>{type.identity_type}</option>
                                             ))}
@@ -393,7 +450,7 @@ export default function Create_Agents_Landloard() {
                     <div className="modal--actions" style={{ maxWidth: "55rem" }}>
                         <button className="modal--btn filled" onClick={handleSubmitUser}>{id ? `Edit ${capAllFirstLetters(role)}` : `Add New ${capAllFirstLetters(role)}`}</button>
                         {id && (
-                            <button className="modal--btn outline-remove" onClick={() => {}}>
+                            <button className="modal--btn outline-remove" onClick={() => setShowModal({ ...showModal, confirm: true })}>
                                 {formdata?.is_active == 1 ? "Deactivate" : "Activate"} {role}
                             </button>
                         )}
