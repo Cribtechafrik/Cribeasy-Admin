@@ -634,15 +634,18 @@ span.auth--img {
 	font-size: 1.34rem;
 	text-transform: capitalize;
 }
+.status--inactive,
 .status--failed,
 .status--rented {
 	border-color: #de8282;
 	background-color: #ffe4e4;
 }
+.status--inactive p,
 .status--failed p,
 .status--rented p {
 	color: #ff0000;
 }
+.status--active,
 .status--completed,
 .status--published,
 .status--available,
@@ -651,6 +654,7 @@ span.auth--img {
 	background-color: #ECFDF3;
 }
 
+.status--active p,
 .status--completed p,
 .status--published p,
 .status--available p,

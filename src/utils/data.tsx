@@ -27,7 +27,7 @@ export const MENU_ITEMS = [
     },
     {
         title: "Agents/Landlord",
-        link: "/dashboard/agents-landloard",
+        link: "/dashboard/agents-landlords",
         icon: <HiOutlineUsers />
     },
     {

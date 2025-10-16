@@ -290,6 +290,27 @@
     gap: 1rem;
 }
 
+.table--profile {
+	display: grid;
+    grid-template-columns: 3rem 1fr;
+	align-items: center;
+	gap: 1rem;
+}
+.table--profile .table--info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	align-items: flex-start;
+}
+.table--profile .table--info h3 {
+	font-size: 1.4rem;
+	font-weight: 500;
+}
+.table--profile .table--info p {
+	font-size: 1.2rem;
+    color: #727272;
+}
+
 
 
 /* ================================================== */
