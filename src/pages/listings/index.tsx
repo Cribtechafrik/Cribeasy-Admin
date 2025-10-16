@@ -54,7 +54,7 @@ export default function index() {
     const [activeTab, setActiveTab] = useState("total_properties");
     const [loading, setLoading] = useState({ main: false, table: false });
     // const [error, setError] = useState("");
-    const [period, setPeriod] = useState("this_month");
+    const [period, setPeriod] = useState("all_time");
     const [analyticsSummary, setAnalyticsSummary] = useState<ListingAnalyticsType | null>(null);
     
     const [propertyTypesData, setPropertyTypesData] = useState<Property_type[] | []>([]);
@@ -344,8 +344,11 @@ export default function index() {
 
                 <div className="page--bottom">
                     <select className="form--select" value={period} onChange={(e) => setPeriod(e.target.value)}>
+                        <option value="last_month">Last Month</option>
                         <option value="this_month">This Month</option>
+                        <option value="last_6_months">Last Month</option>
                         <option value="this_year">This Year</option>
+                        <option value="all_time">All Time</option>
                     </select>
 
                     <div className="insight--grid">

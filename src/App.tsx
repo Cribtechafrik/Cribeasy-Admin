@@ -25,6 +25,8 @@ import Notifications from "./pages/notifications"
 import Coupons from "./pages/coupons"
 
 import CreateListing from "./pages/listings/sub_pages/CreateListing"
+import Create_Agents_Landloard from "./pages/agents_landloard/sub_pages/Create_Agents_Landloard"
+import Agents_Landloard_Details from "./pages/agents_landloard/sub_pages/Agents_Landloard_Details"
 import "photoswipe/dist/photoswipe.css";
 
 
@@ -51,7 +53,11 @@ export default function App() {
 						<Route path="/dashboard/listings/create" element={<CreateListing />}></Route>
 						<Route path="/dashboard/listings/:id/edit" element={<CreateListing />}></Route>
 
-						<Route path="/dashboard/agents-landloard" element={<Agents_Landloard />}></Route>
+						<Route path="/dashboard/agents-landlords" element={<Agents_Landloard />}></Route>
+						<Route path="/dashboard/agents-landlords/create" element={<Create_Agents_Landloard />}></Route>
+						<Route path="/dashboard/agents-landlords/:id/edit" element={<Create_Agents_Landloard />}></Route>
+						<Route path="/dashboard/agents-landlords/:id" element={<Agents_Landloard_Details />}></Route>
+
 						<Route path="/dashboard/Artisans" element={<Artisans />}></Route>
 						<Route path="/dashboard/inspection" element={<Inspection />}></Route>
 						<Route path="/dashboard/renters" element={<Renters />}></Route>

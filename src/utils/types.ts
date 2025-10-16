@@ -83,3 +83,21 @@ export type Property_type = {
     id: number;
     name: string;
 }
+
+
+export type Agent_Landlord_Type = {
+    id: number;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+    role: string;
+    phone_number: string;
+    email: string;
+    occupation: any;
+    profile_image: any;
+    community: any;
+    is_active: number;
+    has_verified_docs: number;
+    properties_count: number;
+    plan: any;
+}

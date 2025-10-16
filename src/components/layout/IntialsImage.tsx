@@ -17,3 +17,16 @@ export default function IntialsImage() {
         </React.Fragment>
     )
 }
+
+
+export function Intials({ hasImage, imageUrl, names }: { hasImage?: boolean, imageUrl?: string, names: string[] }) {
+    return (
+        <React.Fragment>
+            {((hasImage && imageUrl) ? (
+                <img className='auth--img' src={imageUrl} alt={imageUrl} />
+            ) : (!hasImage && names) && (
+                <span className='auth--img'>{getInitials(names?.[0], names?.[1])}</span>
+            ))}
+        </React.Fragment>
+    )
+}
