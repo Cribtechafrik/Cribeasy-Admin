@@ -7,15 +7,19 @@ import Breadcrumbs from '../../../components/elements/Breadcrumbs';
 import Spinner, { SpinnerMini } from '../../../components/elements/Spinner';
 import { Intials } from '../../../components/layout/IntialsImage';
 import { RxEnvelopeClosed } from "react-icons/rx";
-import { HiOutlineLocationMarker, HiOutlinePhone } from 'react-icons/hi';
+import { HiOutlineExclamationCircle, HiOutlineLocationMarker, HiOutlinePhone } from 'react-icons/hi';
 import Line from '../../../components/elements/Line';
 import { capAllFirstLetters, formatDate, generateStars } from '../../../utils/helper';
 import PerformanceCard from '../../../components/layout/PerformanceCard';
-import { IoList } from 'react-icons/io5';
+import { IoCheckmarkCircle, IoList } from 'react-icons/io5';
 import { TbChartHistogram } from 'react-icons/tb';
 import { HiOutlineClipboardDocumentList } from 'react-icons/hi2';
 import DataTable from 'react-data-table-component';
 import { custom_styles_sm } from '../../../utils/contants';
+import { createPortal } from 'react-dom';
+import Confirm from '../../../components/modals/Confirm';
+import Asterisk from '../../../components/elements/Asterisk';
+import { ImEye, ImEyeBlocked } from 'react-icons/im';
 
 
 export default function Agents_Landloard_Details() {
@@ -24,7 +28,7 @@ export default function Agents_Landloard_Details() {
     const { headers, shouldKick } = useAuthContext();
     const [loading, setLoading] = useState(true);
     const [tableLoader, setTableLoader] = useState(true)
-    // const [showModal, setShowModal] = useState({ confirm: false, completed: false });
+    const [showModal, setShowModal] = useState({ confirm: false, completed: false, delete_confirm: false, delete_completed: false });
     const [agent_landlordData, setAgent_LandlordData] = useState<Agent_Landlord_Type | null>(null);
     const [userReports, setUserReports] = useState([]);
     const [userProperties, setUserProperties] = useState<ListingType[]>([]);
@@ -34,6 +38,14 @@ export default function Agents_Landloard_Details() {
         totalCount: 0,
     });
 
+    const [adminPassword, setAdminPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+//     {
+//     "user_ids": [40],
+//     "password": "100%@Cribeasy"
+// }
+
     const phone_number = agent_landlordData?.phone_number?.startsWith("234") ? "+" + agent_landlordData?.phone_number : agent_landlordData?.phone_number
 
     const breadCrumbs = [
@@ -41,7 +53,7 @@ export default function Agents_Landloard_Details() {
         { name: `${agent_landlordData?.full_name ?? "Details"}`, isCurrent: true },
     ];
 
-    const columns = [
+    const user_property_columns = [
         {
             name: 'Property',
             selector: (row: ListingType) => row?.property_title,
@@ -151,6 +163,61 @@ export default function Agents_Landloard_Details() {
             toast.error(message);
         }
     }
+
+    async function handleToggleActivation() {
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/toggle-users-activation/${id}`, {
+                method: "PATCH",
+                headers,
+            });
+            shouldKick(res);
+
+            const data = await res.json();
+            console.log(data)
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            setShowModal({ ...showModal, confirm: false, completed: true })
+            setAgent_LandlordData( agent_landlordData ? { ...agent_landlordData, is_active: agent_landlordData?.is_active == 0 ? 1 : 0 } : null);
+        } catch (err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function handleDelection() {
+        if(!adminPassword) {
+            toast.error("Password is Required!")
+            return;
+        }
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/users`, {
+                method: "DELETE",
+                headers,
+                body: JSON.stringify({ password: adminPassword, user_ids: [id] })
+            });
+            shouldKick(res);
+
+            const data = await res.json();
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            setShowModal({ ...showModal, delete_confirm: false, delete_completed: true })
+        } catch (err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setLoading(false);
+        }
+    }
   
     useEffect(function() {
         handleFetchData();
@@ -165,6 +232,71 @@ export default function Agents_Landloard_Details() {
     return (
         <React.Fragment>
             {loading && <Spinner />}
+
+            {showModal.confirm && createPortal(
+                <Confirm setClose={() => setShowModal({ ...showModal, confirm: false })}>
+                    <div className="modal--body">
+                        <span className="modal--icon warn"><HiOutlineExclamationCircle /> </span>
+                        <h4 className="modal--title">{agent_landlordData?.is_active == 1 ? "Deactivate" : "Activate"} {capAllFirstLetters(agent_landlordData?.role ?? "")}</h4>
+                        <p className="modal--subtext">Are you sure you want to {agent_landlordData?.is_active == 1 ? "Deactivate" : "Activate"} this {agent_landlordData?.role}? </p>
+                        <div className="flex-col-1">
+                            <button className="modal--btn filled" onClick={() => setShowModal({ ...showModal, confirm: false })}>No, Cancel</button>
+                            <button className="modal--btn blured" onClick={handleToggleActivation}>Yes, {agent_landlordData?.is_active == 1 ? "Deactivate" : "Activate"}</button>
+                        </div>
+                    </div>
+                </Confirm>, document.body
+            )}
+
+            {showModal.completed && createPortal(
+                <Confirm setClose={() => setShowModal({ ...showModal, completed: false })}>
+                    <div className="modal--body">
+                        <span className="modal--icon success"><IoCheckmarkCircle /> </span>
+                        <h4 className="modal--title">{agent_landlordData?.is_active == 1 ? "Deactivate" : "Activate"} {capAllFirstLetters(agent_landlordData?.role ?? "")} Successfully</h4>
+
+                        <button className="modal--btn filled" onClick={() => setShowModal({ ...showModal, completed: false })}>Completed</button>
+                    </div>
+                </Confirm>, document.body
+            )}
+
+            {showModal.delete_confirm && createPortal(
+                <Confirm setClose={() => setShowModal({ ...showModal, delete_confirm: false })}>
+                    <div className="modal--body">
+                        <span className="modal--icon warn"><HiOutlineExclamationCircle /> </span>
+                        <h4 className="modal--title">Delete {capAllFirstLetters(agent_landlordData?.role ?? "")} Profile</h4>
+                        <p className="modal--subtext">You are about to permanently delete this a user profile. This action will remove all user data including listings, performance history, and account information.</p>
+
+                        <div className="form--item">
+                            <label htmlFor="password" className="form--label colored">Administrator Password <Asterisk /></label>
+                            <div className="form--input-box">
+                                <input type={showPassword ? "text" : "password"} name="password" id="password" className="form--input" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" value={adminPassword} onChange={(e) => setAdminPassword(e?.target?.value)} />
+                                <div className='form--input-icon' onClick={() => setShowPassword(!showPassword)}>
+                                    {showPassword ? <ImEye /> : <ImEyeBlocked />}
+                                </div>
+                            </div>
+                            <p className="sub-text" style={{ textAlign: "left" }}>For security purposes, please enter your admin password to confirm this action.</p>
+                        </div>
+
+                        <div className="modal--actions" style={{ marginTop: "1rem" }}>
+                            <button className="modal--btn blured" onClick={() => setShowModal({ ...showModal, delete_confirm: false })}>No, Cancel!</button>
+                            <button className="modal--btn remove" onClick={handleDelection}>Permanently Delete!</button>
+                        </div>
+                    </div>
+                </Confirm>, document.body
+            )}
+
+            {showModal.delete_completed && createPortal(
+                <Confirm setClose={() => {
+                    setShowModal({ ...showModal, delete_completed: false })
+                    navigate("/dashboard/agents-landlords");
+                }}>
+                    <div className="modal--body">
+                        <span className="modal--icon success"><IoCheckmarkCircle /> </span>
+                        <h4 className="modal--title">{capAllFirstLetters(agent_landlordData?.role ?? "")} Deleted Successfully</h4>
+
+                        <button className="modal--btn filled" onClick={() => navigate("/dashboard/agents-landlords")}>Completed</button>
+                    </div>
+                </Confirm>, document.body
+            )}
 
             {(!loading && agent_landlordData?.id) && (
                 <section className="section--page">
@@ -303,7 +435,7 @@ export default function Agents_Landloard_Details() {
                             {userProperties?.length > 0 ? (
                                 <DataTable
                                     data={userProperties as ListingType[]}
-                                    columns={columns as any}
+                                    columns={user_property_columns as any}
                                     responsive
                                     persistTableHead
                                     customStyles={custom_styles_sm as any}
@@ -352,10 +484,10 @@ export default function Agents_Landloard_Details() {
 
                     <div className="modal--actions" style={{ maxWidth: "60rem" }}>
                         <button className="modal--btn outline" onClick={() => navigate(`/dashboard/agents-landlords/${id}/edit`)}>Edit</button>
-                        <button className="modal--btn outline-remove" onClick={() => {}}>
+                        <button className="modal--btn outline-remove" onClick={() => setShowModal({ ...showModal, confirm: true })}>
                             {agent_landlordData?.is_active == 1 ? "Deactivate" : "Activate"} {agent_landlordData?.role}
                         </button>
-                        <button className="modal--btn remove" onClick={() => {}}>Delete</button>
+                        <button className="modal--btn remove" onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
                     </div>
                 </section>
             )}

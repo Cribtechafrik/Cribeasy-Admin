@@ -317,7 +317,7 @@ body:has(.global--overlay) {
 /* SIMPLE NORMAL MODAL */
 .modal.confirm {
 	min-height: 25rem;
-	width: 40rem;
+	width: 42.5rem;
 	border-radius: 0.68rem;
 }
 .modal.confirm .modal--body {
