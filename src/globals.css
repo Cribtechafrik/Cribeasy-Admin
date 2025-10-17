@@ -158,6 +158,8 @@ body:has(.global--overlay) {
 }
 
 .flex-col-1,
+.flex-col-2,
+.flex-col-3,
 .flex-col-0-8 {
 	display: flex;
 	flex-direction: column;
@@ -165,6 +167,12 @@ body:has(.global--overlay) {
 }
 .flex-col-0-8 {
 	gap: 0.8rem;
+}
+.flex-col-2 {
+	gap: 2rem;
+}
+.flex-col-3 {
+	gap: 3rem;
 }
 
 .flex-col-gap {
@@ -214,6 +222,13 @@ body:has(.global--overlay) {
 .rating-star {
 	color: orange;
 	font-size: 1.8rem;
+}
+.verified-true svg {
+	background-color: #DCFAE6;
+	color: #77C87C;
+}
+.verified-false svg {
+	color: #F56464;
 }
 
 
@@ -442,6 +457,10 @@ body:has(.global--overlay) {
 	width: 100%;
 	border-radius: 0.48rem;
 }
+.modal--btn.black-outline {
+	color: var(--color-brand-dark);
+	box-shadow: inset 0 0 0 0.14rem var(--color-brand-dark);
+}
 .modal--btn.outline {
 	color: var(--color-brand-primary);
 	box-shadow: inset 0 0 0 0.14rem var(--color-brand-primary);
@@ -570,6 +589,10 @@ span.auth--img {
 }
 .insight--grid.grid-3 {
 	grid-template-columns: repeat(3, 1fr);
+	justify-content: space-between;
+}
+.insight--grid.grid-2 {
+	grid-template-columns: repeat(2, 1fr);
 	justify-content: space-between;
 }
 

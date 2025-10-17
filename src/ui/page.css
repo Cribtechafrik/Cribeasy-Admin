@@ -253,6 +253,30 @@
     cursor: zoom-in;
 }
 
+
+.details--profile-img,
+.details--profile-img .auth--img {
+    border-radius: 50%;
+    width: 10rem;
+    height: 10rem;
+    font-size: 2.68rem;
+    cursor: default;
+}
+.details--profile-img {
+    cursor: zoom-in;
+    background-color: #eee;
+    overflow: hidden;    
+}
+
+.details--card.card {
+    background-color: #F9FAFB;
+    border: none;
+}
+.details--card .section--top {
+    margin-bottom: 1.68rem;
+}
+
+
 .details--info {
     gap: 0.8rem;
 }
@@ -320,7 +344,8 @@
     padding: 0.4rem 0.8rem;
     border-radius: 2rem;
 }
-.details--info .status::before {
+.details--info .status.status--success::before,
+.details--info .status.status--pending::before {
     content: "";
     display: inline-block;
     width: 0.68rem;

@@ -131,9 +131,12 @@ export type ArtisansType = {
     community: string | null;
     is_active: number;
     has_verified_docs: number;
+    has_phone_verified: number;
     joined: string;
     reviews: number;
     average_stars: number;
     completed_jobs: number;
     plan: number | null;
+    company_name: string | null;
+    service_type: string | null;
 }

@@ -53,8 +53,6 @@ type FormDataType = {
 export default function CreateListing() {
     const { id } = useParams();
     const navigate = useNavigate();
-    console.log(id)
-
     const { headers, token, shouldKick } = useAuthContext();
 
     const [loading, setLoading] = useState(false);
