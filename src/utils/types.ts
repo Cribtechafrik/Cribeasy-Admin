@@ -116,3 +116,24 @@ export type Agent_Landlord_Type = {
     joined: string;
     updated_at: string;
 }
+
+
+export type ArtisansType = {
+    id: number;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+    role: string;
+    phone_number: string;
+    email: string;
+    occupation: string | null;
+    profile_image: string | null;
+    community: string | null;
+    is_active: number;
+    has_verified_docs: number;
+    joined: string;
+    reviews: number;
+    average_stars: number;
+    completed_jobs: number;
+    plan: number | null;
+}

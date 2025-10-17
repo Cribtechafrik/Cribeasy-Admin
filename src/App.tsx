@@ -58,7 +58,7 @@ export default function App() {
 						<Route path="/dashboard/agents-landlords/:id/edit" element={<Create_Agents_Landloard />}></Route>
 						<Route path="/dashboard/agents-landlords/:id" element={<Agents_Landloard_Details />}></Route>
 
-						<Route path="/dashboard/Artisans" element={<Artisans />}></Route>
+						<Route path="/dashboard/artisans" element={<Artisans />}></Route>
 						<Route path="/dashboard/inspection" element={<Inspection />}></Route>
 						<Route path="/dashboard/renters" element={<Renters />}></Route>
 						<Route path="/dashboard/payments" element={<Payments />}></Route>

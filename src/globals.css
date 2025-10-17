@@ -211,6 +211,11 @@ body:has(.global--overlay) {
 	color: #5c636d;
 }
 
+.rating-star {
+	color: orange;
+	font-size: 1.8rem;
+}
+
 
 .section--top {
 	margin-bottom: 1rem;
