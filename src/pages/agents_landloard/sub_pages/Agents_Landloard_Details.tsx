@@ -9,7 +9,7 @@ import { Intials } from '../../../components/layout/IntialsImage';
 import { RxEnvelopeClosed } from "react-icons/rx";
 import { HiOutlineExclamationCircle, HiOutlineLocationMarker, HiOutlinePhone } from 'react-icons/hi';
 import Line from '../../../components/elements/Line';
-import { capAllFirstLetters, formatDate, generateStars } from '../../../utils/helper';
+import { capAllFirstLetters, formatDate } from '../../../utils/helper';
 import PerformanceCard from '../../../components/layout/PerformanceCard';
 import { IoCheckmarkCircle, IoList } from 'react-icons/io5';
 import { TbChartHistogram } from 'react-icons/tb';
@@ -20,6 +20,7 @@ import { createPortal } from 'react-dom';
 import Confirm from '../../../components/modals/Confirm';
 import Asterisk from '../../../components/elements/Asterisk';
 import { ImEye, ImEyeBlocked } from 'react-icons/im';
+import { generateStars } from "../../../utils/data.tsx";
 
 
 export default function Agents_Landloard_Details() {
@@ -40,11 +41,6 @@ export default function Agents_Landloard_Details() {
 
     const [adminPassword, setAdminPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-
-//     {
-//     "user_ids": [40],
-//     "password": "100%@Cribeasy"
-// }
 
     const phone_number = agent_landlordData?.phone_number?.startsWith("234") ? "+" + agent_landlordData?.phone_number : agent_landlordData?.phone_number
 
