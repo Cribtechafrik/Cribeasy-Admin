@@ -260,12 +260,10 @@
     width: 10rem;
     height: 10rem;
     font-size: 2.68rem;
-    cursor: default;
+    overflow: hidden;    
 }
 .details--profile-img {
-    cursor: zoom-in;
     background-color: #eee;
-    overflow: hidden;    
 }
 
 .details--card.card {
