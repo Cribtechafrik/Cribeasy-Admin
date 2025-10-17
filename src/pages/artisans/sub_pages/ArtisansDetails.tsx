@@ -5,7 +5,7 @@ import type { ArtisansType } from '../../../utils/types';
 import { toast } from 'sonner';
 import Spinner, { SpinnerMini } from '../../../components/elements/Spinner';
 import { createPortal } from 'react-dom';
-import { Gallery, Item } from 'react-photoswipe-gallery';
+// import { Gallery, Item } from 'react-photoswipe-gallery';
 import { Intials } from '../../../components/layout/IntialsImage';
 import { RxEnvelopeClosed } from 'react-icons/rx';
 import { HiOutlineCreditCard, HiOutlineExclamationCircle, HiOutlineLocationMarker, HiOutlinePhone, HiOutlineStar } from 'react-icons/hi';
@@ -198,25 +198,11 @@ export default function ArtisansDetails({ id, closeDetails }: { id: number, clos
             <div className="details--container flex-col-3">
                 <div className="flex-col-1 details--top" style={{ alignItems: "center", textAlign: "center" }}>
                     <div className="details--profile-img">
-                        {artisansData?.profile_image !== null ? (
-                            <Gallery options={{ zoom: true, bgOpacity: 1 }}>
-                                <Item
-                                    original={artisansData?.profile_image ?? ""}
-                                    thumbnail={artisansData?.profile_image ?? ""}
-                                    width="auto"
-                                    height="auto"
-                                >
-                                    {({ ref, open }) => (             
-                                        <img ref={ref} onClick={open} src={artisansData?.profile_image ?? ""} alt={artisansData?.full_name} />
-                                    )}
-                                </Item>
-                            </Gallery>
-                        ) : (
-                            <Intials
-                                hasImage={false}
-                                names={[artisansData?.first_name, artisansData?.last_name]}
-                            />
-                        )}
+                        <Intials
+                            hasImage={!!artisansData?.profile_image}
+                            imageUrl={artisansData?.profile_image ?? ""}
+                            names={[artisansData?.first_name, artisansData?.last_name]}
+                        />
                     </div>
 
                     <div className="flex-col-0-8 user--details-top">
