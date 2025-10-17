@@ -18,7 +18,7 @@ export default function PerformanceCard({ title, icon, value, subText }: Props) 
 
 export function PerformanceCardSm({ title, icon, value }: Props) {
 	return (
-		<div className="insight--card">
+		<div className="insight--card" style={{ padding: "1.2rem" }}>
             <div className="flex-align-cen">
 			    <span className="insight--icon">{icon}</span>
 				<p className="insight--title">{title}</p>

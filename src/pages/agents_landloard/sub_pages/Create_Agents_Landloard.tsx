@@ -310,6 +310,7 @@ export default function Create_Agents_Landloard() {
                                             {showPassword ? <ImEye /> : <ImEyeBlocked />}
                                         </div>
                                     </div>
+                                    <div className="sub-text">A secure password will be automatically sent to the agent's email</div>
                                 </div>
                             </div>
 
@@ -325,7 +326,7 @@ export default function Create_Agents_Landloard() {
                         </div>
 
                         <div className="form--item">
-                            <label htmlFor="" className="form--label flex-align-cen">Cover Image <span className="form--info">(Optional)</span></label>
+                            <label className="form--label flex-align-cen">Profile Image <span className="form--info">(Optional)</span></label>
                             <ImageUpload
                                 name="profile_image"
                                 preview={profileImage.preview}
@@ -429,12 +430,12 @@ export default function Create_Agents_Landloard() {
                                         
                                         <React.Fragment>
                                             {formdata?.has_verified_docs == 1 ? (
-                                                <span className="flex-align-cen">
+                                                <span className="flex-align-cen verified-true">
                                                     <ImCheckboxChecked />
                                                     Verified
                                                 </span>
                                             ) : (
-                                                <span className="flex-align-cen">
+                                                <span className="flex-align-cen verified-false">
                                                     <FaWindowClose />
                                                     Unverified
                                                 </span>

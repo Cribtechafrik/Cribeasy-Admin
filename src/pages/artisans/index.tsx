@@ -1,27 +1,28 @@
-import Breadcrumbs from "../../components/elements/Breadcrumbs";
+import Breadcrumbs from "../../components/elements/Breadcrumbs.tsx";
 import { PiExport } from "react-icons/pi";
 import { AiOutlinePlus } from "react-icons/ai";
-import InsightCard from "../../components/layout/InsightCard";
+import InsightCard from "../../components/layout/InsightCard.tsx";
 import DataTable from 'react-data-table-component';
-import { custom_styles } from "../../utils/contants";
-import Spinner, { SpinnerMini } from "../../components/elements/Spinner";
-import EmptyTable from "../../components/layout/EmptyTable";
+import { custom_styles } from "../../utils/contants.ts";
+import Spinner, { SpinnerMini } from "../../components/elements/Spinner.tsx";
+import EmptyTable from "../../components/layout/EmptyTable.tsx";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LuCrown, LuUsers } from "react-icons/lu";
-import FilterButton from "../../components/elements/FilterButton";
+import FilterButton from "../../components/elements/FilterButton.tsx";
 import { BsEye, BsFillFlagFill } from "react-icons/bs";
 import { IoBriefcaseOutline, IoList } from "react-icons/io5";
 import { FaUserLarge } from "react-icons/fa6";
-import { useAuthContext } from "../../context/AuthContext";
-import type { ArtisansType, Count } from "../../utils/types";
+import { useAuthContext } from "../../context/AuthContext.tsx";
+import type { ArtisansType, Count } from "../../utils/types.ts";
 import { toast } from "sonner";
-import { Intials } from "../../components/layout/IntialsImage";
-import { formatDate } from "../../utils/helper";
-import HalfScreen from "../../components/modals/HalfScreen";
-import BasicModal from "../../components/modals/Basic";
+import { Intials } from "../../components/layout/IntialsImage.tsx";
+import { formatDate } from "../../utils/helper.ts";
+import HalfScreen from "../../components/modals/HalfScreen.tsx";
+import BasicModal from "../../components/modals/Basic.tsx";
 // import { useWindowSize } from "react-use";
 import { generateStars } from "../../utils/data.tsx";
+import ArtisansDetails from "./sub_pages/ArtisansDetails.tsx";
 
 
 const breadCrumbs = [
@@ -240,7 +241,7 @@ export default function index() {
         
             {(selectedId && showModal.details) && (
                 <HalfScreen title="Artisans Details" setClose={() => setShowModal({ ...showModal, details: false })}>
-                    <p></p>
+                    <ArtisansDetails id={selectedId} closeDetails={() => setShowModal({ ...showModal, details: false })} />
                 </HalfScreen>
             )}
         

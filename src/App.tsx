@@ -12,7 +12,7 @@ import ForgotPassword from "./pages/forgot-password";
 
 import Listings from "./pages/listings"
 import Agents_Landloard from "./pages/agents_landloard"
-import Artisans from "./pages/artisants"
+import Artisans from "./pages/artisans"
 import Inspection from "./pages/inspection"
 import Renters from "./pages/renters"
 import Payments from "./pages/payments"
@@ -25,6 +25,7 @@ import Notifications from "./pages/notifications"
 import Coupons from "./pages/coupons"
 
 import CreateListing from "./pages/listings/sub_pages/CreateListing"
+import CreateArtisans from "./pages/artisans/sub_pages/CreateArtisans"
 import Create_Agents_Landloard from "./pages/agents_landloard/sub_pages/Create_Agents_Landloard"
 import Agents_Landloard_Details from "./pages/agents_landloard/sub_pages/Agents_Landloard_Details"
 import "photoswipe/dist/photoswipe.css";
@@ -59,6 +60,9 @@ export default function App() {
 						<Route path="/dashboard/agents-landlords/:id" element={<Agents_Landloard_Details />}></Route>
 
 						<Route path="/dashboard/artisans" element={<Artisans />}></Route>
+						<Route path="/dashboard/artisans/create" element={<CreateArtisans />}></Route>
+						<Route path="/dashboard/artisans/:id/edit" element={<CreateArtisans />}></Route>
+
 						<Route path="/dashboard/inspection" element={<Inspection />}></Route>
 						<Route path="/dashboard/renters" element={<Renters />}></Route>
 						<Route path="/dashboard/payments" element={<Payments />}></Route>
