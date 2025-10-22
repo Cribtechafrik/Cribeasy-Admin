@@ -134,6 +134,11 @@ export default function index() {
         }
     }
 
+    const handleTabChange = function(tab: string) {
+        setPaginationDetails({ ...paginationDetails, currentPage: 1 });
+        setActiveTab(tab);
+    };
+
     const handleResetFilter = function() {
         if(filterSavedData !== null) {
             setShowModal({ ...showModal, filters: false });
@@ -398,10 +403,10 @@ export default function index() {
 
                     <div className="page--table">
                         <div className="page--tabs">
-                            <span className={`page--tab ${activeTab == "total_properties" ? "active" : ""}`} onClick={() => setActiveTab("total_properties")}>All properties ({summary?.total_properties ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "published_properties" ? "active" : ""}`} onClick={() => setActiveTab("published_properties")}>published properties ({summary?.published_properties ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "unpublished_properties" ? "active" : ""}`} onClick={() => setActiveTab("unpublished_properties")}>unpublished properties ({summary?.unpublished_properties ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "rented_properties" ? "active" : ""}`} onClick={() => setActiveTab("rented_properties")}>rented properties ({summary?.rented_properties ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "total_properties" ? "active" : ""}`} onClick={() => handleTabChange("total_properties")}>All properties ({summary?.total_properties ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "published_properties" ? "active" : ""}`} onClick={() => handleTabChange("published_properties")}>published properties ({summary?.published_properties ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "unpublished_properties" ? "active" : ""}`} onClick={() => handleTabChange("unpublished_properties")}>unpublished properties ({summary?.unpublished_properties ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "rented_properties" ? "active" : ""}`} onClick={() => handleTabChange("rented_properties")}>rented properties ({summary?.rented_properties ?? 0})</span>
                         </div>
                         
                         <DataTable

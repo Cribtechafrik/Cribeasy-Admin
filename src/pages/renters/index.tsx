@@ -138,6 +138,11 @@ export default function index() {
         }
     }
 
+    const handleTabChange = function(tab: string) {
+        setPaginationDetails({ ...paginationDetails, currentPage: 1 });
+        setActiveTab(tab);
+    };
+
     const handleResetFilter = function() {
         if(filterSavedData !== null) {
             setShowModal({ ...showModal, filters: false });
@@ -402,10 +407,10 @@ export default function index() {
 
                     <div className="page--table">
                         <div className="page--tabs">
-                            <span className={`page--tab ${activeTab == "total" ? "active" : ""}`} onClick={() => setActiveTab("total")}>All Renter ({summary?.total_renters ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "active" ? "active" : ""}`} onClick={() => setActiveTab("active")}>Active Renter({summary?.active_renters ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "inactive" ? "active" : ""}`} onClick={() => setActiveTab("inactive")}>Inactive Renter ({summary?.inactive_renters ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "pending" ? "active" : ""}`} onClick={() => setActiveTab("pending")}>Pending Renter ({summary?.pending_verification_renters ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "total" ? "active" : ""}`} onClick={() => handleTabChange("total")}>All Renter ({summary?.total_renters ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "active" ? "active" : ""}`} onClick={() => handleTabChange("active")}>Active Renter({summary?.active_renters ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "inactive" ? "active" : ""}`} onClick={() => handleTabChange("inactive")}>Inactive Renter ({summary?.inactive_renters ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "pending" ? "active" : ""}`} onClick={() => handleTabChange("pending")}>Pending Renter ({summary?.pending_verification_renters ?? 0})</span>
                         </div>
                         
                         <DataTable

@@ -138,6 +138,10 @@ export default function index() {
         },
     ];
 
+    const handleTabChange = function(tab: string) {
+        setPaginationDetails({ ...paginationDetails, currentPage: 1 });
+        setActiveTab(tab);
+    };
 
     const handleResetFilter = function() {
         if(filterSavedData !== null) {
@@ -250,7 +254,6 @@ export default function index() {
     useEffect(function() {
         handleFetchAgents_Landloards();
     }, [activeTab, paginationDetails?.currentPage, paginationDetails?.perPage, filterSavedData]);
-
     
     useEffect(function() {
         const fetchData = async () => {
@@ -410,9 +413,9 @@ export default function index() {
 
                     <div className="page--table">
                         <div className="page--tabs">
-                            <span className={`page--tab ${activeTab == "total_users" ? "active" : ""}`} onClick={() => setActiveTab("total_users")}>All Users ({summary?.total_users ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "active_users" ? "active" : ""}`} onClick={() => setActiveTab("active_users")}>Active Users ({summary?.active_users ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "inactive_users" ? "active" : ""}`} onClick={() => setActiveTab("inactive_users")}>Inactive Users ({summary?.inactive_users ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "total_users" ? "active" : ""}`} onClick={() => handleTabChange("total_users")}>All Users ({summary?.total_users ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "active_users" ? "active" : ""}`} onClick={() => handleTabChange("active_users")}>Active Users ({summary?.active_users ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "inactive_users" ? "active" : ""}`} onClick={() => handleTabChange("inactive_users")}>Inactive Users ({summary?.inactive_users ?? 0})</span>
                         </div>
                             
                         <DataTable

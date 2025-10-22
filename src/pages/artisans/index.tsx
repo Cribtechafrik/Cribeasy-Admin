@@ -155,6 +155,11 @@ export default function index() {
         }
     }
 
+    const handleTabChange = function(tab: string) {
+        setPaginationDetails({ ...paginationDetails, currentPage: 1 });
+        setActiveTab(tab);
+    };
+
     const handleResetFilter = function() {
         if(filterSavedData !== null) {
             setShowModal({ ...showModal, filters: false });
@@ -389,10 +394,10 @@ export default function index() {
 
                     <div className="page--table">
                         <div className="page--tabs">
-                            <span className={`page--tab ${activeTab == "total_artisans " ? "active" : ""}`} onClick={() => setActiveTab("total_artisans")}>All Artisans ({summary?.total_artisans ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "active_artisans" ? "active" : ""}`} onClick={() => setActiveTab("active_artisans")}>Active Artisans({summary?.active_artisans ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "inactive_artisans" ? "active" : ""}`} onClick={() => setActiveTab("inactive_artisans")}>Inactive Artisans ({summary?.inactive_artisans ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "pending_verifications" ? "active" : ""}`} onClick={() => setActiveTab("pending_verifications")}>Pending Verification ({summary?.pending_verifications ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "total_artisans " ? "active" : ""}`} onClick={() => handleTabChange("total_artisans")}>All Artisans ({summary?.total_artisans ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "active_artisans" ? "active" : ""}`} onClick={() => handleTabChange("active_artisans")}>Active Artisans({summary?.active_artisans ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "inactive_artisans" ? "active" : ""}`} onClick={() => handleTabChange("inactive_artisans")}>Inactive Artisans ({summary?.inactive_artisans ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "pending_verifications" ? "active" : ""}`} onClick={() => handleTabChange("pending_verifications")}>Pending Verification ({summary?.pending_verifications ?? 0})</span>
                         </div>
                         
                         <DataTable
