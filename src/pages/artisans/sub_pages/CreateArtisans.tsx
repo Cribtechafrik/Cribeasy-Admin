@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import Breadcrumbs from "../../../components/elements/Breadcrumbs";
-import { useParams } from "react-router-dom";
 import Spinner from "../../../components/elements/Spinner";
 import Line from "../../../components/elements/Line";
 import ImageUpload from "../../../components/layout/ImageUpload";
 import Asterisk from "../../../components/elements/Asterisk";
 import { ImEye, ImEyeBlocked } from "react-icons/im";
 
+
+const breadCrumbs = [
+    { name: "Artisan", link: "/dashboard/artisans" },
+    { name: "Add New Artisan", isCurrent: true },
+];
+
 export default function CreateArtisans() {
-	const { id } = useParams();
-	// const navigate = useNavigate();
-	const [loading, _] = useState(false);
+// @ts-ignore
+	const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     
     const [profileImage, setProfileImage] = useState({ preview: "", file: null });
-    const [__, setIdUpload] = useState({ preview: "", file: null });
+// @ts-ignore
+    const [idUpload, setIdUpload] = useState({ preview: "", file: null });
 
     const [formdata, setFormdata] = useState({
         full_name: "",
@@ -29,18 +34,12 @@ export default function CreateArtisans() {
         has_verified_docs: "",
     });
 
-	const breadCrumbs = [
-		{ name: "Artisan", link: "/dashboard/artisans" },
-		{ name: `${id ? "Edit" : "Add New"} Artisan`, isCurrent: true },
-	];
-
 
     const handleImageChange = function(event: { target: { files: any[]; } }, name: string) {
         const file = event.target.files[0];
 
         if (file) {
             const imageUrl = URL.createObjectURL(file);
-            console.log(imageUrl, file)
             if (name == "profile_image") {
                 setProfileImage({ preview: imageUrl, file });
             }
@@ -71,7 +70,7 @@ export default function CreateArtisans() {
 			<section className="">
 				<div className="page--top">
 					<div className="page--heading">
-						<h4 className="title">{id ? "Edit" : "New"} Artisans</h4>
+						<h4 className="title">New Artisans</h4>
 						<Breadcrumbs breadcrumArr={breadCrumbs} />
 					</div>
 				</div>

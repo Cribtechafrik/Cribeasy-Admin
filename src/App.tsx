@@ -19,15 +19,21 @@ import Payments from "./pages/payments"
 import Settings from "./pages/settings"
 import Support from "./pages/support"
 import Community from "./pages/community"
-import Analytics from "./pages/analytics"
-import Ratings_reviews from "./pages/ratings-reviews"
-import Notifications from "./pages/notifications"
-import Coupons from "./pages/coupons"
+// import Analytics from "./pages/analytics"
+// import Ratings_reviews from "./pages/ratings-reviews"
+// import Notifications from "./pages/notifications"
+// import Coupons from "./pages/coupons"
 
 import CreateListing from "./pages/listings/sub_pages/CreateListing"
 import CreateArtisans from "./pages/artisans/sub_pages/CreateArtisans"
+import CreateRenters from "./pages/renters/sub_pages/CreateRenters"
+
 import Create_Agents_Landloard from "./pages/agents_landloard/sub_pages/Create_Agents_Landloard"
 import Agents_Landloard_Details from "./pages/agents_landloard/sub_pages/Agents_Landloard_Details"
+import InspectionDetails from "./pages/inspection/sub_pages/InspectionDetails"
+
+import ResetArtisantsCredential from "./pages/artisans/sub_pages/ResetArtisantsCredential"
+import ResetRentersCredentials from "./pages/renters/sub_pages/ResetRenterCredential"
 import "photoswipe/dist/photoswipe.css";
 
 
@@ -56,23 +62,27 @@ export default function App() {
 
 						<Route path="/dashboard/agents-landlords" element={<Agents_Landloard />}></Route>
 						<Route path="/dashboard/agents-landlords/create" element={<Create_Agents_Landloard />}></Route>
-						<Route path="/dashboard/agents-landlords/:id/edit" element={<Create_Agents_Landloard />}></Route>
 						<Route path="/dashboard/agents-landlords/:id" element={<Agents_Landloard_Details />}></Route>
 
 						<Route path="/dashboard/artisans" element={<Artisans />}></Route>
 						<Route path="/dashboard/artisans/create" element={<CreateArtisans />}></Route>
-						<Route path="/dashboard/artisans/:id/edit" element={<CreateArtisans />}></Route>
+						<Route path="/dashboard/artisans/:id/reset-credentials" element={<ResetArtisantsCredential />}></Route>
 
-						<Route path="/dashboard/inspection" element={<Inspection />}></Route>
+						<Route path="/dashboard/inspections" element={<Inspection />}></Route>
+						<Route path="/dashboard/inspections/:id" element={<InspectionDetails />}></Route>
+
 						<Route path="/dashboard/renters" element={<Renters />}></Route>
+						<Route path="/dashboard/renters/create" element={<CreateRenters />}></Route>
+						<Route path="/dashboard/renters/:id/reset-credentials" element={<ResetRentersCredentials />}></Route>
+
 						<Route path="/dashboard/payments" element={<Payments />}></Route>
 						<Route path="/dashboard/settings" element={<Settings />}></Route>
 						<Route path="/dashboard/support" element={<Support />}></Route>
 						<Route path="/dashboard/community" element={<Community />}></Route>
-						<Route path="/dashboard/analytics" element={<Analytics />}></Route>
-						<Route path="/dashboard/ratings-reviews" element={<Ratings_reviews />}></Route>
-						<Route path="/dashboard/notifications" element={<Notifications />}></Route>
-						<Route path="/dashboard/coupons" element={<Coupons />}></Route>
+						{/* <Route path="/dashboard/analytics" element={<Analytics />}></Route> */}
+						{/* <Route path="/dashboard/notifications" element={<Notifications />}></Route> */}
+						{/* <Route path="/dashboard/ratings-reviews" element={<Ratings_reviews />}></Route> */}
+						{/* <Route path="/dashboard/coupons" element={<Coupons />}></Route> */}
 					</Route>
 				</Routes>
 			</BrowserRouter>

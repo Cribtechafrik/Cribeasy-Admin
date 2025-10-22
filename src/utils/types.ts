@@ -49,6 +49,7 @@ type PropertyDetailsType = {
 export type ImageUrl = {
     cloudinary_id: string | null;
     cloudinary_url: string;
+    cloudinary_public?: string;
 }
 
 export type ListingType = {
@@ -79,9 +80,52 @@ export type ListingType = {
 }
 
 
-export type Property_type = {
+export type Property_types_Type = {
     id: number;
     name: string;
+}
+
+export type Property_category_Type = {
+    id: number;
+    name: string;
+    slug: string;
+}
+
+export type Identity_type_Type = {
+    id: number;
+    identity_type: string;
+}
+
+export type Service_types_Type = {
+    id: number;
+    name: string;
+    slug: string;
+}
+
+export type Community_Type = {
+    id: number;
+    name: string;
+}
+
+export type Employment_Status_Type = {
+    id: number;
+    employment_type: string;
+}
+
+export type Plans_Type = {
+    id: number;
+    amount: string;
+    created_at: string;
+    currency: string;
+    description: string;
+    interval: string;
+    is_active: number;
+    name: string;
+    plan_category: string;
+    plan_code: string | null;
+    slug: string;
+    updated_at: string;
+
 }
 
 
@@ -112,7 +156,6 @@ export type Agent_Landlord_Type = {
         property_rating: number,
         property_rating_is_based_on: number
     },
-    last_active: string;
     joined: string;
     updated_at: string;
 }
@@ -139,4 +182,58 @@ export type ArtisansType = {
     plan: number | null;
     company_name: string | null;
     service_type: string | null;
+    proof_of_work: ImageUrl[];
+    revenue: number;
+}
+
+
+export type RenterType = {
+    id: number;
+    community: string | null;
+    email: string;
+    first_name: string;
+    full_name: string;
+    has_verified_docs: number;
+    is_active: number;
+    last_name: string;
+    occupation: string | null;
+    phone_number: string;
+    profile_image: string | null;
+    role: string;
+    plan: number;
+
+    completed_jobs: number;
+    employment_status_id: number | null;
+    joined: string;
+    total_inspections: number;
+    updated_at: string;
+}
+
+export type InspectionType = {
+    id: number;
+    agent_first_name: string;
+    agent_last_name: string;
+    agent_profile_image: string;
+    community: string;
+    ends_at: string;
+    property_address: string;
+    property_title: string;
+    renter_email: string;
+    renter_first_name: string;
+    renter_last_name: string;
+    starts_at: string;
+    status: string;
+
+    agent_phone: string;
+    agent_email: string;
+    confirmation_code: string | null;
+    notes: string;
+    property_category: string;
+    property_cover: string;
+    property_id: number;
+    property_price: string;
+    property_ref_id: string;
+    renter_phone: string;
+    renter_profile_image: string;
+    cancelled_by: string;
 }

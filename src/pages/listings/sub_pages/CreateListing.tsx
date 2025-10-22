@@ -17,7 +17,7 @@ import moment from 'moment';
 import { customAlphabet } from 'nanoid';
 import { fetchPropertyTypes } from "../../../utils/fetch";
 import { useAuthContext } from "../../../context/AuthContext";
-import type { ListingType, Property_type } from "../../../utils/types";
+import type { ListingType, Property_types_Type } from "../../../utils/types";
 import Spinner from "../../../components/elements/Spinner";
 
 
@@ -56,7 +56,7 @@ export default function CreateListing() {
     const { headers, token, shouldKick } = useAuthContext();
 
     const [loading, setLoading] = useState(false);
-    const [propertyTypeData, setPropertyTypeData] = useState<Property_type[] | []>([]);
+    const [propertyTypeData, setPropertyTypeData] = useState<Property_types_Type[] | []>([]);
     const [showScheduleModal, setShowScheduleModal] = useState(false);
     const [coverImage, setCoverImage] = useState({ preview: "", file: null });
     const [galleryImages, setGalleryImages] = useState<{
@@ -299,12 +299,14 @@ export default function CreateListing() {
 
 
     useEffect(function() {
-        (async () => {
+        const fetchData = async function() {
             const propertyTypeData = await fetchPropertyTypes(headers)
             if(propertyTypeData?.success) {
                 setPropertyTypeData(propertyTypeData?.data[0])
             }
-        })();
+        }
+
+        fetchData();
     }, []);
 
 

@@ -1,5 +1,5 @@
 import Breadcrumbs from "../../components/elements/Breadcrumbs";
-import { PiExport } from "react-icons/pi";
+// import { PiExport } from "react-icons/pi";
 import { AiOutlinePlus } from "react-icons/ai";
 import InsightCard from "../../components/layout/InsightCard";
 import { IoList } from "react-icons/io5";
@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import FilterButton from "../../components/elements/FilterButton";
 import { toast } from "sonner";
 import { useAuthContext } from "../../context/AuthContext";
-import type { Count, ListingType, Property_type } from "../../utils/types";
+import type { Community_Type, Count, ListingType, Property_category_Type, Property_types_Type } from "../../utils/types";
 import { BsEye } from 'react-icons/bs';
 import { formatNumber } from "../../utils/helper";
 import BasicModal from "../../components/modals/Basic";
@@ -21,7 +21,7 @@ import ReactCurrencyInput from 'react-currency-input-field';
 import { useWindowSize } from "react-use";
 import ListingDetails from "./sub_pages/ListingDetails";
 import HalfScreen from "../../components/modals/HalfScreen";
-import {fetchPropertyTypes } from "../../utils/fetch";
+import {fetchCommunities, fetchPropertyCategories, fetchPropertyTypes } from "../../utils/fetch";
 
 
 const breadCrumbs = [
@@ -52,13 +52,17 @@ export default function index() {
     const { width } = useWindowSize();
     const { headers, shouldKick } = useAuthContext();
     const [activeTab, setActiveTab] = useState("total_properties");
-    const [loading, setLoading] = useState({ main: false, table: false });
+    const [mainLoading, setMainLoading] = useState(true);
+    const [tableLoading, setTableLoading] = useState(true)
     // const [error, setError] = useState("");
+
+    const [propertyTypesData, setPropertyTypesData] = useState<Property_types_Type[] | []>([]);
+    const [propertyCategoryData, setPropertyCategoryData] = useState<Property_category_Type[]>([]);
+    const [communities, setCommunities] = useState<Community_Type[]>([]);
+
     const [period, setPeriod] = useState("all_time");
     const [analyticsSummary, setAnalyticsSummary] = useState<ListingAnalyticsType | null>(null);
     
-    const [propertyTypesData, setPropertyTypesData] = useState<Property_type[] | []>([]);
-    // const [propertyCategoryData, setPropertyCategoryData] = useState<Property_type[] | []>([]);
     const [listingData, setListingData] = useState<ListingType[] | []>([]);
     const [summary, setSummary] = useState<ListingSummaryType | null>(null);
     const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -131,6 +135,10 @@ export default function index() {
     }
 
     const handleResetFilter = function() {
+        if(filterSavedData !== null) {
+            setShowModal({ ...showModal, filters: false });
+        }
+
         setFilterUnsavedData({
             property_type: "",
             category: "",
@@ -153,8 +161,14 @@ export default function index() {
         setPaginationDetails({ ...paginationDetails, perPage: newPerPage });
     };
 
+    const handleFilterDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+        const { name, value } = e?.target;
+        setFilterUnsavedData({ ...filterUnsavedData, [name]: value });
+    }
+
     async function handleFetchAnalytics() {
-        setLoading({ ...loading, main: true });
+        setMainLoading(true);
+
         try {
 			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/analytics-cards?period=${period}`, {
 				method: "GET",
@@ -173,17 +187,29 @@ export default function index() {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			toast.error(message);
 		} finally {
-			setLoading({ ...loading, main: false });
+			setMainLoading(false);
 		}
     }
 
     // fetchAmenities
     async function handleFetchListings() {
-        setLoading({ ...loading, table: true });
-        const status = activeTab == "total_properties" ? "available" : activeTab?.replace("_properties", "")
+        setTableLoading(true);
+
+        const params = new URLSearchParams({
+            page: `${paginationDetails?.currentPage}`,
+            ...({ status: activeTab == "total_properties" ? "available" : activeTab?.replace("_properties", "") }),
+        });
+
+        if(filterSavedData !== null) {
+            Object.entries(filterSavedData).forEach(([key, value]) => {
+                if (value !== "" && value !== null && value !== undefined) {
+                    params.append(key, value);
+                }
+            });
+        }
 
         try {
-			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties?page=${paginationDetails?.currentPage ?? 1}&status=${status}`, {
+			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties?${params.toString()}`, {
 				method: "GET",
 				headers,
 			});
@@ -202,7 +228,7 @@ export default function index() {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			toast.error(message);
 		} finally {
-			setLoading({ ...loading, table: false });
+			setTableLoading(false);
 		}
     }
 
@@ -214,34 +240,33 @@ export default function index() {
 
     useEffect(function() {
         handleFetchListings();
-    }, [activeTab, filterSavedData, !showModal.details, paginationDetails?.currentPage, paginationDetails?.perPage ]);
+    }, [activeTab, filterSavedData, paginationDetails?.currentPage, paginationDetails?.perPage ]);
 
     useEffect(function() {
+        const fetchData = async function() {
+            const [propertyType, categoryData, communities] = await Promise.all([
+                fetchPropertyTypes(headers),
+                fetchPropertyCategories(headers),
+                fetchCommunities(headers),
+            ]);
+
+            if(propertyType?.success) setPropertyTypesData(propertyType?.data[0])
+            if(categoryData?.success) setPropertyCategoryData(categoryData?.data[0])
+            if(communities?.success) setCommunities(communities?.data[0])
+        }
+        
         if(showModal.filters) {
-            (async () => {
-                const propertyType = await fetchPropertyTypes(headers)
-                if(propertyType?.success) {
-                    setPropertyTypesData(propertyType?.data[0])
-                }
-            })();
-
-
-            // (async () => {
-            //     const categoryData = await fetchPropertyCategories(headers)
-            //     if(categoryData?.success) {
-            //         setPropertyCategoryData(categoryData?.data[0])
-            //     }
-            // })();
+            fetchData();
         }
     }, [showModal.filters])
 
 	return (
         <React.Fragment>
-            {loading.main && <Spinner />}
+            {mainLoading && <Spinner />}
 
             {(selectedId && showModal.details) && (
                 <HalfScreen title="Listing Details" setClose={() => setShowModal({ ...showModal, details: false })}>
-                    <ListingDetails id={selectedId} />
+                    <ListingDetails id={selectedId} refetchTable={handleFetchListings} />
                 </HalfScreen>
             )}
 
@@ -251,14 +276,17 @@ export default function index() {
                         <div className="form--flex">
                             <div className="form--item">
                                 <label htmlFor="category" className="form--label colored">Category</label>
-                                <select className="form--select" name="category" id="category">
+                                <select className="form--select" name="category" id="category" value={filterUnsavedData?.category} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
+                                    {propertyCategoryData && propertyCategoryData?.map((pc, i) => (
+                                        <option value={pc?.slug} key={i}>{pc.name}</option>
+                                    ))}
                                 </select>
                             </div>
 
                             <div className="form--item">
                                 <label htmlFor="property_type" className="form--label colored">Property Type</label>
-                                <select className="form--select" name="property_type" id="property_type">
+                                <select className="form--select" name="property_type" id="property_type" value={filterUnsavedData?.property_type} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
                                     {propertyTypesData && propertyTypesData?.map((type, i) => (
                                         <option value={type?.name} key={i}>{type.name}</option>
@@ -313,6 +341,9 @@ export default function index() {
                                 <label htmlFor="community" className="form--label colored">Community</label>
                                 <select className="form--select" name="community" id="community">
                                     <option selected value="">All</option>
+                                    {communities && communities?.map((c, i) => (
+                                        <option value={c?.id} key={i}>{c.name}</option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -336,9 +367,9 @@ export default function index() {
                         <Breadcrumbs breadcrumArr={breadCrumbs} />
                     </div>
 
-                    <div className="flex-align-cen" style={{ flexWrap: "wrap", gap: "1rem" }}>
+                    <div className="flex-align-cen gap-1" style={{ flexWrap: "wrap" }}>
                         <Link to="/dashboard/listings/create" className="page--btn filled"><AiOutlinePlus /> Add new Listing</Link>
-                        <button className="page--btn outline"><PiExport /> Export</button>
+                        {/* <button className="page--btn outline"><PiExport /> Export</button> */}
                     </div>
                 </div>
 
@@ -346,7 +377,7 @@ export default function index() {
                     <select className="form--select" value={period} onChange={(e) => setPeriod(e.target.value)}>
                         <option value="last_month">Last Month</option>
                         <option value="this_month">This Month</option>
-                        <option value="last_6_months">Last Month</option>
+                        <option value="last_6_months">Last 6 Month</option>
                         <option value="this_year">This Year</option>
                         <option value="all_time">All Time</option>
                     </select>
@@ -358,7 +389,12 @@ export default function index() {
                         <InsightCard title="Rented Listings" value={analyticsSummary?.rented_properties?.count ?? 0} icon={<IoList />} />
                     </div>
 
-                    <FilterButton handleShowFilter={() => setShowModal({ ...showModal, filters: true })} />
+                    <div className="page--filter-actions">
+                        {filterSavedData !== null && (
+                            <button className="page--btn remove" onClick={handleResetFilter}>Clear Filter</button>
+                        )}
+                        <FilterButton handleShowFilter={() => setShowModal({ ...showModal, filters: true })} />
+                    </div>
 
                     <div className="page--table">
                         <div className="page--tabs">
@@ -378,13 +414,13 @@ export default function index() {
                             noDataComponent={
                                 <EmptyTable
                                     icon={<GoListUnordered />}
-                                    text={`No ${activeTab == "total_properties" ? "listing" : activeTab?.replace("_", " ")} yet. Click the “Add New” to create one and it will be displayed here`}
+                                    text={`No ${activeTab == "total_properties" ? "listing" : activeTab?.replace("_", " ")} found. ${(activeTab == "total_properties" && !filterSavedData) ? "Click the “Add New” to create one and it will be displayed here" : ""}`}
                                 />
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}
                             selectableRows={true}
-                            progressPending={loading.main ? false : loading.table}
+                            progressPending={tableLoading}
                             progressComponent={<div className="table-spinner-container"><SpinnerMini /></div>}
                             highlightOnHover={false}
                             paginationRowsPerPageOptions={[10]}

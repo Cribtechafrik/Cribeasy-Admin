@@ -18,7 +18,7 @@ type InspectionScheduleType = {
     timeSlots: { start: string; end: string; }[];
 }
 
-export default function ListingDetails({ id }: { id: number }) {
+export default function ListingDetails({ id, refetchTable }: { id: number, refetchTable: () => void; }) {
     const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
     const [loading, setLoading] = useState({ modal: false, main: false })
@@ -135,6 +135,7 @@ export default function ListingDetails({ id }: { id: number }) {
 
             setShowModal({ confirm: false, completed: true })
             setListingData( listingData ? { ...listingData, is_active: listingData?.is_active == 0 ? 1 : 0 } : null);
+            refetchTable();
 		} catch (err: any) {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			toast.error(message);
@@ -326,7 +327,6 @@ export default function ListingDetails({ id }: { id: number }) {
                         <button className={`modal--btn ${listingData?.is_active == 1 ? "remove" : "filled"}`} onClick={() => setShowModal({ ...showModal, confirm: true })}>
                             {listingData?.is_active == 1 ? "Unpublish" : "Publish"}
                         </button>
-                        {/* <button className="modal--btn remove">Delete</button> */}
                     </div>
                 </div>
             )}

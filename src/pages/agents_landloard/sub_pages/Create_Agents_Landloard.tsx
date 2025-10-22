@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Spinner from "../../../components/elements/Spinner";
 import Breadcrumbs from "../../../components/elements/Breadcrumbs";
 import Asterisk from "../../../components/elements/Asterisk";
 import ImageUpload from "../../../components/layout/ImageUpload";
 import Line from "../../../components/elements/Line";
 import { toast } from "sonner";
-import { ImCheckboxChecked, ImEye, ImEyeBlocked } from "react-icons/im";
+import { ImEye, ImEyeBlocked } from "react-icons/im";
 import { useAuthContext } from "../../../context/AuthContext";
-import type { Agent_Landlord_Type } from "../../../utils/types";
-import { fetchIdentityTypes } from "../../../utils/fetch";
-import { FaWindowClose } from "react-icons/fa";
+import { fetchCommunities, fetchIdentityTypes } from "../../../utils/fetch";
 import CheckBoxInput from "../../../components/forms/CheckBoxInput";
 import { capAllFirstLetters } from "../../../utils/helper";
-import { createPortal } from "react-dom";
-import Confirm from "../../../components/modals/Confirm";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { IoCheckmarkCircle } from "react-icons/io5";
+import type { Community_Type, Identity_type_Type } from "../../../utils/types";
 
+const breadCrumbs = [
+    { name: "Agents/Landlords", link: "/dashboard/agents-landlords" },
+    { name: "Add New Agents/Landlords", isCurrent: true },
+];
 
 type FormDataType = {
     full_name: string;
@@ -27,25 +26,19 @@ type FormDataType = {
     company_name: string;
     identity_type: string;
     lasrera: string;
-    mark_as_verified?: boolean;
-    is_active?: string | number;
-    has_verified_docs?: string | number;
-}
-
-type Identity_type_Type = {
-    id: number;
-    identity_type: string;
+    community_id: string;
+    mark_as_verified: boolean;
 }
 
 export default function Create_Agents_Landloard() {
-	const { id } = useParams();
     const navigate = useNavigate();
     const { headers, token, shouldKick } = useAuthContext();
 
-    const [identityTypes, setIdentityTypes] = useState<Identity_type_Type[]>([])
+    const [identityTypes, setIdentityTypes] = useState<Identity_type_Type[]>([]);
+    const [communities, setCommunities] = useState<Community_Type[]>([]);
+
 	const [loading, setLoading] = useState(false);
     const [role, setRole] = useState("agent");
-    const [showModal, setShowModal] = useState({ confirm: false, completed: false });
 
     const [showPassword, setShowPassword] = useState(false);
     const [profileImage, setProfileImage] = useState({ preview: "", file: null });
@@ -60,15 +53,9 @@ export default function Create_Agents_Landloard() {
         company_name: "",
         identity_type: "",
         lasrera: "",
+        community_id: "",
         mark_as_verified: false,
-        is_active: "",
-        has_verified_docs: "",
     });
-
-	const breadCrumbs = [
-		{ name: "Agents/Landlords", link: "/dashboard/agents-landlords" },
-		{ name: `${id ? "Edit" : "Add New"} Agents/Landlords`, isCurrent: true },
-	];
 
     const handleUserDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e?.target;
@@ -80,7 +67,6 @@ export default function Create_Agents_Landloard() {
 
         if (file) {
             const imageUrl = URL.createObjectURL(file);
-            console.log(imageUrl, file)
             if (name == "profile_image") {
                 setProfileImage({ preview: imageUrl, file });
             }
@@ -106,49 +92,17 @@ export default function Create_Agents_Landloard() {
     }
 
     useEffect(function() {
-        async function handleFetch() {
-            setLoading(true);
+        const fetchData = async () => {
+            const [identityTypeData, communities] = await Promise.all([
+                fetchIdentityTypes(headers),
+                fetchCommunities(headers),
+            ]);
 
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords/${id}?full=true&withIdentification=true`, {
-                method: "GET",
-                headers,
-            });
-
-            const data = await res.json();
-            
-            if(id && data?.success) {
-                const result: Agent_Landlord_Type = data?.data;
-                setRole(result?.role)
-                setFormdata({
-                    full_name: result?.full_name || "",
-                    email: result?.email || "",
-                    phone_number: result?.phone_number || "",
-                    password: "",
-                    company_name: result?.company_name || "",
-                    identity_type: `${result?.identity_type}` || "",
-                    lasrera: "",
-                    is_active: +result?.is_active,
-                    has_verified_docs: +result?.has_verified_docs,
-                });
-
-                setProfileImage({ file: null, preview: result?.profile_image ?? "" })
-            }
-            setLoading(false);
+            if (identityTypeData?.success) setIdentityTypes(identityTypeData.data[0]);
+            if (communities?.success) setCommunities(communities.data[0]);
         };
 
-        if(id) {
-            handleFetch();
-        }
-    }, [id]);
-
-    useEffect(function() {
-        (async () => {
-            const identityTypeData = await fetchIdentityTypes(headers)
-            if(identityTypeData?.success) {
-                console.log(identityTypeData)
-                setIdentityTypes(identityTypeData?.data[0])
-            }
-        })();
+        fetchData();
     }, []);
 
     async function handleSubmitUser() {
@@ -161,13 +115,12 @@ export default function Create_Agents_Landloard() {
             formData.append('last_name', formdata.full_name?.split(" ")[1]);
             formData.append('phone_number', formdata.phone_number);
             formData.append('password', formdata.password);
-            formData.append('email', formdata.email);
+            formData.append('email', formdata.email?.toLowerCase());
             formData.append('company_name', formdata.company_name);
             formData.append('lasrera', formdata.lasrera);
             formData.append('identity_type_id', formdata.identity_type);
-            formData.append('community_id', "1");
-            // @ts-ignore
-            formData.append('mark_as_verified', formdata.mark_as_verified ? 1 : 0);
+            formData.append('community_id', formdata?.community_id);
+            formData.append('mark_as_verified', formdata.mark_as_verified ? "1" : "0");
 
             if(profileImage?.file) {
                 formData.append('profile_image', profileImage?.file);
@@ -184,48 +137,22 @@ export default function Create_Agents_Landloard() {
                 Authorization: `Bearer ${token}`
             }
 
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/${id ? `agents-landlords/${id}/profile-update` : "agents-landlords-create"}`, {
-                method: id ? "PUT" : "POST",
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords-create`, {
+                method: "POST",
                 headers: formDataHeaders,
                 body: formData
             });
             shouldKick(res);
 
             const data = await res.json();
-            if (res.status !== (id ? 200 : 201) || !data?.success) {
+            if (res.status !== 201 || !data?.success) {
                 throw new Error(data?.error?.message);
             }
 
-            toast.success(`${capAllFirstLetters(role)} ${id ? "Updated" : "Created"} Successfully!`);
+            toast.success(`${capAllFirstLetters(role)} Created Successfully!`);
             navigate("/dashboard/agents-landlords")
 
         } catch(err: any) {
-            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
-            toast.error(message);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    async function handleToggleActivation() {
-        setLoading(true);
-
-        try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/toggle-users-activation/${id}`, {
-                method: "PATCH",
-                headers,
-            });
-            shouldKick(res);
-
-            const data = await res.json();
-            if (res.status !== 200 || !data?.success) {
-                throw new Error(data?.error?.message);
-            }
-
-            setShowModal({ confirm: false, completed: true })
-            setFormdata({ ...formdata, is_active: formdata?.is_active == 0 ? 1 : 0 });
-
-        } catch (err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
         } finally {
@@ -237,35 +164,10 @@ export default function Create_Agents_Landloard() {
 		<React.Fragment>
 			{loading && <Spinner />}
 
-            {showModal.confirm && createPortal(
-                <Confirm setClose={() => setShowModal({ ...showModal, confirm: false })}>
-                    <div className="modal--body">
-                        <span className="modal--icon warn"><HiOutlineExclamationCircle /> </span>
-                        <h4 className="modal--title">{formdata?.is_active == 1 ? "Deactivate" : "Activate"} {capAllFirstLetters(role ?? "")}</h4>
-                        <p className="modal--subtext">Are you sure you want to {formdata?.is_active == 1 ? "Deactivate" : "Activate"} this {role}? </p>
-                        <div className="flex-col-1">
-                            <button className="modal--btn filled" onClick={() => setShowModal({ ...showModal, confirm: false })}>No, Cancel</button>
-                            <button className="modal--btn blured" onClick={handleToggleActivation}>Yes, {formdata?.is_active == 1 ? "Deactivate" : "Activate"}</button>
-                        </div>
-                    </div>
-                </Confirm>, document.body
-            )}
-
-            {showModal.completed && createPortal(
-                <Confirm setClose={() => setShowModal({ ...showModal, completed: false })}>
-                    <div className="modal--body">
-                        <span className="modal--icon success"><IoCheckmarkCircle /> </span>
-                        <h4 className="modal--title">{formdata?.is_active == 1 ? "Deactivate" : "Activate"} {capAllFirstLetters(role ?? "")} Successfully</h4>
-
-                        <button className="modal--btn filled" onClick={() => setShowModal({ ...showModal, completed: false })}>Completed</button>
-                    </div>
-                </Confirm>, document.body
-            )}
-
 			<section className="">
 				<div className="page--top">
 					<div className="page--heading">
-						<h4 className="title">{id ? "Edit" : "New"} Listings</h4>
+						<h4 className="title">New Listings</h4>
 						<Breadcrumbs breadcrumArr={breadCrumbs} />
 					</div>
 				</div>
@@ -320,7 +222,15 @@ export default function Create_Agents_Landloard() {
                                     <input type="text" className="form--input" name="company_name" id="company_name" placeholder="Real estate company LTD " value={formdata.company_name} onChange={handleUserDataChange} />
                                 </div>
 
-                                <div className="form--item" />
+                                <div className="form--item">
+                                    <label htmlFor="community_id" className="form--label">Community <Asterisk /></label>
+                                    <select className="form--select" name="community_id" id="community_id" value={formdata?.community_id} onChange={handleUserDataChange}>
+                                        <option selected hidden>All</option>
+                                        {communities && communities?.map((c, i) => (
+                                            <option value={c?.id} key={i}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                         </div>
@@ -338,67 +248,15 @@ export default function Create_Agents_Landloard() {
 
                     <Line />
 
-                    {!id ? (
-                        <div className="flex-col-gap">
-                            <h4 className="form--title">Identity & Certificate</h4>
+                    <div className="flex-col-gap">
+                        <h4 className="form--title">Identity & Certificate</h4>
 
-                            <div className="form--grid">
-                                <div className="flex-col-gap">
-                                    <div className="form--item">
-                                        <label htmlFor="identity_type" className="form--label colored">ID Type <Asterisk /></label>
-                                        <select name="identity_type" id="identity_type" className="form--select" value={formdata.identity_type} onChange={handleUserDataChange}>
-                                            <option hidden selected>Id Type</option>
-                                            {identityTypes && identityTypes?.map((type, i) => (
-                                                <option value={type?.id} key={i}>{type.identity_type}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="form--item">
-                                        <label htmlFor="lasrera" className="form--label colored">LASRERA Number <Asterisk /></label>
-                                        <input type="text" className="form--input" name="lasrera" id="lasrera" placeholder="Enter a LASRERA number" value={formdata.lasrera} onChange={handleUserDataChange} />
-                                    </div>
-                                </div>
-
-                                <div className="form--item">
-                                    <label htmlFor="" className="form--label colored">Upload ID Document <Asterisk /></label>
-                                    <ImageUpload
-                                        title=" "
-                                        name="id_upload"
-                                        preview={idUpload.preview}
-                                        handleChange={(e) => handleImageChange(e, "id_upload")} 
-                                        handleRemove={() => handleRemoveImage("id_upload")}
-                                    />
-                                </div>
-
-                                <div className="flex-col-gap">
-                                    <div className="form--item">
-                                        <label htmlFor="" className="form--label colored">CAC Certificate <Asterisk /></label>
-                                        <ImageUpload
-                                            title=" "
-                                            name="cac_certificate"
-                                            preview={cacCertificate.preview}
-                                            handleChange={(e) => handleImageChange(e, "cac_certificate")} 
-                                            handleRemove={() => handleRemoveImage("cac_certificate")}
-                                        />
-                                    </div>
-
-                                    <div className="form--check flex-align-cen" onClick={() => setFormdata({ ...formdata, mark_as_verified: !formdata?.mark_as_verified })} style={{ cursor: "pointer" }}>
-                                        <CheckBoxInput isChecked={formdata?.mark_as_verified ?? false} />
-                                        <p className="form--info">Mark agent as verified</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
                         <div className="form--grid">
                             <div className="flex-col-gap">
-                                <h4 className="form--title">Identity & Certificate</h4>
-
                                 <div className="form--item">
                                     <label htmlFor="identity_type" className="form--label colored">ID Type <Asterisk /></label>
                                     <select name="identity_type" id="identity_type" className="form--select" value={formdata.identity_type} onChange={handleUserDataChange}>
-                                        <option hidden disabled selected>Id Type</option>
+                                        <option hidden selected>Id Type</option>
                                         {identityTypes && identityTypes?.map((type, i) => (
                                             <option value={type?.id} key={i}>{type.identity_type}</option>
                                         ))}
@@ -411,50 +269,39 @@ export default function Create_Agents_Landloard() {
                                 </div>
                             </div>
 
-                            <div className="flex-col-gap">
-                                <h4 className="form--title">Status & Verification</h4>
+                            <div className="form--item">
+                                <label htmlFor="" className="form--label colored">Upload ID Document <Asterisk /></label>
+                                <ImageUpload
+                                    title=" "
+                                    name="id_upload"
+                                    preview={idUpload.preview}
+                                    handleChange={(e) => handleImageChange(e, "id_upload")} 
+                                    handleRemove={() => handleRemoveImage("id_upload")}
+                                />
+                            </div>
 
+                            <div className="flex-col-gap">
                                 <div className="form--item">
-                                    <label htmlFor="status" className="form--label colored">ID Type <Asterisk /></label>
-                                    <select name="status" id="status" className="form--select" value={formdata.is_active} onChange={handleUserDataChange}>
-                                        <option value={0}>Inactive</option>
-                                        <option value={1}>Active</option>
-                                    </select>
+                                    <label htmlFor="" className="form--label colored">CAC Certificate <Asterisk /></label>
+                                    <ImageUpload
+                                        title=" "
+                                        name="cac_certificate"
+                                        preview={cacCertificate.preview}
+                                        handleChange={(e) => handleImageChange(e, "cac_certificate")} 
+                                        handleRemove={() => handleRemoveImage("cac_certificate")}
+                                    />
                                 </div>
 
-                                <div className="form--item">
-                                    <label className="form--label colored">Verification Status</label>
-
-                                    <div className="form--input flex-align-justify-spabtw">
-                                        <label className="form--label colored">Identity:</label>
-                                        
-                                        <React.Fragment>
-                                            {formdata?.has_verified_docs == 1 ? (
-                                                <span className="flex-align-cen verified-true">
-                                                    <ImCheckboxChecked />
-                                                    Verified
-                                                </span>
-                                            ) : (
-                                                <span className="flex-align-cen verified-false">
-                                                    <FaWindowClose />
-                                                    Unverified
-                                                </span>
-                                            )}
-                                        </React.Fragment>
-                                    </div>
+                                <div className="form--check flex-align-cen" onClick={() => setFormdata({ ...formdata, mark_as_verified: !formdata?.mark_as_verified })} style={{ cursor: "pointer" }}>
+                                    <CheckBoxInput isChecked={formdata?.mark_as_verified ?? false} />
+                                    <p className="form--info">Mark agent as verified</p>
                                 </div>
                             </div>
                         </div>
-                    )}
-
-
+                    </div>
+              
                     <div className="modal--actions" style={{ maxWidth: "55rem" }}>
-                        <button className="modal--btn filled" onClick={handleSubmitUser}>{id ? `Edit ${capAllFirstLetters(role)}` : `Add New ${capAllFirstLetters(role)}`}</button>
-                        {id && (
-                            <button className="modal--btn outline-remove" onClick={() => setShowModal({ ...showModal, confirm: true })}>
-                                {formdata?.is_active == 1 ? "Deactivate" : "Activate"} {role}
-                            </button>
-                        )}
+                        <button className="modal--btn filled" onClick={handleSubmitUser}>Add New {capAllFirstLetters(role)}</button>
                         <button className="modal--btn outline" onClick={() => navigate(-1)}>Cancel</button>
                     </div>
                 </div>

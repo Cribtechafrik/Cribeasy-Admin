@@ -1,15 +1,14 @@
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import { BiSwim, BiUser } from "react-icons/bi";
-import { BsBarChartLine } from "react-icons/bs";
+// import { BsBarChartLine } from "react-icons/bs";
 import { FaDumbbell, FaWifi } from "react-icons/fa";
 import { FaToiletPortable } from "react-icons/fa6";
 import { GoGear, GoShieldCheck } from "react-icons/go";
 import {} from "react-icons/hi";
-import { HiOutlineChatBubbleLeftRight, HiOutlineUsers, HiOutlineStar } from "react-icons/hi2";
+import { HiOutlineChatBubbleLeftRight, HiOutlineUsers } from "react-icons/hi2";
 import { IoGrid, IoList, IoWaterOutline } from "react-icons/io5";
 import { LuCircleParking, LuCrown, LuSearch } from "react-icons/lu";
 import { MdBalcony, MdOutlineKitchen, MdOutlinePets } from "react-icons/md";
-import { RiCouponLine } from "react-icons/ri";
 import { TbAirConditioning, TbCreditCard, TbUsersGroup } from "react-icons/tb";
 import { IoIosStar, IoIosStarHalf, IoIosStarOutline } from "react-icons/io";
 
@@ -36,7 +35,7 @@ export const MENU_ITEMS = [
 	},
 	{
 		title: "Inspection",
-		link: "/dashboard/inspection",
+		link: "/dashboard/inspections",
 		icon: <LuSearch />,
 	},
 	{
@@ -64,26 +63,26 @@ export const MENU_ITEMS = [
 		link: "/dashboard/community",
 		icon: <TbUsersGroup />,
 	},
-	{
-		title: "Analytics",
-		link: "/dashboard/analytics",
-		icon: <BsBarChartLine />,
-	},
-	{
-		title: "Ratings & Reviews",
-		link: "/dashboard/ratings-reviews",
-		icon: <HiOutlineStar />,
-	},
+	// {
+	// 	title: "Analytics",
+	// 	link: "/dashboard/analytics",
+	// 	icon: <BsBarChartLine />,
+	// },
+	// {
+	// 	title: "Ratings & Reviews",
+	// 	link: "/dashboard/ratings-reviews",
+	// 	icon: <HiOutlineStar />,
+	// },
 	// {
 	//     title: "Notifications",
 	//     link: "/dashboard/notifications",
 	//     icon: <IoNotificationsOutline />
 	// },
-	{
-		title: "Coupons",
-		link: "/dashboard/coupons",
-		icon: <RiCouponLine />,
-	},
+	// {
+	// 	title: "Coupons",
+	// 	link: "/dashboard/coupons",
+	// 	icon: <RiCouponLine />,
+	// },
 ];
 
 export const amenities = [
