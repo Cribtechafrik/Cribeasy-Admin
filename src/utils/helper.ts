@@ -14,6 +14,9 @@ export function formatTime(time: string): string {
 export function formatDate(date: string): string {
 	return moment(date).format("MMM Do, YYYY");
 }
+export function formatDateWithDay(date: string): string {
+	return moment(date).format("ddd. MMM Do YYYY");
+}
 
 export function todayDate(): string {
 	return moment().format("dddd, MMMM Do, YYYY");
@@ -32,4 +35,22 @@ export function capAllFirstLetters(str: string): string {
 export function hexToRgba(hex: string, opacity: string) {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result ? `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${opacity})` : null;
+}
+
+
+export function formatDateTime(dateTimeString: string): string {
+	const momentDate = moment(dateTimeString);
+	const now = moment();
+
+	if (momentDate.isSame(now, 'day')) {
+		return `Today, ${momentDate.format('h:mm A')}`;
+	} else if (momentDate.isSame(now.add(1, 'days'), 'day')) {
+		return `Tomorrow, ${momentDate.format('h:mm A')}`;
+	} else if (momentDate.isSame(now.subtract(1, 'days'), 'day')) {
+		return `Yesterday, ${momentDate.format('h:mm A')}`;
+	} else if (momentDate.isBefore(now, 'day') && momentDate.isAfter(now.subtract(7, 'days'), 'day')) {
+		return `Last ${momentDate.format('dddd')}, ${momentDate.format('h:mm A')}`;
+	} else {
+		return `${momentDate.format('dddd, MMM D, h:mm A')}`;
+	}
 }

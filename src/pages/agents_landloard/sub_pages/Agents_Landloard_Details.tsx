@@ -21,6 +21,7 @@ import Confirm from '../../../components/modals/Confirm';
 import Asterisk from '../../../components/elements/Asterisk';
 import { ImEye, ImEyeBlocked } from 'react-icons/im';
 import { generateStars } from "../../../utils/data.tsx";
+import HalfScreen from '../../../components/modals/HalfScreen.tsx';
 
 
 export default function Agents_Landloard_Details() {
@@ -29,7 +30,7 @@ export default function Agents_Landloard_Details() {
     const { headers, shouldKick } = useAuthContext();
     const [loading, setLoading] = useState(true);
     const [tableLoader, setTableLoader] = useState(true)
-    const [showModal, setShowModal] = useState({ confirm: false, completed: false, delete_confirm: false, delete_completed: false });
+    const [showModal, setShowModal] = useState({ confirm: false, completed: false, delete_confirm: false, delete_completed: false, edit: false });
     const [agent_landlordData, setAgent_LandlordData] = useState<Agent_Landlord_Type | null>(null);
     const [userReports, setUserReports] = useState([]);
     const [userProperties, setUserProperties] = useState<ListingType[]>([]);
@@ -229,6 +230,12 @@ export default function Agents_Landloard_Details() {
         <React.Fragment>
             {loading && <Spinner />}
 
+            {showModal.edit && (
+                <HalfScreen title="Edit Agents/Landlords Details" setClose={() => setShowModal({ ...showModal, edit: false })}>
+                    <p></p>
+                </HalfScreen>
+            )}
+
             {showModal.confirm && createPortal(
                 <Confirm setClose={() => setShowModal({ ...showModal, confirm: false })}>
                     <div className="modal--body">
@@ -305,7 +312,7 @@ export default function Agents_Landloard_Details() {
 
                     <div className="page--bottom">
                         <div className="card">
-                            <div className="flex-align-cen" style={{ gap: "1.28rem" }}>
+                            <div className="flex-align-cen gap-1-2">
                                 <Intials
                                     hasImage={!!agent_landlordData?.profile_image}
                                     imageUrl={agent_landlordData?.profile_image ?? ""}
@@ -315,7 +322,7 @@ export default function Agents_Landloard_Details() {
 
                                 <div className="flex-col-0-8 user--details-top">
                                     <h5 className="heading">{agent_landlordData?.full_name}</h5>
-                                    <div className="flex-align-cen" style={{ gap: "1rem" }}>
+                                    <div className="flex-align-cen gap-1">
                                         <span className='flex-align-cen'>
                                             <RxEnvelopeClosed />
                                             <p className='info'>
@@ -376,10 +383,6 @@ export default function Agents_Landloard_Details() {
                                     <div className="details--info">
                                         <p className="text">Community</p>
                                         <p className="info">{agent_landlordData?.community ?? "--"}</p>
-                                    </div>
-                                    <div className="details--info">
-                                        <p className="text">Last Active</p>
-                                        <p className="info">{agent_landlordData?.last_active ?? "--"}</p>
                                     </div>
                                     <div className="details--info">
                                         <p className="text">Verification Status</p>
@@ -459,7 +462,7 @@ export default function Agents_Landloard_Details() {
                                     }}
                                 />
                             ) : (
-                                <p className='no-data' style={{ textAlign: "center" }}>No property listed yet!</p>
+                                <p className='no-data'>No property listed yet!</p>
                             )}
                         </div>
 
@@ -479,7 +482,7 @@ export default function Agents_Landloard_Details() {
                     </div>
 
                     <div className="modal--actions" style={{ maxWidth: "60rem" }}>
-                        <button className="modal--btn outline" onClick={() => navigate(`/dashboard/agents-landlords/${id}/edit`)}>Edit</button>
+                        <button className="modal--btn outline" onClick={() => setShowModal({ ...showModal, edit: true })}>Edit</button>
                         <button className="modal--btn outline-remove" onClick={() => setShowModal({ ...showModal, confirm: true })}>
                             {agent_landlordData?.is_active == 1 ? "Deactivate" : "Activate"} {agent_landlordData?.role}
                         </button>

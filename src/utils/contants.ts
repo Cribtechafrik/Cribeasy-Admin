@@ -28,7 +28,7 @@ export const custom_styles = {
         style: {
             paddingRight: '0.5rem',
             backgroundColor: '#FAFAFA',
-            color: '#00419C',
+            color: '#333',
             height: "3.5rem",
         },
     },

@@ -12,7 +12,6 @@ import Logo from "../assets/logo/logo.png"
 export default function DashboardSidebar() {
     const { width } = useWindowSize();
     const { pathname } = useLocation();
-    console.log(pathname)
     const { isShowSidemenu, animateOut, handleToggleSidemenu } = useDataContext();
 
     const isHomeRoute = pathname === "/" || pathname === "/dashboard" || pathname === "/dashboard/"

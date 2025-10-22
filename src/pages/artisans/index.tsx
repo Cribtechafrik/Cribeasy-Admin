@@ -1,5 +1,5 @@
 import Breadcrumbs from "../../components/elements/Breadcrumbs.tsx";
-import { PiExport } from "react-icons/pi";
+// import { PiExport } from "react-icons/pi";
 import { AiOutlinePlus } from "react-icons/ai";
 import InsightCard from "../../components/layout/InsightCard.tsx";
 import DataTable from 'react-data-table-component';
@@ -12,9 +12,8 @@ import { LuCrown, LuUsers } from "react-icons/lu";
 import FilterButton from "../../components/elements/FilterButton.tsx";
 import { BsEye, BsFillFlagFill } from "react-icons/bs";
 import { IoBriefcaseOutline, IoList } from "react-icons/io5";
-import { FaUserLarge } from "react-icons/fa6";
 import { useAuthContext } from "../../context/AuthContext.tsx";
-import type { ArtisansType, Count } from "../../utils/types.ts";
+import type { ArtisansType, Community_Type, Count, Service_types_Type } from "../../utils/types.ts";
 import { toast } from "sonner";
 import { Intials } from "../../components/layout/IntialsImage.tsx";
 import { formatDate } from "../../utils/helper.ts";
@@ -23,6 +22,9 @@ import BasicModal from "../../components/modals/Basic.tsx";
 // import { useWindowSize } from "react-use";
 import { generateStars } from "../../utils/data.tsx";
 import ArtisansDetails from "./sub_pages/ArtisansDetails.tsx";
+import { FaUserCheck } from "react-icons/fa";
+import EditArtisans from "./sub_pages/EditArtisans.tsx";
+import { fetchCommunities, fetchServiceTypes } from "../../utils/fetch.ts";
 
 
 const breadCrumbs = [
@@ -46,7 +48,7 @@ type SummaryType = {
 type FilterDataType = {
     service_type: string;
     specialization: string;
-    community: string;
+    community_id: string;
 }
 
 export default function index() {
@@ -54,15 +56,19 @@ export default function index() {
     // const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
 
+    const [communities, setCommunities] = useState<Community_Type[]>([]);
+    const [serviceTypes, setServiceTypes] = useState<Service_types_Type[]>([]);
+
     const [activeTab, setActiveTab] = useState("total_artisans");
     const [period, setPeriod] = useState("all_time");
-    const [loading, setLoading] = useState({ main: false, table: false });
+    const [mainLoading, setMainLoading] = useState(true);
+    const [tableLoading, setTableLoading] = useState(true)
 
     const [analyticsSummary, setAnalyticsSummary] = useState<AnalyticsType | null>(null);
     const [summary, setSummary] = useState<SummaryType | null>(null);
     const [artisans, setArtisans] = useState<ArtisansType[]>([])
     
-    const [showModal, setShowModal] = useState({ details: false, filters: false });
+    const [showModal, setShowModal] = useState({ details: false, edit: false, filters: false });
     const [selectedId, setSelectedId] = useState<number | null>(null);
     
     const [paginationDetails, setPaginationDetails] = useState({
@@ -74,7 +80,7 @@ export default function index() {
     const [filterUnsavedData, setFilterUnsavedData] = useState<FilterDataType>({
         service_type: "",
         specialization: "",
-        community: "",
+        community_id: "",
     });
     const [filterSavedData, setFilterSavedData] = useState<FilterDataType | null>(null)
     
@@ -150,10 +156,14 @@ export default function index() {
     }
 
     const handleResetFilter = function() {
+        if(filterSavedData !== null) {
+            setShowModal({ ...showModal, filters: false });
+        }
+
         setFilterUnsavedData({
             service_type: "",
             specialization: "",
-            community: "",
+            community_id: "",
         });
         setFilterSavedData(null)
     }
@@ -171,8 +181,14 @@ export default function index() {
         setPaginationDetails({ ...paginationDetails, perPage: newPerPage });
     };
 
+    const handleFilterDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+        const { name, value } = e?.target;
+        setFilterUnsavedData({ ...filterUnsavedData, [name]: value });
+    }
+
     async function handleFetchAnalytics() {
-        setLoading({ ...loading, main: true });
+        setTableLoading(true);
+
         try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/artisans-analytics-cards?period=${period}`, {
                 method: "GET",
@@ -191,16 +207,29 @@ export default function index() {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
         } finally {
-            setLoading({ ...loading, main: false });
+            setTableLoading(false);
         }
     }
 
     // fetchAmenities
     async function handleFetchArtisans() {
-        setLoading({ ...loading, table: true });
+        setMainLoading(true);
+
+        const params = new URLSearchParams({
+            page: `${paginationDetails?.currentPage}`,
+            ...(activeTab !== "total_artisans" ? { status: activeTab === "total_artisans" ? "1" : "0" } : ""),
+        });
+
+        if(filterSavedData !== null) {
+            Object.entries(filterSavedData).forEach(([key, value]) => {
+                if (value !== "" && value !== null && value !== undefined) {
+                    params.append(key, value);
+                }
+            });
+        }
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/artisans?page=${paginationDetails?.currentPage ?? 1}${activeTab !== "total_artisans" ? `&status=${activeTab == "active_artisans" ? 1 : 0}` : ""}`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/artisans?${params.toString()}`, {
                 method: "GET",
                 headers,
             });
@@ -219,7 +248,7 @@ export default function index() {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
         } finally {
-            setLoading({ ...loading, table: false });
+            setMainLoading(false);
         }
     }
 
@@ -233,15 +262,42 @@ export default function index() {
         handleFetchArtisans();
     }, [activeTab, paginationDetails?.currentPage, paginationDetails?.perPage, filterSavedData]);
 
+    useEffect(function() {
+        const fetchData = async () => {
+            const [serviceTypes, communities] = await Promise.all([
+                fetchServiceTypes(headers),
+                fetchCommunities(headers),
+            ]);
+            if (serviceTypes?.success) setServiceTypes(serviceTypes.data);
+            if (communities?.success) setCommunities(communities.data[0]);
+        };
 
+        if(showModal.filters) {
+            fetchData();
+        }
+    }, [showModal.filters]);
 
 	return (
         <React.Fragment>
-            {loading.main && <Spinner />}
+            {mainLoading && <Spinner />}
         
             {(selectedId && showModal.details) && (
                 <HalfScreen title="Artisans Details" setClose={() => setShowModal({ ...showModal, details: false })}>
-                    <ArtisansDetails id={selectedId} closeDetails={() => setShowModal({ ...showModal, details: false })} />
+                    <ArtisansDetails
+                        id={selectedId}
+                        handleOpenEdit={() => setShowModal({ ...showModal, details: false, edit: true })}
+                        closeDetails={() => setShowModal({ ...showModal, details: false })}
+                        refetchTable={handleFetchArtisans}
+                    />
+                </HalfScreen>
+            )}
+
+            {(selectedId && showModal.edit) && (
+                <HalfScreen title="Edit Artisans Details" setClose={() => setShowModal({ ...showModal, edit: false })}>
+                    <EditArtisans
+                        id={selectedId}
+                        closeDetails={() => setShowModal({ ...showModal, details: false })}
+                    />
                 </HalfScreen>
             )}
         
@@ -251,8 +307,11 @@ export default function index() {
                         <div className="form--flex">
                             <div className="form--item">
                                 <label htmlFor="service_type" className="form--label colored">Service Type</label>
-                                <select className="form--select" name="service_type" id="service_type" value={filterUnsavedData?.service_type}>
+                                <select className="form--select" name="service_type" id="service_type" value={filterUnsavedData?.service_type} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
+                                    {serviceTypes && serviceTypes?.map((type, i) => (
+                                        <option value={type?.id} key={i}>{type.name}</option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -266,9 +325,12 @@ export default function index() {
 
                         <div className="form--flex">
                             <div className="form--item">
-                                <label htmlFor="community" className="form--label colored">Community</label>
-                                <select className="form--select" name="community" id="community" value={filterUnsavedData?.community}>
-                                    <option selected value="">2+</option>
+                                <label htmlFor="community_id" className="form--label colored">Community</label>
+                                <select className="form--select" name="community_id" id="community_id" value={filterUnsavedData.community_id} onChange={handleFilterDataChange}>
+                                    <option selected>All</option>
+                                    {communities && communities?.map((c, i) => (
+                                        <option value={c?.id} key={i}>{c.name}</option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -296,9 +358,9 @@ export default function index() {
                         <Breadcrumbs breadcrumArr={breadCrumbs} />
                     </div>
 
-                    <div className="flex-align-cen" style={{ flexWrap: "wrap", gap: "1rem" }}>
+                    <div className="flex-align-cen gap-1" style={{ flexWrap: "wrap", }}>
                         <Link to="/dashboard/artisans/create" className="page--btn filled"><AiOutlinePlus /> Add new Artisans</Link>
-                        <button className="page--btn outline"><PiExport /> Export</button>
+                        {/* <button className="page--btn outline"><PiExport /> Export</button> */}
                     </div>
                 </div>
 
@@ -306,19 +368,24 @@ export default function index() {
                     <select className="form--select" value={period} onChange={(e) => setPeriod(e.target.value)}>
                         <option value="last_month">Last Month</option>
                         <option value="this_month">This Month</option>
-                        <option value="last_6_months">Last Month</option>
+                        <option value="last_6_months">Last 6 Month</option>
                         <option value="this_year">This Year</option>
                         <option value="all_time">All Time</option>
                     </select>
 
                     <div className="insight--grid">
                         <InsightCard title="All Artisans" value={analyticsSummary?.total_artisans?.count ?? 0} icon={<LuUsers />} />
-                        <InsightCard title="Active Artisans" value={analyticsSummary?.active_artisans?.count ?? 0} icon={<FaUserLarge  />} />
+                        <InsightCard title="Active Artisans" value={analyticsSummary?.active_artisans?.count ?? 0} icon={<FaUserCheck  />} />
                         <InsightCard title="Pending Verification" value={analyticsSummary?.inactive_artisans?.count ?? 0} icon={<IoList />} />
                         <InsightCard title="Inactive Artisans" value={analyticsSummary?.pending_verifications?.count ?? 0} icon={<BsFillFlagFill />} />
                     </div>
 
-                    <FilterButton handleShowFilter={() => setShowModal({ ...showModal, filters: true })} />
+                    <div className="page--filter-actions">
+                        {filterSavedData !== null && (
+                            <button className="page--btn remove" onClick={handleResetFilter}>Clear Filter</button>
+                        )}
+                        <FilterButton handleShowFilter={() => setShowModal({ ...showModal, filters: true })} />
+                    </div>
 
                     <div className="page--table">
                         <div className="page--tabs">
@@ -338,15 +405,17 @@ export default function index() {
                             noDataComponent={
                                 <EmptyTable
                                     icon={<LuCrown />}
-                                    text="No Artisans yet. Click the “Add New Artisans” to create one and it will be displayed here"
+                                    text={`No Artisans found. ${(activeTab == "total_artisans" && !filterSavedData) ? "Click the “Add New Artisans” to create one and it will be displayed here" : ""}`}
                                 />
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}
                             selectableRows={true}
-                            progressPending={loading?.table}
+                            progressPending={tableLoading}
                             progressComponent={
-                                <div className="table-spinner-container"><SpinnerMini /></div>
+                                <div className="table-spinner-container">
+                                    <SpinnerMini />
+                                </div>
                             }
                             highlightOnHover={false}
                             paginationRowsPerPageOptions={[10]}

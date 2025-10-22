@@ -181,6 +181,10 @@ body:has(.global--overlay) {
 	gap: 1.4rem;
 }
 
+.align-flex-end {
+	align-items: flex-end;
+}
+
 .flex-align-cen {
 	display: flex;
 	align-items: center;
@@ -196,6 +200,24 @@ body:has(.global--overlay) {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+}
+.flex-align-start-justify-spabtw {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+.gap-0-6 {
+	gap: 0.68rem;
+}
+.gap-1 {
+	gap: 1rem;
+}
+.gap-1-2 {
+	gap: 1.28rem;
+}
+.gap-2 {
+	gap: 2rem;
 }
 
 .sub-text {
@@ -217,6 +239,7 @@ body:has(.global--overlay) {
 	font-size: 1.4rem;
 	padding: 1rem 0;
 	color: #5c636d;
+	text-align: center;
 }
 
 .rating-star {
@@ -697,6 +720,7 @@ span.auth--img {
 	color: #ff0000;
 }
 .status--active,
+.status--accepted,
 .status--completed,
 .status--published,
 .status--available,
@@ -706,6 +730,7 @@ span.auth--img {
 }
 
 .status--active p,
+.status--accepted p,
 .status--completed p,
 .status--published p,
 .status--available p,
@@ -714,18 +739,21 @@ span.auth--img {
 }
 
 .status--pending,
+.status--unverified,
 .status--unpublished,
 .status--processing {
 	border-color: #FEDF89;
 	background-color: #FFFAEB;
 }
 .status--pending p,
+.status--unverified p,
 .status--unpublished p,
 .status--processing p {
 	color: #B54708;
 }
 
-.status--free {
+.status--free,
+.status--default {
 	background-color: #eee;
 	border-color: #ccc;
 }
@@ -735,6 +763,10 @@ span.auth--img {
 }
 .status--premium p {
 	color: #132B4B;
+}
+
+.status--default p {
+	color: #444;
 }
 
 

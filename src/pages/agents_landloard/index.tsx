@@ -1,5 +1,5 @@
 import Breadcrumbs from "../../components/elements/Breadcrumbs";
-import { PiExport } from "react-icons/pi";
+// import { PiExport } from "react-icons/pi";
 import { AiOutlinePlus, AiOutlinePlusCircle } from "react-icons/ai";
 import InsightCard from "../../components/layout/InsightCard";
 import DataTable from 'react-data-table-component';
@@ -14,13 +14,14 @@ import { FiCheckCircle } from "react-icons/fi";
 import FilterButton from "../../components/elements/FilterButton";
 import { useWindowSize } from "react-use";
 import { useAuthContext } from "../../context/AuthContext";
-import type { Agent_Landlord_Type, Count } from "../../utils/types";
+import type { Agent_Landlord_Type, Community_Type, Count, Plans_Type } from "../../utils/types";
 import { toast } from "sonner";
 import { BsEye } from "react-icons/bs";
 import BasicModal from "../../components/modals/Basic";
 import ReactCurrencyInput from 'react-currency-input-field';
 import { Intials } from "../../components/layout/IntialsImage";
 import { capAllFirstLetters } from "../../utils/helper";
+import { fetchCommunities, fetchPlans } from "../../utils/fetch";
 
 
 const breadCrumbs = [
@@ -41,13 +42,13 @@ type SummaryType = {
 }
 
 type FilterDataType = {
-    plan: string;
-    role: string;
-    community: string;
+    plan_id: string;
+    user_type: "agent" | "landlord" | "";
+    community_id: string;
     verification_status: string;
     status: string;
-    max_price: string;
-    min_price: string;
+    max_properties: string;
+    min_properties: string;
 }
 
 export default function index() {
@@ -55,9 +56,12 @@ export default function index() {
     const { width } = useWindowSize();
     const { headers, shouldKick } = useAuthContext();
 
+    const [communities, setCommunities] = useState<Community_Type[]>([]);
+    const [plans, setPlans] = useState<Plans_Type[]>([]);
     const [period, setPeriod] = useState("all_time");
     const [activeTab, setActiveTab] = useState("total_users");
-    const [loading, setLoading] = useState({ main: false, table: false });
+    const [mainLoading, setMainLoading] = useState(true);
+    const [tableLoading, setTableLoading] = useState(true)
     const [analyticsSummary, setAnalyticsSummary] = useState<AnalyticsType | null>(null);
 
     const [agents_landlordsData, setAgents_LandloardsData] = useState<Agent_Landlord_Type[] | []>([]);
@@ -65,12 +69,12 @@ export default function index() {
     const [showModal, setShowModal] = useState({ details: false, filters: false });
 
     const [filterUnsavedData, setFilterUnsavedData] = useState<FilterDataType>({
-        plan: "",
-        role: "",
-        community: "",
+        plan_id: "",
+        user_type: "",
+        community_id: "",
         verification_status: "",
-        max_price: "",
-        min_price: "",
+        max_properties: "",
+        min_properties: "",
         status: "",
     });
     const [filterSavedData, setFilterSavedData] = useState<FilterDataType | null>(null)
@@ -136,16 +140,20 @@ export default function index() {
 
 
     const handleResetFilter = function() {
+        if(filterSavedData !== null) {
+            setShowModal({ ...showModal, filters: false });
+        }
+
         setFilterUnsavedData({
-            plan: "",
-            role: "",
-            community: "",
+            plan_id: "",
+            user_type: "",
+            community_id: "",
             verification_status: "",
-            max_price: "",
-            min_price: "",
+            max_properties: "",
+            min_properties: "",
             status: "",
         });
-        setFilterSavedData(null)
+        setFilterSavedData(null);
     }
 
     const handleSaveFilterData = function() {
@@ -161,9 +169,15 @@ export default function index() {
         setPaginationDetails({ ...paginationDetails, perPage: newPerPage });
     };
 
+    const handleFilterDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+        const { name, value } = e?.target;
+        setFilterUnsavedData({ ...filterUnsavedData, [name]: value });
+    }
+
 
     async function handleFetchAnalytics() {
-        setLoading({ ...loading, main: true });
+        setMainLoading(true);
+
         try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords-analytics-cards?period=${period}`, {
                 method: "GET",
@@ -182,16 +196,29 @@ export default function index() {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
         } finally {
-            setLoading({ ...loading, main: false });
+            setMainLoading(false);
         }
     }
 
     // fetchAmenities
     async function handleFetchAgents_Landloards() {
-        setLoading({ ...loading, table: true });
+        setTableLoading(true);
+        
+        const params = new URLSearchParams({
+            page: `${paginationDetails?.currentPage}`,
+            ...(activeTab !== "total_users" ? { status: activeTab === "active_users" ? "1" : "0" } : ""),
+        });
+
+        if(filterSavedData !== null) {
+            Object.entries(filterSavedData).forEach(([key, value]) => {
+                if (value !== "" && value !== null && value !== undefined) {
+                    params.append(key, value);
+                }
+            });
+        }
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords?page=${paginationDetails?.currentPage ?? 1}${activeTab !== "total_users" ? `&status=${activeTab == "active_users" ? 1 : 0}` : ""}`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords?${params.toString()}`, {
                 method: "GET",
                 headers,
             });
@@ -210,7 +237,7 @@ export default function index() {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
         } finally {
-            setLoading({ ...loading, table: false });
+            setTableLoading(false);
         }
     }
 
@@ -224,58 +251,97 @@ export default function index() {
         handleFetchAgents_Landloards();
     }, [activeTab, paginationDetails?.currentPage, paginationDetails?.perPage, filterSavedData]);
 
+    
+    useEffect(function() {
+        const fetchData = async () => {
+            const [communities, plans] = await Promise.all([
+                fetchCommunities(headers),
+                fetchPlans(headers)
+            ]);
+            
+            if (communities?.success) setCommunities(communities.data[0]);
+            if(plans?.success) setPlans(plans?.data)
+        };
+
+        if(showModal.filters) {
+            fetchData();
+        }
+    }, [showModal.filters]);
 
 	return (
         <React.Fragment>
-            {loading.main && <Spinner />}
+            {mainLoading && <Spinner />}
 
             {showModal.filters && (
                 <BasicModal title="Filter" setClose={() => setShowModal({ ...showModal, filters: false })}>
                     <div className="modal--content">
                         <div className="form--flex">
                             <div className="form--item">
-                                <label htmlFor="category" className="form--label colored">Category</label>
-                                <select className="form--select" name="category" id="category">
+                                <label htmlFor="plan_id" className="form--label colored">Plan</label>
+                                <select className="form--select" name="plan_id" id="plan_id" value={filterUnsavedData.plan_id} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
+                                    {plans && plans?.map((p, i) => (
+                                        <option value={p?.id} key={i}>{p.name}</option>
+                                    ))}
                                 </select>
                             </div>
 
                             <div className="form--item">
-                                <label htmlFor="property_type" className="form--label colored">Property Type</label>
-                                <select className="form--select" name="property_type" id="property_type">
+                                <label htmlFor="user_type" className="form--label colored">Role</label>
+                                <select className="form--select" name="user_type" id="user_type" value={filterUnsavedData.user_type} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
+                                    <option value="agent">Agent</option>
+                                    <option value="landloard">Landlord</option>
                                 </select>
                             </div>
                         </div>
 
                         <div className="form--flex">
                             <div className="form--item">
-                                <label htmlFor="min_price" className="form--label colored">Price Range</label>
+                                <label htmlFor="community_id" className="form--label colored">Community</label>
+                                <select className="form--select" name="community_id" id="community_id" value={filterUnsavedData.community_id} onChange={handleFilterDataChange}>
+                                    <option selected>All</option>
+                                    {communities && communities?.map((c, i) => (
+                                        <option value={c?.id} key={i}>{c.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form--item">
+                                <label htmlFor="verification_status" className="form--label colored">Verification Status</label>
+                                <select className="form--select" name="verification_status" id="verification_status" value={filterUnsavedData.verification_status} onChange={handleFilterDataChange}>
+                                    <option selected value="0">Pending</option>
+                                    <option selected value="1">Verified</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="form--flex">
+                            <div className="form--item">
+                                <label htmlFor="min_properties" className="form--label colored">Numbers of Properties</label>
                                 <div className="form--input-box">
                                     <ReactCurrencyInput
-                                        id="min_price"
-                                        name="min_price"
+                                        id="min_properties"
+                                        name="min_properties"
                                         className="form--input"
-                                        placeholder="Min Price"
-                                        prefix="₦"
-                                        value={filterUnsavedData.min_price}
-                                        onValueChange={(value) => setFilterUnsavedData({ ...filterUnsavedData, min_price: value ?? "" })}
+                                        placeholder="Min Properties"
+                                        value={filterUnsavedData.min_properties}
+                                        onValueChange={(value) => setFilterUnsavedData({ ...filterUnsavedData, min_properties: value ?? "" })}
                                     />
                                     <span className="form--input-icon">Min</span>
                                 </div>
                             </div>
 
                             <div className="form--item">
-                                {width > 850 && <label htmlFor="max_price" className="form--label">&nbsp;</label>}
+                                {width > 850 && <label htmlFor="max_properties" className="form--label">&nbsp;</label>}
                                 <div className="form--input-box">
                                     <ReactCurrencyInput
-                                        id="max_price"
-                                        name="max_price"
+                                        id="max_properties"
+                                        name="max_properties"
                                         className="form--input"
-                                        placeholder="Max Price"
-                                        prefix="₦"
-                                        value={filterUnsavedData.max_price}
-                                        onValueChange={(value) => setFilterUnsavedData({ ...filterUnsavedData, max_price: value ?? "" })}
+                                        placeholder="Max Properties"
+                                        value={filterUnsavedData.max_properties}
+                                        onValueChange={(value) => setFilterUnsavedData({ ...filterUnsavedData, max_properties: value ?? "" })}
                                     />
                                     <span className="form--input-icon">Max</span>
                                 </div>
@@ -284,18 +350,14 @@ export default function index() {
 
                         <div className="form--flex">
                             <div className="form--item">
-                                <label htmlFor="bedrooms" className="form--label colored">Bedrooms</label>
-                                <select className="form--select" name="bedrooms" id="bedrooms">
-                                    <option selected value="">2+</option>
+                                <label htmlFor="status" className="form--label colored">Status</label>
+                                <select className="form--select" name="status" id="status" value={filterUnsavedData.status} onChange={handleFilterDataChange}>
+                                    <option selected value="1">Active</option>
+                                    <option selected value="0">Inactive</option>
                                 </select>
                             </div>
 
-                            <div className="form--item">
-                                <label htmlFor="community" className="form--label colored">Community</label>
-                                <select className="form--select" name="community" id="community">
-                                    <option selected value="">All</option>
-                                </select>
-                            </div>
+                            <div className="form--item">&nbsp;</div>
                         </div>
                     </div>
 
@@ -317,9 +379,9 @@ export default function index() {
                         <Breadcrumbs breadcrumArr={breadCrumbs} />
                     </div>
 
-                    <div className="flex-align-cen" style={{ flexWrap: "wrap", gap: "1rem" }}>
+                    <div className="flex-align-cen gap-1" style={{ flexWrap: "wrap" }}>
                         <Link to="/dashboard/agents-landlords/create" className="page--btn filled"><AiOutlinePlus /> Add new Agents/Landloard</Link>
-                        <button className="page--btn outline"><PiExport /> Export</button>
+                        {/* <button className="page--btn outline"><PiExport /> Export</button> */}
                     </div>
                 </div>
 
@@ -327,7 +389,7 @@ export default function index() {
                     <select className="form--select" value={period} onChange={(e) => setPeriod(e.target.value)}>
                         <option value="last_month">Last Month</option>
                         <option value="this_month">This Month</option>
-                        <option value="last_6_months">Last Month</option>
+                        <option value="last_6_months">Last 6 Month</option>
                         <option value="this_year">This Year</option>
                         <option value="all_time">All Time</option>
                     </select>
@@ -339,7 +401,12 @@ export default function index() {
                         <InsightCard title="New This Month" value={analyticsSummary?.new_users_this_month?.count ?? 0} icon={<AiOutlinePlusCircle />} />
                     </div>
 
-                    <FilterButton handleShowFilter={() => setShowModal({ ...showModal, filters: true })} />
+                    <div className="page--filter-actions">
+                        {filterSavedData !== null && (
+                            <button className="page--btn remove" onClick={handleResetFilter}>Clear Filter</button>
+                        )}
+                        <FilterButton handleShowFilter={() => setShowModal({ ...showModal, filters: true })} />
+                    </div>
 
                     <div className="page--table">
                         <div className="page--tabs">
@@ -358,14 +425,18 @@ export default function index() {
                             noDataComponent={
                                 <EmptyTable
                                     icon={<HiOutlineUsers />}
-                                    text="No agents yet. Click the “Add New Agents/Landloard” to create one and it will be displayed here"
+                                    text={`No ${filterSavedData?.user_type ? filterSavedData?.user_type : "Agent/Landloard"} found. ${(activeTab == "total_users" && !filterSavedData) ? "Click the “Add New Agents/Landloard” to create one and it will be displayed here" : ""}`}
                                 />
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}
                             selectableRows={true}
-                            progressPending={loading.main ? false : loading.table}
-                            progressComponent={<div className="table-spinner-container"><SpinnerMini /></div>}
+                            progressPending={tableLoading}
+                            progressComponent={
+                                <div className="table-spinner-container">
+                                    <SpinnerMini />
+                                </div>
+                            }
                             highlightOnHover={false}
                             paginationRowsPerPageOptions={[10]}
 
