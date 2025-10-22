@@ -20,6 +20,7 @@ import ReactCurrencyInput from 'react-currency-input-field';
 import { useWindowSize } from "react-use";
 import BasicModal from "../../components/modals/Basic";
 import { fetchCommunities, fetchPropertyCategories, fetchPropertyTypes } from "../../utils/fetch";
+import ErrorComponent from "../../components/layout/ErrorComponent";
 
 
 
@@ -55,6 +56,7 @@ export default function index() {
     const { width } = useWindowSize();
     const { headers, shouldKick } = useAuthContext();
 
+    const [error, setError] = useState(false);
     const [propertyTypesData, setPropertyTypesData] = useState<Property_types_Type[] | []>([]);
     const [propertyCategoryData, setPropertyCategoryData] = useState<Property_category_Type[]>([]);
     const [communities, setCommunities] = useState<Community_Type[]>([]);
@@ -223,6 +225,7 @@ export default function index() {
 
     // fetchAmenities
     async function handleFetchInspections() {
+        setError(false);
         setTableLoading(true);
 
         const params = new URLSearchParams({
@@ -257,6 +260,7 @@ export default function index() {
 		} catch (err: any) {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			toast.error(message);
+            setError(true);
 		} finally {
 			setTableLoading(false);
 		}
@@ -433,10 +437,14 @@ export default function index() {
                             paginationServer
                             persistTableHead
                             noDataComponent={
-                                <EmptyTable
-                                    icon={<FaClipboardList />}
-                                    text="No inspections found."
-                                />
+                                error ? (
+                                    <ErrorComponent />
+                                ) : (
+                                    <EmptyTable
+                                        icon={<FaClipboardList />}
+                                        text="No inspections found."
+                                    />
+                                )
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}

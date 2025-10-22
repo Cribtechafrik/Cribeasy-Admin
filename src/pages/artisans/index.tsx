@@ -25,6 +25,7 @@ import ArtisansDetails from "./sub_pages/ArtisansDetails.tsx";
 import { FaUserCheck } from "react-icons/fa";
 import EditArtisans from "./sub_pages/EditArtisans.tsx";
 import { fetchCommunities, fetchServiceTypes } from "../../utils/fetch.ts";
+import ErrorComponent from "../../components/layout/ErrorComponent.tsx";
 
 
 const breadCrumbs = [
@@ -56,6 +57,7 @@ export default function index() {
     // const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
 
+    const [error, setError] = useState(false);
     const [communities, setCommunities] = useState<Community_Type[]>([]);
     const [serviceTypes, setServiceTypes] = useState<Service_types_Type[]>([]);
 
@@ -218,6 +220,7 @@ export default function index() {
 
     // fetchAmenities
     async function handleFetchArtisans() {
+        setError(false);
         setMainLoading(true);
 
         const params = new URLSearchParams({
@@ -252,6 +255,7 @@ export default function index() {
         } catch (err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
+            setError(true);
         } finally {
             setMainLoading(false);
         }
@@ -408,10 +412,14 @@ export default function index() {
                             paginationServer
                             persistTableHead
                             noDataComponent={
-                                <EmptyTable
-                                    icon={<LuCrown />}
-                                    text={`No Artisans found. ${(activeTab == "total_artisans" && !filterSavedData) ? "Click the “Add New Artisans” to create one and it will be displayed here" : ""}`}
-                                />
+                                error ? (
+                                    <ErrorComponent />
+                                ) : (
+                                    <EmptyTable
+                                        icon={<LuCrown />}
+                                        text={`No Artisans found. ${(activeTab == "total_artisans" && !filterSavedData) ? "Click the “Add New Artisans” to create one and it will be displayed here" : ""}`}
+                                    />
+                                )
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}
