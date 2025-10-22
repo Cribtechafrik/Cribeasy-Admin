@@ -158,6 +158,11 @@ export default function index() {
         },
     ];
 
+    const handleTabChange = function(tab: string) {
+        setPaginationDetails({ ...paginationDetails, currentPage: 1 });
+        setActiveTab(tab);
+    };
+
     const handleResetFilter = function() {
         if(filterSavedData !== null) {
             setShowModal({ ...showModal, filters: false });
@@ -413,11 +418,11 @@ export default function index() {
 
                     <div className="page--table">
                         <div className="page--tabs">
-                            <span className={`page--tab ${activeTab == "total" ? "active" : ""}`} onClick={() => setActiveTab("total")}>All Inspections ({summary?.total_inspections ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "pending" ? "active" : ""}`} onClick={() => setActiveTab("pending")}>pending ({summary?.inactive_inspections ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "completed" ? "active" : ""}`} onClick={() => setActiveTab("completed")}>completed ({summary?.active_inspections ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "cancelled" ? "active" : ""}`} onClick={() => setActiveTab("cancelled")}>cancelled ({summary?.cancelled_inspections ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "accepted" ? "active" : ""}`} onClick={() => setActiveTab("accepted")}>scheduled ({summary?.scheduled_inspections ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "total" ? "active" : ""}`} onClick={() => handleTabChange("total")}>All Inspections ({summary?.total_inspections ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "pending" ? "active" : ""}`} onClick={() => handleTabChange("pending")}>pending ({summary?.inactive_inspections ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "completed" ? "active" : ""}`} onClick={() => handleTabChange("completed")}>completed ({summary?.active_inspections ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "cancelled" ? "active" : ""}`} onClick={() => handleTabChange("cancelled")}>cancelled ({summary?.cancelled_inspections ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "accepted" ? "active" : ""}`} onClick={() => handleTabChange("accepted")}>scheduled ({summary?.scheduled_inspections ?? 0})</span>
                         </div>
                         
                         <DataTable
