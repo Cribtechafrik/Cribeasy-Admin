@@ -55,7 +55,6 @@
 	background-color: #F56464;
 }
 
-
 .page--tabs {
     display: flex;
     align-items: center;
@@ -88,6 +87,21 @@
 }
 .page--tab.active::after {
     background-color: var(--color-brand-primary);
+}
+
+.page--actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.page--table-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.32rem;
+    border-top: 1.2px solid #ddd;
+    border-bottom: 1.2px solid #ddd;
+    background-color: #fff;
 }
 
 .page--bottom {

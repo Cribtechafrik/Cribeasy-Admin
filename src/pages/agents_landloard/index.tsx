@@ -22,6 +22,7 @@ import ReactCurrencyInput from 'react-currency-input-field';
 import { Intials } from "../../components/layout/IntialsImage";
 import { capAllFirstLetters } from "../../utils/helper";
 import { fetchCommunities, fetchPlans } from "../../utils/fetch";
+import ErrorComponent from "../../components/layout/ErrorComponent";
 
 
 const breadCrumbs = [
@@ -56,8 +57,10 @@ export default function index() {
     const { width } = useWindowSize();
     const { headers, shouldKick } = useAuthContext();
 
+    const [error, setError] = useState(false);
     const [communities, setCommunities] = useState<Community_Type[]>([]);
     const [plans, setPlans] = useState<Plans_Type[]>([]);
+
     const [period, setPeriod] = useState("all_time");
     const [activeTab, setActiveTab] = useState("total_users");
     const [mainLoading, setMainLoading] = useState(true);
@@ -206,6 +209,7 @@ export default function index() {
 
     // fetchAmenities
     async function handleFetchAgents_Landloards() {
+        setError(false);
         setTableLoading(true);
         
         const params = new URLSearchParams({
@@ -240,6 +244,7 @@ export default function index() {
         } catch (err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
+            setError(true);
         } finally {
             setTableLoading(false);
         }
@@ -426,10 +431,14 @@ export default function index() {
                             paginationServer
                             persistTableHead
                             noDataComponent={
-                                <EmptyTable
-                                    icon={<HiOutlineUsers />}
-                                    text={`No ${filterSavedData?.user_type ? filterSavedData?.user_type : "Agent/Landloard"} found. ${(activeTab == "total_users" && !filterSavedData) ? "Click the “Add New Agents/Landloard” to create one and it will be displayed here" : ""}`}
-                                />
+                                error ? (
+                                    <ErrorComponent />
+                                ) : (
+                                    <EmptyTable
+                                        icon={<HiOutlineUsers />}
+                                        text={`No ${filterSavedData?.user_type ? filterSavedData?.user_type : "Agent/Landloard"} found. ${(activeTab == "total_users" && !filterSavedData) ? "Click the “Add New Agents/Landloard” to create one and it will be displayed here" : ""}`}
+                                    />
+                                )
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}

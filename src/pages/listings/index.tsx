@@ -22,6 +22,7 @@ import { useWindowSize } from "react-use";
 import ListingDetails from "./sub_pages/ListingDetails";
 import HalfScreen from "../../components/modals/HalfScreen";
 import {fetchCommunities, fetchPropertyCategories, fetchPropertyTypes } from "../../utils/fetch";
+import ErrorComponent from "../../components/layout/ErrorComponent";
 
 
 const breadCrumbs = [
@@ -54,8 +55,8 @@ export default function index() {
     const [activeTab, setActiveTab] = useState("total_properties");
     const [mainLoading, setMainLoading] = useState(true);
     const [tableLoading, setTableLoading] = useState(true)
-    // const [error, setError] = useState("");
-
+    
+    const [error, setError] = useState(false);
     const [propertyTypesData, setPropertyTypesData] = useState<Property_types_Type[] | []>([]);
     const [propertyCategoryData, setPropertyCategoryData] = useState<Property_category_Type[]>([]);
     const [communities, setCommunities] = useState<Community_Type[]>([]);
@@ -199,6 +200,7 @@ export default function index() {
     // fetchAmenities
     async function handleFetchListings() {
         setTableLoading(true);
+        setError(false);
 
         const params = new URLSearchParams({
             page: `${paginationDetails?.currentPage}`,
@@ -221,7 +223,6 @@ export default function index() {
             shouldKick(res);
 
 			const data = await res.json();
-            console.log(data)
 			if (res.status !== 200 || !data?.success) {
                 throw new Error(data?.error?.message);
             }
@@ -232,6 +233,7 @@ export default function index() {
 		} catch (err: any) {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			toast.error(message);
+            setError(true)
 		} finally {
 			setTableLoading(false);
 		}
@@ -417,10 +419,14 @@ export default function index() {
                             paginationServer
                             persistTableHead
                             noDataComponent={
-                                <EmptyTable
-                                    icon={<GoListUnordered />}
-                                    text={`No ${activeTab == "total_properties" ? "listing" : activeTab?.replace("_", " ")} found. ${(activeTab == "total_properties" && !filterSavedData) ? "Click the “Add New” to create one and it will be displayed here" : ""}`}
-                                />
+                                error ? (
+                                    <ErrorComponent />
+                                ) : (
+                                    <EmptyTable
+                                        icon={<GoListUnordered />}
+                                        text={`No ${activeTab == "total_properties" ? "listing" : activeTab?.replace("_", " ")} found. ${(activeTab == "total_properties" && !filterSavedData) ? "Click the “Add New” to create one and it will be displayed here" : ""}`}
+                                    />
+                                )
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}

@@ -23,6 +23,11 @@ import HalfScreen from "../../components/modals/HalfScreen";
 import RenterDetails from "./sub_pages/RenterDetails";
 import EditRenters from "./sub_pages/EditRenters";
 import { fetchCommunities, fetchPropertyCategories } from "../../utils/fetch";
+import ErrorComponent from "../../components/layout/ErrorComponent";
+import Confirm from "../../components/modals/Confirm";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { ImEye, ImEyeBlocked } from "react-icons/im";
+import Asterisk from "../../components/elements/Asterisk";
 
 
 const breadCrumbs = [
@@ -53,6 +58,7 @@ export default function index() {
     const { width } = useWindowSize();
     const { headers, shouldKick } = useAuthContext();
 
+    const [error, setError] = useState(false);
     const [propertyCategoryData, setPropertyCategoryData] = useState<Property_category_Type[]>([]);
     const [communities, setCommunities] = useState<Community_Type[]>([]);
 
@@ -61,11 +67,16 @@ export default function index() {
     const [activeTab, setActiveTab] = useState("total");
     const [period, setPeriod] = useState("all_time");
 
+    const [selectedRowsId, setSelectedRowsId] = useState([]);
+    const [selectedRowIsCleared, setSelectedRowIsCleared] = useState(true);
+    const [adminPassword, setAdminPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
     const [rentersData, setRentersData] = useState<RenterType[] | []>([]);
     const [analyticsSummary, setAnalyticsSummary] = useState<RenterAnalyticsType | null>(null);
     const [summary, setSummary] = useState<RenterSummaryType | null>(null);
     const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [showModal, setShowModal] = useState({ details: false, filters: false, edit: false });
+    const [showModal, setShowModal] = useState({ details: false, filters: false, edit: false, delete_confirm: false, delete_completed: false });
     const [paginationDetails, setPaginationDetails] = useState({
         currentPage: 1,
         perPage: 10,
@@ -143,6 +154,13 @@ export default function index() {
         setActiveTab(tab);
     };
 
+    const handleSelectedRow = function ({ selectedRows }: { selectedRows: any }) {
+        const ids = [] as any;
+        selectedRows?.map((row: any) => ids.push(row?.id));
+        console.log(selectedRows, ids)
+        setSelectedRowsId(ids);
+    }
+
     const handleResetFilter = function() {
         if(filterSavedData !== null) {
             setShowModal({ ...showModal, filters: false });
@@ -176,6 +194,7 @@ export default function index() {
     }
 
     async function handleFetchAnalytics() {
+        setError(false);
         setMainLoading(true);
 
         try {
@@ -186,7 +205,6 @@ export default function index() {
             shouldKick(res);
 
 			const data = await res.json();
-            console.log(data)
 			if (res.status !== 200 || !data?.success) {
                 throw new Error(data?.error?.message);
             }
@@ -195,6 +213,7 @@ export default function index() {
 		} catch (err: any) {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			toast.error(message);
+            setError(true);
 		} finally {
 			setMainLoading(false);
 		}
@@ -240,6 +259,38 @@ export default function index() {
 		} finally {
 			setTableLoading(false);
 		}
+    }
+
+    async function handleBulkDelete() {
+        if(!adminPassword) {
+            toast.error("Password is Required!")
+            return;
+        }
+
+        setMainLoading(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/users`, {
+                method: "DELETE",
+                headers,
+                body: JSON.stringify({ password: adminPassword, user_ids: selectedRowsId })
+            });
+
+            const data = await res.json();
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            setShowModal({ ...showModal, delete_confirm: false, delete_completed: true });
+            setSelectedRowsId([]);
+            setSelectedRowIsCleared(!selectedRowIsCleared);
+            handleFetchRenters();
+        } catch (err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setMainLoading(false);
+        }
     }
 
     useEffect(function() {
@@ -369,6 +420,34 @@ export default function index() {
                 </HalfScreen>
             )}
 
+            {showModal.delete_confirm && (
+                <Confirm setClose={() => {
+                    setShowModal({ ...showModal, delete_confirm: false })
+                }}>
+                    <div className="modal--body">
+                        <span className="modal--icon warn"><HiOutlineExclamationCircle /> </span>
+                        <h4 className="modal--title">Delete Artisan Profile</h4>
+                        <p className="modal--subtext">You are about to permanently delete this a artisan profile. This action will remove all user data including listings, performance history, and account information.</p>
+
+                        <div className="form--item">
+                            <label htmlFor="password" className="form--label colored">Administrator Password <Asterisk /></label>
+                            <div className="form--input-box">
+                                <input type={showPassword ? "text" : "password"} name="password" id="password" className="form--input" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" value={adminPassword} onChange={(e) => setAdminPassword(e?.target?.value)} />
+                                <div className='form--input-icon' onClick={() => setShowPassword(!showPassword)}>
+                                    {showPassword ? <ImEye /> : <ImEyeBlocked />}
+                                </div>
+                            </div>
+                            <p className="sub-text" style={{ textAlign: "left" }}>For security purposes, please enter your admin password to confirm this action.</p>
+                        </div>
+
+                        <div className="modal--actions" style={{ marginTop: "1rem" }}>
+                            <button className="modal--btn blured" onClick={() => setShowModal({ ...showModal, delete_confirm: false })}>No, Cancel!</button>
+                            <button className="modal--btn remove" onClick={handleBulkDelete}>Permanently Delete!</button>
+                        </div>
+                    </div>
+                </Confirm>
+            )}
+
             <section className="section--page">
                 <div className="page--top">
                     <div className="page--heading">
@@ -413,6 +492,24 @@ export default function index() {
                             <span className={`page--tab ${activeTab == "pending" ? "active" : ""}`} onClick={() => handleTabChange("pending")}>Pending Renter ({summary?.pending_verification_renters ?? 0})</span>
                         </div>
                         
+                        {selectedRowsId?.length > 0 && (
+                            <div className="page--table-action">
+                                <p className="">{selectedRowsId?.length} renter selected</p>
+
+                                <div className="page--actions">
+                                    <button className="page--btn remove" onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>
+                                        Delete {selectedRowsId?.length} selected
+                                    </button>
+                                    <button className="page--btn outline" 
+                                        onClick={() => {
+                                            setSelectedRowsId([]);
+                                            setSelectedRowIsCleared(!selectedRowIsCleared);
+                                        }}
+                                    >Cancel</button>
+                                </div>
+                            </div>
+                        )}
+
                         <DataTable
                             data={rentersData as RenterType[]}
                             columns={columns as any}
@@ -421,12 +518,18 @@ export default function index() {
                             paginationServer
                             persistTableHead
                             noDataComponent={
-                                <EmptyTable
-                                    icon={<IoList />}
-                                    text={`No renters found. ${(activeTab == "total" && !filterSavedData) ? "Click the “Add New Renters” to create one and it will be displayed here" : ""}`}
-                                />
+                                error ? (
+                                    <ErrorComponent />
+                                ) : (
+                                    <EmptyTable
+                                        icon={<IoList />}
+                                        text={`No renters found. ${(activeTab == "total" && !filterSavedData) ? "Click the “Add New Renters” to create one and it will be displayed here" : ""}`}
+                                    />
+                                )
                             }
                             customStyles={custom_styles as any}
+                            clearSelectedRows={selectedRowIsCleared}
+                            onSelectedRowsChange={handleSelectedRow}
                             pointerOnHover={false}
                             selectableRows={true}
                             progressPending={tableLoading}
