@@ -295,8 +295,6 @@ export default function index() {
     }, [showModal.filters]);
 
 
-    console.log(filterUnsavedData?.date)
-
     return (
         <React.Fragment>
             {mainLoading && <Spinner />}

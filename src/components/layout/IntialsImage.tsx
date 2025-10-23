@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAuthContext } from '../../context/AuthContext';
 import { getInitials } from '../../utils/helper';
+import { FaCamera } from 'react-icons/fa';
+import { AiOutlineClose } from 'react-icons/ai';
 
 
 export default function IntialsImage() {
@@ -30,6 +32,40 @@ export function Intials({ hasImage, imageUrl, names, showOnline=false }: { hasIm
                 </span>
             ))}
             {showOnline && <span className='show-online' />}
+        </div>
+    )
+}
+
+
+export function IntialsAndUploader({ hasImage, imageUrl, isPreview, names, handleChange, handleRemove }: {
+    hasImage?: boolean, imageUrl?: string, names: string[]; isPreview: boolean;
+    handleChange: (e: { target: { files: File } } | any) => void;
+    handleRemove: () => void;
+}) {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+        <div style={{ position: "relative" }} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+            {((hasImage && imageUrl) ? (
+                <img className='auth--img' src={imageUrl} alt={imageUrl} />
+            ) : (!hasImage && names) && (
+                <span className='auth--img'>
+                    {getInitials(names?.[0], names?.[1])}
+                </span>
+            ))}
+
+            {(isPreview && isHovered) && (
+                <div className='uploader--close-icon' onClick={handleRemove}>
+                    <AiOutlineClose />
+                </div>
+            )}
+
+            <div className='uploader--icon'>
+                <input type='file' id="profile_image" accept="image/*" onChange={handleChange} />
+                <label htmlFor="profile_image">
+                    <FaCamera />
+                </label>
+            </div>
         </div>
     )
 }

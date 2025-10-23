@@ -1,7 +1,7 @@
 import Breadcrumbs from "../../components/elements/Breadcrumbs";
 import { AiOutlinePlus } from "react-icons/ai";
 import InsightCard from "../../components/layout/InsightCard";
-import { IoList } from "react-icons/io5";
+import { IoCheckmarkCircle, IoList } from "react-icons/io5";
 import DataTable from 'react-data-table-component';
 import { custom_styles } from "../../utils/contants";
 import Spinner, { SpinnerMini } from "../../components/elements/Spinner";
@@ -157,7 +157,6 @@ export default function index() {
     const handleSelectedRow = function ({ selectedRows }: { selectedRows: any }) {
         const ids = [] as any;
         selectedRows?.map((row: any) => ids.push(row?.id));
-        console.log(selectedRows, ids)
         setSelectedRowsId(ids);
     }
 
@@ -191,6 +190,13 @@ export default function index() {
     const handleFilterDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e?.target;
         setFilterUnsavedData({ ...filterUnsavedData, [name]: value });
+    }
+
+    const handleCloseCompleteDeleteModal = function() {
+        setSelectedRowsId([]);
+        setSelectedRowIsCleared(!selectedRowIsCleared);
+        setShowModal({ ...showModal, delete_completed: false })
+        handleFetchRenters();
     }
 
     async function handleFetchAnalytics() {
@@ -282,9 +288,7 @@ export default function index() {
             }
 
             setShowModal({ ...showModal, delete_confirm: false, delete_completed: true });
-            setSelectedRowsId([]);
-            setSelectedRowIsCleared(!selectedRowIsCleared);
-            handleFetchRenters();
+
         } catch (err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
@@ -415,7 +419,8 @@ export default function index() {
                 >
                     <EditRenters
                         id={selectedId}
-                        closeDetails={() => setShowModal({ ...showModal, details: false })}
+                        closeEditModal={() => setShowModal({ ...showModal, edit: false })}
+                        refetchTable={handleFetchRenters}
                     />
                 </HalfScreen>
             )}
@@ -426,8 +431,8 @@ export default function index() {
                 }}>
                     <div className="modal--body">
                         <span className="modal--icon warn"><HiOutlineExclamationCircle /> </span>
-                        <h4 className="modal--title">Delete Artisan Profile</h4>
-                        <p className="modal--subtext">You are about to permanently delete this a artisan profile. This action will remove all user data including listings, performance history, and account information.</p>
+                        <h4 className="modal--title">Delete {selectedRowsId?.length} Renter{selectedRowsId?.length > 1 ? "s" : ""} Profile</h4>
+                        <p className="modal--subtext">You are about to permanently delete {selectedRowsId?.length} renter{selectedRowsId?.length > 1 ? "s" : ""} profile. This action will remove all user data including listings, performance history, and account information.</p>
 
                         <div className="form--item">
                             <label htmlFor="password" className="form--label colored">Administrator Password <Asterisk /></label>
@@ -444,6 +449,17 @@ export default function index() {
                             <button className="modal--btn blured" onClick={() => setShowModal({ ...showModal, delete_confirm: false })}>No, Cancel!</button>
                             <button className="modal--btn remove" onClick={handleBulkDelete}>Permanently Delete!</button>
                         </div>
+                    </div>
+                </Confirm>
+            )}
+
+            {showModal.delete_completed && (
+                <Confirm setClose={handleCloseCompleteDeleteModal}>
+                    <div className="modal--body">
+                        <span className="modal--icon success"><IoCheckmarkCircle /> </span>
+                        <h4 className="modal--title">Renter{selectedRowsId?.length > 1 ? "s" : ""} Deleted Successfully</h4>
+
+                        <button className="modal--btn filled" onClick={handleCloseCompleteDeleteModal}>Completed</button>
                     </div>
                 </Confirm>
             )}
