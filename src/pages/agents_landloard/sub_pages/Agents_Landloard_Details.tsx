@@ -22,6 +22,7 @@ import Asterisk from '../../../components/elements/Asterisk';
 import { ImEye, ImEyeBlocked } from 'react-icons/im';
 import { generateStars } from "../../../utils/data.tsx";
 import HalfScreen from '../../../components/modals/HalfScreen.tsx';
+import Update_Agents_Landloard from "./Update_Agents_Landloard.tsx";
 
 
 export default function Agents_Landloard_Details() {
@@ -221,18 +222,22 @@ export default function Agents_Landloard_Details() {
         handleFetchUserReport();
     }, [id]);
 
-
     useEffect(function() {
         handleFetchUserProperties();
     }, [id, paginationDetails?.currentPage]);
+
 
     return (
         <React.Fragment>
             {loading && <Spinner />}
 
-            {showModal.edit && (
+            {(showModal.edit && id) && (
                 <HalfScreen title="Edit Agents/Landlords Details" setClose={() => setShowModal({ ...showModal, edit: false })}>
-                    <p></p>
+                    <Update_Agents_Landloard
+                        id={id}
+                        closeEditModal={() => setShowModal({ ...showModal, edit: false })}
+                        refetchData={handleFetchData}
+                    />
                 </HalfScreen>
             )}
 

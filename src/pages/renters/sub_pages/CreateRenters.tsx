@@ -62,7 +62,7 @@ export default function CreateRenters() {
         }
     }
 
-    const handleUserDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    const handleRenterDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e?.target;
         setFormdata({ ...formdata, [name]: value });
     }
@@ -152,30 +152,30 @@ export default function CreateRenters() {
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="full_name" className="form--label">Full Name <Asterisk /></label>
-                                    <input type="text" className="form--input" name="full_name" id="full_name" placeholder="Taiwo Matthew" value={formdata.full_name} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" name="full_name" id="full_name" placeholder="Taiwo Matthew" value={formdata.full_name} onChange={handleRenterDataChange} />
                                 </div>
                                 <div className="form--item">
                                     <label htmlFor="email" className="form--label">Email <Asterisk /></label>
-                                    <input type="text" className="form--input" name="email" id="email" placeholder="example@mail.com" value={formdata.email} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" name="email" id="email" placeholder="example@mail.com" value={formdata.email} onChange={handleRenterDataChange} />
                                 </div>
                             </div>
 
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="phone_number" className="form--label">Phone Number <Asterisk /></label>
-                                    <input type="text" className="form--input" name="phone_number" id="phone_number" placeholder="+2349044556701" value={formdata.phone_number} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" name="phone_number" id="phone_number" placeholder="+2349044556701" value={formdata.phone_number} onChange={handleRenterDataChange} />
                                 </div>
 
                                 <div className="form--item">
                                     <label htmlFor="occupation" className="form--label">Occupation <Asterisk /></label>
-                                    <input type="text" className="form--input" name="occupation" id="occupation" placeholder="Farmer" value={formdata.occupation} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" name="occupation" id="occupation" placeholder="Farmer" value={formdata.occupation} onChange={handleRenterDataChange} />
                                 </div>
                             </div>
 
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="community_id" className="form--label">Community <Asterisk /></label>
-                                    <select className="form--select" name="community_id" id="community_id" value={formdata?.community_id} onChange={handleUserDataChange}>
+                                    <select className="form--select" name="community_id" id="community_id" value={formdata?.community_id} onChange={handleRenterDataChange}>
                                         <option selected hidden>All</option>
                                         {communities && communities?.map((c, i) => (
                                             <option value={c?.id} key={i}>{c.name}</option>
@@ -185,7 +185,7 @@ export default function CreateRenters() {
 
                                 <div className="form--item">
                                     <label htmlFor="employment_status_id" className="form--label">Employment Status <Asterisk /></label>
-                                    <select className="form--select" name="employment_status_id" id="employment_status_id" value={formdata?.employment_status_id} onChange={handleUserDataChange}>
+                                    <select className="form--select" name="employment_status_id" id="employment_status_id" value={formdata?.employment_status_id} onChange={handleRenterDataChange}>
                                         <option selected hidden>All</option>
                                         {employmentStatuses && employmentStatuses?.map((status, i) => (
                                             <option value={status?.id} key={i}>{status.employment_type}</option>
@@ -215,7 +215,7 @@ export default function CreateRenters() {
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="identity_type_id" className="form--label colored">ID Type <Asterisk /></label>
-                                    <select name="identity_type_id" id="identity_type_id" className="form--select" value={formdata.identity_type_id} onChange={handleUserDataChange}>
+                                    <select name="identity_type_id" id="identity_type_id" className="form--select" value={formdata.identity_type_id} onChange={handleRenterDataChange}>
                                         <option hidden selected>Id Type</option>
                                         {identityTypes && identityTypes?.map((type, i) => (
                                             <option value={type?.id} key={i}>{type.identity_type}</option>

@@ -1,5 +1,4 @@
 import Breadcrumbs from "../../components/elements/Breadcrumbs.tsx";
-// import { PiExport } from "react-icons/pi";
 import { AiOutlinePlus } from "react-icons/ai";
 import InsightCard from "../../components/layout/InsightCard.tsx";
 import DataTable from 'react-data-table-component';
@@ -11,7 +10,7 @@ import { Link } from "react-router-dom";
 import { LuCrown, LuUsers } from "react-icons/lu";
 import FilterButton from "../../components/elements/FilterButton.tsx";
 import { BsEye, BsFillFlagFill } from "react-icons/bs";
-import { IoBriefcaseOutline, IoList } from "react-icons/io5";
+import { IoBriefcaseOutline, IoCheckmarkCircle, IoList } from "react-icons/io5";
 import { useAuthContext } from "../../context/AuthContext.tsx";
 import type { ArtisansType, Community_Type, Count, Service_types_Type } from "../../utils/types.ts";
 import { toast } from "sonner";
@@ -19,13 +18,16 @@ import { Intials } from "../../components/layout/IntialsImage.tsx";
 import { formatDate } from "../../utils/helper.ts";
 import HalfScreen from "../../components/modals/HalfScreen.tsx";
 import BasicModal from "../../components/modals/Basic.tsx";
-// import { useWindowSize } from "react-use";
 import { generateStars } from "../../utils/data.tsx";
 import ArtisansDetails from "./sub_pages/ArtisansDetails.tsx";
 import { FaUserCheck } from "react-icons/fa";
 import EditArtisans from "./sub_pages/EditArtisans.tsx";
 import { fetchCommunities, fetchServiceTypes } from "../../utils/fetch.ts";
 import ErrorComponent from "../../components/layout/ErrorComponent.tsx";
+import Confirm from "../../components/modals/Confirm.tsx";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { ImEye, ImEyeBlocked } from "react-icons/im";
+import Asterisk from "../../components/elements/Asterisk.tsx";
 
 
 const breadCrumbs = [
@@ -53,13 +55,16 @@ type FilterDataType = {
 }
 
 export default function index() {
-    // const { width } = useWindowSize();
-    // const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
 
     const [error, setError] = useState(false);
     const [communities, setCommunities] = useState<Community_Type[]>([]);
     const [serviceTypes, setServiceTypes] = useState<Service_types_Type[]>([]);
+
+    const [selectedRowsId, setSelectedRowsId] = useState([]);
+    const [selectedRowIsCleared, setSelectedRowIsCleared] = useState(true);
+    const [adminPassword, setAdminPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const [activeTab, setActiveTab] = useState("total_artisans");
     const [period, setPeriod] = useState("all_time");
@@ -70,7 +75,7 @@ export default function index() {
     const [summary, setSummary] = useState<SummaryType | null>(null);
     const [artisans, setArtisans] = useState<ArtisansType[]>([])
     
-    const [showModal, setShowModal] = useState({ details: false, edit: false, filters: false });
+    const [showModal, setShowModal] = useState({ details: false, edit: false, filters: false, delete_confirm: false, delete_completed: false });
     const [selectedId, setSelectedId] = useState<number | null>(null);
     
     const [paginationDetails, setPaginationDetails] = useState({
@@ -162,6 +167,12 @@ export default function index() {
         setActiveTab(tab);
     };
 
+    const handleSelectedRow = function ({ selectedRows }: { selectedRows: any }) {
+        const ids = [] as any;
+        selectedRows?.map((row: any) => ids.push(row?.id));
+        setSelectedRowsId(ids);
+    }
+
     const handleResetFilter = function() {
         if(filterSavedData !== null) {
             setShowModal({ ...showModal, filters: false });
@@ -191,6 +202,13 @@ export default function index() {
     const handleFilterDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const { name, value } = e?.target;
         setFilterUnsavedData({ ...filterUnsavedData, [name]: value });
+    }
+
+    const handleCloseCompleteDeleteModal = function() {
+        setSelectedRowsId([]);
+        setSelectedRowIsCleared(!selectedRowIsCleared);
+        setShowModal({ ...showModal, delete_completed: false })
+        handleFetchArtisans();
     }
 
     async function handleFetchAnalytics() {
@@ -261,6 +279,36 @@ export default function index() {
         }
     }
 
+    async function handleBulkDelete() {
+        if(!adminPassword) {
+            toast.error("Password is Required!")
+            return;
+        }
+
+        setMainLoading(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/users`, {
+                method: "DELETE",
+                headers,
+                body: JSON.stringify({ password: adminPassword, user_ids: selectedRowsId })
+            });
+
+            const data = await res.json();
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            setShowModal({ ...showModal, delete_confirm: false, delete_completed: true });
+
+        } catch (err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setMainLoading(false);
+        }
+    }
+
     useEffect(function() {
         if(period) {
             handleFetchAnalytics();
@@ -305,7 +353,7 @@ export default function index() {
                 <HalfScreen title="Edit Artisans Details" setClose={() => setShowModal({ ...showModal, edit: false })}>
                     <EditArtisans
                         id={selectedId}
-                        closeDetails={() => setShowModal({ ...showModal, details: false })}
+                        closeEditModal={() => setShowModal({ ...showModal, details: false })}
                     />
                 </HalfScreen>
             )}
@@ -360,6 +408,43 @@ export default function index() {
                 </BasicModal>
             )}
 
+            {showModal.delete_confirm && (
+                <Confirm setClose={() => setShowModal({ ...showModal, delete_confirm: false })}>
+                    <div className="modal--body">
+                        <span className="modal--icon warn"><HiOutlineExclamationCircle /> </span>
+                        <h4 className="modal--title">Delete {selectedRowsId?.length} Artisan{selectedRowsId?.length > 1 ? "s" : ""} Profile</h4>
+                        <p className="modal--subtext">You are about to permanently delete {selectedRowsId?.length} artisan{selectedRowsId?.length > 1 ? "s" : ""} profile. This action will remove all user data including listings, performance history, and account information.</p>
+
+                        <div className="form--item">
+                            <label htmlFor="password" className="form--label colored">Administrator Password <Asterisk /></label>
+                            <div className="form--input-box">
+                                <input type={showPassword ? "text" : "password"} name="password" id="password" className="form--input" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" value={adminPassword} onChange={(e) => setAdminPassword(e?.target?.value)} />
+                                <div className='form--input-icon' onClick={() => setShowPassword(!showPassword)}>
+                                    {showPassword ? <ImEye /> : <ImEyeBlocked />}
+                                </div>
+                            </div>
+                            <p className="sub-text" style={{ textAlign: "left" }}>For security purposes, please enter your admin password to confirm this action.</p>
+                        </div>
+
+                        <div className="modal--actions" style={{ marginTop: "1rem" }}>
+                            <button className="modal--btn blured" onClick={() => setShowModal({ ...showModal, delete_confirm: false })}>No, Cancel!</button>
+                            <button className="modal--btn remove" onClick={handleBulkDelete}>Permanently Delete!</button>
+                        </div>
+                    </div>
+                </Confirm>
+            )}
+
+            {showModal.delete_completed && (
+                <Confirm setClose={handleCloseCompleteDeleteModal}>
+                    <div className="modal--body">
+                        <span className="modal--icon success"><IoCheckmarkCircle /> </span>
+                        <h4 className="modal--title">Artisan{selectedRowsId?.length > 1 ? "s" : ""} Deleted Successfully</h4>
+
+                        <button className="modal--btn filled" onClick={handleCloseCompleteDeleteModal}>Completed</button>
+                    </div>
+                </Confirm>
+            )}
+
             <section className="section--page">
                 <div className="page--top">
                     <div className="page--heading">
@@ -403,6 +488,24 @@ export default function index() {
                             <span className={`page--tab ${activeTab == "inactive_artisans" ? "active" : ""}`} onClick={() => handleTabChange("inactive_artisans")}>Inactive Artisans ({summary?.inactive_artisans ?? 0})</span>
                             <span className={`page--tab ${activeTab == "pending_verifications" ? "active" : ""}`} onClick={() => handleTabChange("pending_verifications")}>Pending Verification ({summary?.pending_verifications ?? 0})</span>
                         </div>
+
+                        {selectedRowsId?.length > 0 && (
+                            <div className="page--table-action">
+                                <p className="">{selectedRowsId?.length} artisans selected</p>
+
+                                <div className="page--actions">
+                                    <button className="page--btn remove" onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>
+                                        Delete {selectedRowsId?.length} selected
+                                    </button>
+                                    <button className="page--btn outline" 
+                                        onClick={() => {
+                                            setSelectedRowsId([]);
+                                            setSelectedRowIsCleared(!selectedRowIsCleared);
+                                        }}
+                                    >Cancel</button>
+                                </div>
+                            </div>
+                        )}
                         
                         <DataTable
                             data={artisans as ArtisansType[]}
@@ -422,6 +525,8 @@ export default function index() {
                                 )
                             }
                             customStyles={custom_styles as any}
+                            clearSelectedRows={selectedRowIsCleared}
+                            onSelectedRowsChange={handleSelectedRow}
                             pointerOnHover={false}
                             selectableRows={true}
                             progressPending={tableLoading}

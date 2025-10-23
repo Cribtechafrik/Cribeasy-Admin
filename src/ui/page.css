@@ -289,7 +289,7 @@
     width: 10rem;
     height: 10rem;
     font-size: 2.68rem;
-    overflow: hidden;    
+    /* overflow: hidden; */
 }
 .details--profile-img {
     background-color: #eee;
