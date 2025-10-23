@@ -223,6 +223,7 @@ body:has(.global--overlay) {
 .sub-text {
 	font-size: 1rem;
 	color: #B4B4B4;
+	text-align: center;
 }
 
 .card {

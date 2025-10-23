@@ -446,7 +446,7 @@ export default function index() {
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}
-                            selectableRows={true}
+                            selectableRows={false}
                             progressPending={tableLoading}
                             progressComponent={
                                 <div className="table-spinner-container">

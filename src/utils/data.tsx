@@ -140,7 +140,8 @@ export const amenities = [
 export function generateStars(averageStars: number, totalStars = 5) {
 	let stars = [];
 	let fullStars = Math.floor(averageStars);
-	let hasHalfStar = averageStars % 1 >= 0.5;
+	// let hasHalfStar = averageStars % 1 >= 0.5;
+	let hasHalfStar = averageStars % 1 >= 0.25;
 
 	for (let i = 0; i < fullStars; i++) {
 		stars.push(<IoIosStar className="rating-star" key={`full-${i}`} />);
@@ -150,7 +151,7 @@ export function generateStars(averageStars: number, totalStars = 5) {
 	}
 
 	// add empty stars
-	for (let i = Math.ceil(averageStars) + (hasHalfStar ? 1 : 0); i < totalStars; i++) {
+	for (let i = stars.length; i < totalStars; i++) {
 		stars.push(<IoIosStarOutline className="rating-star" key={`empty-${i}`} />);
 	}
 

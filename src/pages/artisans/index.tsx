@@ -60,13 +60,14 @@ export default function index() {
     const [error, setError] = useState(false);
     const [communities, setCommunities] = useState<Community_Type[]>([]);
     const [serviceTypes, setServiceTypes] = useState<Service_types_Type[]>([]);
+    const [serviceFocus, setServiceFocus] = useState<Service_types_Type[]>([]);
 
     const [selectedRowsId, setSelectedRowsId] = useState([]);
     const [selectedRowIsCleared, setSelectedRowIsCleared] = useState(true);
     const [adminPassword, setAdminPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const [activeTab, setActiveTab] = useState("total_artisans");
+    const [activeTab, setActiveTab] = useState("total");
     const [period, setPeriod] = useState("all_time");
     const [mainLoading, setMainLoading] = useState(true);
     const [tableLoading, setTableLoading] = useState(true)
@@ -123,7 +124,7 @@ export default function index() {
                         {row?.completed_jobs ?? 0} jobs
                     </span>
                     <span className="flex-align-cen">
-                        {generateStars(row?.average_stars)} {row?.average_stars}
+                        {generateStars(row?.average_stars ?? 0)} {row?.average_stars}
                     </span>
                 </div>
             ),
@@ -212,7 +213,7 @@ export default function index() {
     }
 
     async function handleFetchAnalytics() {
-        setTableLoading(true);
+        setMainLoading(true);
 
         try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/artisans-analytics-cards?period=${period}`, {
@@ -232,18 +233,18 @@ export default function index() {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
         } finally {
-            setTableLoading(false);
+            setMainLoading(false);
         }
     }
 
-    // fetchAmenities
     async function handleFetchArtisans() {
         setError(false);
-        setMainLoading(true);
+        setTableLoading(true);
 
         const params = new URLSearchParams({
             page: `${paginationDetails?.currentPage}`,
-            ...(activeTab !== "total_artisans" ? { status: activeTab === "total_artisans" ? "1" : "0" } : ""),
+            ...(activeTab !== "total" ? { status: activeTab === "active" ? "1" : "0" } : ""),
+            ...(activeTab == "pending" ? { verification_status: "1" } : ""),
         });
 
         if(filterSavedData !== null) {
@@ -275,7 +276,7 @@ export default function index() {
             toast.error(message);
             setError(true);
         } finally {
-            setMainLoading(false);
+            setTableLoading(false);
         }
     }
 
@@ -334,6 +335,29 @@ export default function index() {
         }
     }, [showModal.filters]);
 
+    useEffect(function() {
+        if(!filterUnsavedData?.service_type) {
+            setServiceFocus([]);
+        }
+
+        const fetchData = async () => {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/service-types/${filterUnsavedData?.service_type}/focus`, {
+                method: "GET",
+                headers,
+            });
+
+            const data = await res.json();
+            if(data?.success) {
+                setServiceFocus(data?.data);
+            }
+        }
+
+        if(showModal.filters) {
+            fetchData();
+        }
+    }, [filterUnsavedData?.service_type]);
+
+
 	return (
         <React.Fragment>
             {mainLoading && <Spinner />}
@@ -374,8 +398,11 @@ export default function index() {
 
                             <div className="form--item">
                                 <label htmlFor="specialization" className="form--label colored">Specialization</label>
-                                <select className="form--select" name="specialization" id="specialization" value={filterUnsavedData?.specialization}>
-                                    <option selected value="">All</option>
+                                <select className="form--select" name="specialization" id="specialization" value={filterUnsavedData?.specialization} onChange={handleFilterDataChange}>
+                                    <option selected value="">{filterUnsavedData?.service_type ? "All" : "Select a Service Type First!!"}</option>
+                                    {serviceFocus && serviceFocus?.map((focus, i) => (
+                                        <option value={focus?.id} key={i}>{focus.name}</option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -483,10 +510,10 @@ export default function index() {
 
                     <div className="page--table">
                         <div className="page--tabs">
-                            <span className={`page--tab ${activeTab == "total_artisans " ? "active" : ""}`} onClick={() => handleTabChange("total_artisans")}>All Artisans ({summary?.total_artisans ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "active_artisans" ? "active" : ""}`} onClick={() => handleTabChange("active_artisans")}>Active Artisans({summary?.active_artisans ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "inactive_artisans" ? "active" : ""}`} onClick={() => handleTabChange("inactive_artisans")}>Inactive Artisans ({summary?.inactive_artisans ?? 0})</span>
-                            <span className={`page--tab ${activeTab == "pending_verifications" ? "active" : ""}`} onClick={() => handleTabChange("pending_verifications")}>Pending Verification ({summary?.pending_verifications ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "total" ? "active" : ""}`} onClick={() => handleTabChange("total")}>All Artisans ({summary?.total_artisans ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "active" ? "active" : ""}`} onClick={() => handleTabChange("active")}>Active Artisans({summary?.active_artisans ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "inactive" ? "active" : ""}`} onClick={() => handleTabChange("inactive")}>Inactive Artisans ({summary?.inactive_artisans ?? 0})</span>
+                            <span className={`page--tab ${activeTab == "pending" ? "active" : ""}`} onClick={() => handleTabChange("pending")}>Pending Verification ({summary?.pending_verifications ?? 0})</span>
                         </div>
 
                         {selectedRowsId?.length > 0 && (
@@ -520,7 +547,7 @@ export default function index() {
                                 ) : (
                                     <EmptyTable
                                         icon={<LuCrown />}
-                                        text={`No Artisans found. ${(activeTab == "total_artisans" && !filterSavedData) ? "Click the “Add New Artisans” to create one and it will be displayed here" : ""}`}
+                                        text={`No ${activeTab == "total" ? "" : activeTab + " "}Artisans found. ${(activeTab == "total" && !filterSavedData) ? "Click the “Add New Artisans” to create one and it will be displayed here" : ""}`}
                                     />
                                 )
                             }

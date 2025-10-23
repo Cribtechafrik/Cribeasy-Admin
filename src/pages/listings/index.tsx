@@ -43,10 +43,12 @@ type ListingSummaryType = {
 }
 
 type FilterDataType = {
-    property_type: string;
+    property_type_id: string;
     category: string;
     max_price: string;
     min_price: string;
+    bedroom_min: string;
+    community_id: string;
 }
 
 export default function index() {
@@ -76,10 +78,12 @@ export default function index() {
     });
 
     const [filterUnsavedData, setFilterUnsavedData] = useState<FilterDataType>({
-        property_type: "",
+        property_type_id: "",
         category: "",
         max_price: "",
         min_price: "",
+        bedroom_min: "",
+        community_id: "",
     });
     const [filterSavedData, setFilterSavedData] = useState<FilterDataType | null>(null)
 
@@ -146,10 +150,12 @@ export default function index() {
         }
 
         setFilterUnsavedData({
-            property_type: "",
+            property_type_id: "",
             category: "",
             max_price: "",
             min_price: "",
+            bedroom_min: "",
+            community_id: "",
         });
         setFilterSavedData(null)
     }
@@ -292,11 +298,11 @@ export default function index() {
                             </div>
 
                             <div className="form--item">
-                                <label htmlFor="property_type" className="form--label colored">Property Type</label>
-                                <select className="form--select" name="property_type" id="property_type" value={filterUnsavedData?.property_type} onChange={handleFilterDataChange}>
+                                <label htmlFor="property_type_id" className="form--label colored">Property Type</label>
+                                <select className="form--select" name="property_type_id" id="property_type_id" value={filterUnsavedData?.property_type_id} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
                                     {propertyTypesData && propertyTypesData?.map((type, i) => (
-                                        <option value={type?.name} key={i}>{type.name}</option>
+                                        <option value={type?.id} key={i}>{type.name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -338,15 +344,18 @@ export default function index() {
 
                         <div className="form--flex">
                             <div className="form--item">
-                                <label htmlFor="bedrooms" className="form--label colored">Bedrooms</label>
-                                <select className="form--select" name="bedrooms" id="bedrooms">
-                                    <option selected value="">2+</option>
+                                <label htmlFor="bedroom_min" className="form--label colored">Bedrooms</label>
+                                <select className="form--select" name="bedroom_min" id="bedroom_min" value={filterUnsavedData.bedroom_min} onChange={handleFilterDataChange}>
+                                    <option selected value="1">1</option>
+                                    <option selected value="2">2+</option>
+                                    <option selected value="4">4+</option>
+                                    <option selected value="6">6+</option>
                                 </select>
                             </div>
 
                             <div className="form--item">
-                                <label htmlFor="community" className="form--label colored">Community</label>
-                                <select className="form--select" name="community" id="community">
+                                <label htmlFor="community_id" className="form--label colored">Community</label>
+                                <select className="form--select" name="community_id" id="community_id" value={filterUnsavedData.community_id} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
                                     {communities && communities?.map((c, i) => (
                                         <option value={c?.id} key={i}>{c.name}</option>
@@ -430,7 +439,7 @@ export default function index() {
                             }
                             customStyles={custom_styles as any}
                             pointerOnHover={false}
-                            selectableRows={true}
+                            selectableRows={false}
                             progressPending={tableLoading}
                             progressComponent={<div className="table-spinner-container"><SpinnerMini /></div>}
                             highlightOnHover={false}
