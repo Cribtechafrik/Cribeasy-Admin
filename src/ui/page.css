@@ -259,8 +259,9 @@
 
 .details--grid {
     display: grid;
-    grid-template-columns: 1.2fr 2fr;
-    gap: 2.8rem;
+    grid-template-columns: 1.3fr 2fr;
+    gap: 3rem;
+    width: 100%;
 }
 
 .deatils--container,
