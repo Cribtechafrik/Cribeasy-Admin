@@ -32,7 +32,7 @@ export default function DropdownSelectWithTabs({ selected, setSelected }: Props)
     }
 
     useEffect(function() {
-        (async () => {
+        (async function(){
             const AmenitiesData = await fetchAmenities(headers)
             if(AmenitiesData?.success) {
                 setPropertyAmenitiesData(AmenitiesData?.data[0])

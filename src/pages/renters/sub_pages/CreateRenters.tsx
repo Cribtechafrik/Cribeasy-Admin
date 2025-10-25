@@ -82,7 +82,7 @@ export default function CreateRenters() {
     // }
 
     useEffect(function() {
-        const fetchData = async () => {
+        const fetchData = async function(){
             const [identityTypeData, employmentStatuses, communities] = await Promise.all([
                 fetchIdentityTypes(headers),
                 fetchEmploymentStatuses(headers),

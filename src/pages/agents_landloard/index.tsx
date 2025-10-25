@@ -314,7 +314,7 @@ export default function index() {
     }, [activeTab, paginationDetails?.currentPage, paginationDetails?.perPage, filterSavedData]);
     
     useEffect(function() {
-        const fetchData = async () => {
+        const fetchData = async function(){
             const [communities, plans] = await Promise.all([
                 fetchCommunities(headers),
                 fetchPlans(headers)

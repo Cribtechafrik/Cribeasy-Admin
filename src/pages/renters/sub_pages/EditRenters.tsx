@@ -97,7 +97,7 @@ export default function EditRenters({ id, closeEditModal, refetchTable }: Props)
     }, [id]);
 
     useEffect(function() {
-        const fetchData = async () => {
+        const fetchData = async function(){
             const [identityTypeData, employmentStatuses, communities] = await Promise.all([
                 fetchIdentityTypes(headers),
                 fetchEmploymentStatuses(headers),

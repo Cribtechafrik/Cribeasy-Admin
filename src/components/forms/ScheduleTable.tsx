@@ -28,7 +28,7 @@ export default function ScheduleTable({ schedules, handleRemoveSchedule, isEdit=
 
 				<div key={index} style={styles.dayColumn as React.CSSProperties}>
 					{!isEdit && (
-						<button style={styles.removeButton as React.CSSProperties} onClick={() => handleRemoveSchedule(index)}>
+						<button type="button" style={styles.removeButton as React.CSSProperties} onClick={() => handleRemoveSchedule(index)}>
 							<RiDeleteBin2Line style={styles.removeIcon} />
 						</button>
 					)}
@@ -59,7 +59,7 @@ export default function ScheduleTable({ schedules, handleRemoveSchedule, isEdit=
 								</div>
 
 								{isEdit && (
-									<button style={styles.removeButton as React.CSSProperties} onClick={() => handleRemoveSchedule(slotIndex, slot?.slotId)}>
+									<button type="button" style={styles.removeButton as React.CSSProperties} onClick={() => handleRemoveSchedule(slotIndex, slot?.slotId)}>
 										<RiDeleteBin2Line style={styles.removeIcon} />
 									</button>
 								)}
