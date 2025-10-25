@@ -32,8 +32,8 @@ import Create_Agents_Landloard from "./pages/agents_landloard/sub_pages/Create_A
 import Agents_Landloard_Details from "./pages/agents_landloard/sub_pages/Agents_Landloard_Details"
 import InspectionDetails from "./pages/inspection/sub_pages/InspectionDetails"
 
-import ResetArtisantsCredential from "./pages/artisans/sub_pages/ResetArtisantsCredential"
-import ResetRentersCredentials from "./pages/renters/sub_pages/ResetRenterCredential"
+// import ResetArtisantsCredential from "./pages/artisans/sub_pages/ResetArtisantsCredential"
+// import ResetRentersCredentials from "./pages/renters/sub_pages/ResetRenterCredential"
 import "photoswipe/dist/photoswipe.css";
 
 
@@ -66,14 +66,12 @@ export default function App() {
 
 						<Route path="/dashboard/artisans" element={<Artisans />}></Route>
 						<Route path="/dashboard/artisans/create" element={<CreateArtisans />}></Route>
-						<Route path="/dashboard/artisans/:id/reset-credentials" element={<ResetArtisantsCredential />}></Route>
 
 						<Route path="/dashboard/inspections" element={<Inspection />}></Route>
 						<Route path="/dashboard/inspections/:id" element={<InspectionDetails />}></Route>
 
 						<Route path="/dashboard/renters" element={<Renters />}></Route>
 						<Route path="/dashboard/renters/create" element={<CreateRenters />}></Route>
-						<Route path="/dashboard/renters/:id/reset-credentials" element={<ResetRentersCredentials />}></Route>
 
 						<Route path="/dashboard/payments" element={<Payments />}></Route>
 						<Route path="/dashboard/settings" element={<Settings />}></Route>

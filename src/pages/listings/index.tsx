@@ -346,10 +346,11 @@ export default function index() {
                             <div className="form--item">
                                 <label htmlFor="bedroom_min" className="form--label colored">Bedrooms</label>
                                 <select className="form--select" name="bedroom_min" id="bedroom_min" value={filterUnsavedData.bedroom_min} onChange={handleFilterDataChange}>
-                                    <option selected value="1">1</option>
-                                    <option selected value="2">2+</option>
-                                    <option selected value="4">4+</option>
-                                    <option selected value="6">6+</option>
+                                    <option selected value="">Any</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2+</option>
+                                    <option value="4">4+</option>
+                                    <option value="6">6+</option>
                                 </select>
                             </div>
 

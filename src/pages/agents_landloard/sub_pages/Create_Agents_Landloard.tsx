@@ -12,6 +12,7 @@ import { fetchCommunities, fetchIdentityTypes } from "../../../utils/fetch";
 import CheckBoxInput from "../../../components/forms/CheckBoxInput";
 import { capAllFirstLetters } from "../../../utils/helper";
 import type { Community_Type, Identity_type_Type } from "../../../utils/types";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 const breadCrumbs = [
     { name: "Agents/Landlords", link: "/dashboard/agents-landlords" },
@@ -45,22 +46,25 @@ export default function Create_Agents_Landloard() {
     const [idUpload, setIdUpload] = useState({ preview: "", file: null });
     const [cacCertificate, setCacCertificate] = useState({ preview: "", file: null });
     
-    const [formdata, setFormdata] = useState<FormDataType>({
-        full_name: "",
-        email: "",
-        phone_number: "",
-        password: "",
-        company_name: "",
-        identity_type: "",
-        lasrera: "",
-        community_id: "",
-        mark_as_verified: false,
-    });
+    // const [formdata, setFormdata] = useState<FormDataType>({
+    //     full_name: "",
+    //     email: "",
+    //     phone_number: "",
+    //     password: "",
+    //     company_name: "",
+    //     identity_type: "",
+    //     lasrera: "",
+    //     community_id: "",
+    //     mark_as_verified: false,
+    // });
 
-    const handleUserDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-        const { name, value } = e?.target;
-        setFormdata({ ...formdata, [name]: value });
-    }
+    // const handleUserDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    //     const { name, value } = e?.target;
+    //     setFormdata({ ...formdata, [name]: value });
+    // }
+
+    const { register, handleSubmit, formState, getValues, setValue, watch } = useForm<FormDataType>();
+    watch("mark_as_verified")
 
     const handleImageChange = function(event: { target: { files: any[]; } }, name: string) {
         const file = event.target.files[0];
@@ -105,7 +109,14 @@ export default function Create_Agents_Landloard() {
         fetchData();
     }, []);
 
-    async function handleSubmitUser() {
+    const handleSubmitUser: SubmitHandler<FormDataType> = async function(formdata) {
+        if(!idUpload.file) {
+            return toast.error("Identity image is required");
+        }
+        if(!cacCertificate.file) {
+            return toast.error("CAC Certificate is required");
+        }
+
         setLoading(true);
 
         try {
@@ -172,7 +183,7 @@ export default function Create_Agents_Landloard() {
 					</div>
 				</div>
 
-                <div className="card form">
+                <form className="card form" onSubmit={handleSubmit(handleSubmitUser)}>
                     <div className="flex-col-gap">
                         <h4 className="form--title">User Information</h4>
 
@@ -191,45 +202,83 @@ export default function Create_Agents_Landloard() {
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="full_name" className="form--label">Full Name <Asterisk /></label>
-                                    <input type="text" className="form--input" name="full_name" id="full_name" placeholder="Taiwo Matthew" value={formdata.full_name} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" id="full_name" placeholder="Taiwo Matthew" {...register("full_name", {
+                                        required: "Full name is required!"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.full_name && formState.errors.full_name.message}
+                                    </span>
                                 </div>
                                 <div className="form--item">
                                     <label htmlFor="email" className="form--label">Email <Asterisk /></label>
-                                    <input type="text" className="form--input" name="email" id="email" placeholder="example@mail.com" value={formdata.email} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" id="email" placeholder="example@mail.com" {...register("email", {
+                                        required: "Email address is required!",
+                                        pattern: {
+                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+										    message: 'Email is invalid',
+                                        }
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.email && formState.errors.email.message}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="phone_number" className="form--label">Phone Number <Asterisk /></label>
-                                    <input type="text" className="form--input" name="phone_number" id="phone_number" placeholder="+2349044556701" value={formdata.phone_number} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" id="phone_number" placeholder="+2349044556701" {...register("phone_number", {
+                                        required: "Phone number is required!"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.phone_number && formState.errors.phone_number.message}
+                                    </span>
                                 </div>
                                 <div className="form--item">
                                     <label htmlFor="password" className="form--label">Password <Asterisk /></label>
                                     <div className="form--input-box">
-                                        <input type={showPassword ? "text" : "password"} className="form--input" name="password" id="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" value={formdata.password} onChange={handleUserDataChange} />
+                                        <input type={showPassword ? "text" : "password"} className="form--input" id="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" {...register("password", {
+                                        required: "Password is required!",
+                                        maxLength: {
+                                            value: 8,
+                                            message: "Password must be more than 8 characters"
+                                        }
+                                    })} />
                                         <div className='form--input-icon' onClick={() => setShowPassword(!showPassword)}>
                                             {showPassword ? <ImEye /> : <ImEyeBlocked />}
                                         </div>
                                     </div>
                                     <div className="sub-text">A secure password will be automatically sent to the agent's email</div>
+                                    <span className="form--error-message">
+                                        {formState.errors.password && formState.errors.password.message}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="company_name" className="form--label flex-align-cen">Company Name <span className="form--info">(Optional)</span></label>
-                                    <input type="text" className="form--input" name="company_name" id="company_name" placeholder="Real estate company LTD " value={formdata.company_name} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" id="company_name" placeholder="Real estate company LTD " {...register("company_name", {
+                                        required: "Company Name is required!"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.company_name && formState.errors.company_name.message}
+                                    </span>
                                 </div>
 
                                 <div className="form--item">
                                     <label htmlFor="community_id" className="form--label">Community <Asterisk /></label>
-                                    <select className="form--select" name="community_id" id="community_id" value={formdata?.community_id} onChange={handleUserDataChange}>
+                                    <select className="form--select" id="community_id" {...register("community_id", {
+                                        required: "Community is required!"
+                                    })}>
                                         <option selected hidden>All</option>
                                         {communities && communities?.map((c, i) => (
                                             <option value={c?.id} key={i}>{c.name}</option>
                                         ))}
                                     </select>
+                                    <span className="form--error-message">
+                                        {formState.errors.community_id && formState.errors.community_id.message}
+                                    </span>
                                 </div>
                             </div>
 
@@ -255,17 +304,27 @@ export default function Create_Agents_Landloard() {
                             <div className="flex-col-gap">
                                 <div className="form--item">
                                     <label htmlFor="identity_type" className="form--label colored">ID Type <Asterisk /></label>
-                                    <select name="identity_type" id="identity_type" className="form--select" value={formdata.identity_type} onChange={handleUserDataChange}>
-                                        <option hidden selected>Id Type</option>
+                                    <select id="identity_type" className="form--select" {...register("identity_type", {
+                                        required: "Id Type is required!"
+                                    })}>
+                                        <option hidden selected value="">Id Type</option>
                                         {identityTypes && identityTypes?.map((type, i) => (
                                             <option value={type?.id} key={i}>{type.identity_type}</option>
                                         ))}
                                     </select>
+                                    <span className="form--error-message">
+                                        {formState.errors.identity_type && formState.errors.identity_type.message}
+                                    </span>
                                 </div>
 
                                 <div className="form--item">
                                     <label htmlFor="lasrera" className="form--label colored">LASRERA Number <Asterisk /></label>
-                                    <input type="text" className="form--input" name="lasrera" id="lasrera" placeholder="Enter a LASRERA number" value={formdata.lasrera} onChange={handleUserDataChange} />
+                                    <input type="text" className="form--input" id="lasrera" placeholder="Enter a LASRERA number" {...register("lasrera", {
+                                        required: "LASRERA number is required!"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.lasrera && formState.errors.lasrera.message}
+                                    </span>
                                 </div>
                             </div>
 
@@ -292,8 +351,8 @@ export default function Create_Agents_Landloard() {
                                     />
                                 </div>
 
-                                <div className="form--check flex-align-cen" onClick={() => setFormdata({ ...formdata, mark_as_verified: !formdata?.mark_as_verified })} style={{ cursor: "pointer" }}>
-                                    <CheckBoxInput isChecked={formdata?.mark_as_verified ?? false} />
+                                <div className="form--check flex-align-cen" onClick={() => setValue("mark_as_verified", !getValues("mark_as_verified"))} style={{ cursor: "pointer" }}>
+                                    <CheckBoxInput isChecked={getValues("mark_as_verified") ?? false} />
                                     <p className="form--info">Mark agent as verified</p>
                                 </div>
                             </div>
@@ -301,10 +360,10 @@ export default function Create_Agents_Landloard() {
                     </div>
               
                     <div className="modal--actions" style={{ maxWidth: "55rem" }}>
-                        <button className="modal--btn filled" onClick={handleSubmitUser}>Add New {capAllFirstLetters(role)}</button>
-                        <button className="modal--btn outline" onClick={() => navigate(-1)}>Cancel</button>
+                        <button className="modal--btn filled" type="submit">Add New {capAllFirstLetters(role)}</button>
+                        <button className="modal--btn outline" type="button" onClick={() => navigate(-1)}>Cancel</button>
                     </div>
-                </div>
+                </form>
 			</section>
 		</React.Fragment>
 	);

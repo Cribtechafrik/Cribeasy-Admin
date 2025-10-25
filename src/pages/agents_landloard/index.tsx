@@ -361,7 +361,7 @@ export default function index() {
                             <div className="form--item">
                                 <label htmlFor="community_id" className="form--label colored">Community</label>
                                 <select className="form--select" name="community_id" id="community_id" value={filterUnsavedData.community_id} onChange={handleFilterDataChange}>
-                                    <option selected>All</option>
+                                    <option selected value="">All</option>
                                     {communities && communities?.map((c, i) => (
                                         <option value={c?.id} key={i}>{c.name}</option>
                                     ))}
@@ -371,8 +371,9 @@ export default function index() {
                             <div className="form--item">
                                 <label htmlFor="verification_status" className="form--label colored">Verification Status</label>
                                 <select className="form--select" name="verification_status" id="verification_status" value={filterUnsavedData.verification_status} onChange={handleFilterDataChange}>
-                                    <option selected value="0">Pending</option>
-                                    <option selected value="1">Verified</option>
+                                    <option selected value="">All</option>
+                                    <option value="0">Pending</option>
+                                    <option value="1">Verified</option>
                                 </select>
                             </div>
                         </div>
@@ -413,8 +414,9 @@ export default function index() {
                             <div className="form--item">
                                 <label htmlFor="status" className="form--label colored">Status</label>
                                 <select className="form--select" name="status" id="status" value={filterUnsavedData.status} onChange={handleFilterDataChange}>
-                                    <option selected value="1">Active</option>
-                                    <option selected value="0">Inactive</option>
+                                    <option selected value="">All</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
                                 </select>
                             </div>
 

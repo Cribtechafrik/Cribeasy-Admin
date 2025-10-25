@@ -3,8 +3,6 @@ import Breadcrumbs from "../../../components/elements/Breadcrumbs";
 import Line from "../../../components/elements/Line";
 import TextareaAutosize from 'react-textarea-autosize';
 import { toast } from "sonner";
-import CurrencyInput from "../../../components/forms/CurrencyInput";
-// import { propery_type, amenities } from '../../../utils/data';
 import DropdownSelectWithTabs from "../../../components/forms/DropdownSelectWithTabs";
 import { AiOutlineClose, AiOutlinePlus } from "react-icons/ai";
 import BasicModal from "../../../components/modals/Basic";
@@ -15,16 +13,19 @@ import MultipleImageUpload from "../../../components/layout/MultipleImageUpload"
 import { useNavigate, useParams } from "react-router-dom";
 import moment from 'moment';
 import { customAlphabet } from 'nanoid';
-import { fetchPropertyTypes } from "../../../utils/fetch";
+import { fetchPropertyCategories, fetchPropertyTypes } from "../../../utils/fetch";
 import { useAuthContext } from "../../../context/AuthContext";
-import type { ListingType, Property_types_Type } from "../../../utils/types";
+import type { ListingType, Property_category_Type, Property_types_Type } from "../../../utils/types";
 import Spinner from "../../../components/elements/Spinner";
+import { formatInputNumber, getCurrentTime } from "../../../utils/helper";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 
 const generateId = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 7);
 
-const startOfWeek = moment().startOf('isoWeek').format('YYYY-MM-DD');
-const endOfWeek = moment().endOf('isoWeek').format('YYYY-MM-DD');
+const today = moment().startOf('day');
+const minDate = today.format('YYYY-MM-DD');
+const maxDate = today.add(7, 'days').format('YYYY-MM-DD');
 
 type InspectionScheduleType = {
     date: string;
@@ -44,6 +45,7 @@ type FormDataType = {
     property_size: string;
     property_address: string;
     property_type_id: string;
+    property_category_id: string;
     service_charge: string;
     agent: string;
     bedrooms: string;
@@ -55,8 +57,10 @@ export default function CreateListing() {
     const navigate = useNavigate();
     const { headers, token, shouldKick } = useAuthContext();
 
+    const [propertyTypesData, setPropertyTypesData] = useState<Property_types_Type[] | []>([]);
+    const [propertyCategoryData, setPropertyCategoryData] = useState<Property_category_Type[]>([]);
+
     const [loading, setLoading] = useState(false);
-    const [propertyTypeData, setPropertyTypeData] = useState<Property_types_Type[] | []>([]);
     const [showScheduleModal, setShowScheduleModal] = useState(false);
     const [coverImage, setCoverImage] = useState({ preview: "", file: null });
     const [galleryImages, setGalleryImages] = useState<{
@@ -65,18 +69,22 @@ export default function CreateListing() {
         public_id?: string | null;
     }[]>([]);
 
-    const [formData, setFormData] = useState<FormDataType>({
-        property_title: "",
-        description: "",
-        rent_price: "",
-        property_size: "",
-        property_address: "",
-        property_type_id: "",
-        service_charge: "",
-        agent: "",
-        bedrooms: "",
-        bathrooms: "",
-    });
+    const { register, handleSubmit, formState, getValues, setValue, watch } = useForm<FormDataType>();
+    watch("description");
+
+    // const [formData, setFormData] = useState<FormDataType>({
+    //     property_title: "",
+    //     description: "",
+    //     rent_price: "",
+    //     property_size: "",
+    //     property_address: "",
+    //     property_type_id: "",
+    //     property_category_id: "",
+    //     service_charge: "",
+    //     agent: "",
+    //     bedrooms: "",
+    //     bathrooms: "",
+    // });
 
     const [selectedAmenities, setSelectedAmenities] = useState<AmenitiesType[]>([]);
     const [inspectionSchedules, setInspectionSchedules] = useState<InspectionScheduleType[]>([])
@@ -100,8 +108,8 @@ export default function CreateListing() {
 
 
     const handleShowScheduleModal = function() {
-        if(!formData.property_title) {
-            toast.error("Fill up required fields first!");
+        if(!getValues("property_title")) {
+            toast.error("Property name is required!");
             return;
         }
 
@@ -110,17 +118,17 @@ export default function CreateListing() {
 
     const handleDescriptionLength = (text: string) => {
         if (text.length <= 500) {
-            setFormData({ ...formData, description: text });
+            setValue("description", text);
         } else {
-            setFormData({ ...formData, description: text.slice(0, 500) });
-            toast.error("Cannot upload more than 3 images!");
+            setValue("description", text?.slice(0, 500));
+            toast.error("500 limit excided!");
         }
     }
 
-    const handleListingDataChange = function (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-        const { name, value } = e?.target;
-        setFormData({ ...formData, [name]: value });
-    };
+    // const handleListingDataChange = function (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    //     const { name, value } = e?.target;
+    //     setFormData({ ...formData, [name]: value });
+    // };
 
     // GALLERY IMAGES ADD / CHANGE IMAGE
     const handleGalleryImagesChange = function(event: { target: { files: any[]; } }, type?: "drop" | "select") {
@@ -173,9 +181,42 @@ export default function CreateListing() {
 
     const handleTimeChange = function(index: number, field: "start" | "end", value: string) {
         const newSlots = [...schedule.timeSlots];
+        // if (newSlots[index]) {
+        //     newSlots[index][field] = value;
+        // }
+
         if (newSlots[index]) {
+            const currentTime = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            if (field === 'start') {
+                if (value < currentTime && index === 0) {
+                    toast.error("Start time cannot be earlier than the current time");
+                    return;
+                }
+                if (index > 0 && value <= newSlots[index - 1].end) {
+                    toast.error("Start time cannot be earlier than or equal to the previous end time");
+                    return;
+                }
+                if (newSlots[index].end && value >= newSlots[index].end) {
+                    toast.error("Start time cannot be later than or equal to the end time");
+                    return;
+                }
+            } else if (field === 'end') {
+                if (!newSlots[index].start) {
+                    toast.error("Select a Start time first!");
+                    return;
+                }
+                if (value <= newSlots[index].start) {
+                    toast.error("End time cannot be earlier than or equal to the start time");
+                    return;
+                }
+                if (index < newSlots.length - 1 && value >= newSlots[index + 1].start) {
+                    toast.error("End time cannot be later than or equal to the next start time");
+                    return;
+                }
+            }
             newSlots[index][field] = value;
         }
+
         setSchedule({ ...schedule, timeSlots: newSlots });
     };
 
@@ -198,31 +239,34 @@ export default function CreateListing() {
         }
 
         // Here you would add logic to save the schedule
-        
-        if(!id) {
+        const existingScheduleIndex = inspectionSchedules.findIndex(s => s.date === schedule.date);
+        if (existingScheduleIndex !== -1) {
+            const updatedSchedules = [...inspectionSchedules];
+            updatedSchedules[existingScheduleIndex].timeSlots = [...updatedSchedules[existingScheduleIndex].timeSlots, ...schedule.timeSlots];
+            setInspectionSchedules(updatedSchedules);
+        } else {
             setInspectionSchedules(prev => [...prev, { ...schedule }]);
-            toast.success("Saved Schedule!");
-        } else if(id) {
-           const updatedSchedules = [...inspectionSchedules, schedule];
+        }
+
+
+        if(id) {
+        //    const updatedSchedules = [...inspectionSchedules, schedule];
+        //    console.log(schedule.timeSlots, updatedSchedules);
 
             (async () => {
                 setLoading(true);
                 try {
                     const formData = new FormData();
 
-                    const slots: any = [];
-                    updatedSchedules?.forEach((data, inspIndex) => {
-                        data.timeSlots.forEach((slot, slotIndex) => {
-                            const starts_at = `${data.date} ${slot.start}:00`;
-                            const ends_at = `${data.date} ${slot.end}:00`;
-                            console.log(inspIndex * data.timeSlots.length + slotIndex)
-                            formData.append(`slots[${inspIndex * data.timeSlots.length + slotIndex}][starts_at]`, starts_at);
-                            formData.append(`slots[${inspIndex * data.timeSlots.length + slotIndex}][ends_at]`, ends_at);
-                            console.log(starts_at, ends_at)
-                            slots.push({ starts_at, ends_at })
-                        });
+                    // const slots: any = [];
+                    schedule.timeSlots.forEach((slot, slotIndex) => {
+                        const starts_at = `${schedule.date} ${slot.start}:00`;
+                        const ends_at = `${schedule.date} ${slot.end}:00`;
+                        formData.append(`slots[${slotIndex}][starts_at]`, starts_at);
+                        formData.append(`slots[${slotIndex}][ends_at]`, ends_at);
+                        // slots.push({ starts_at, ends_at })
                     });
-                    formData.append("slots[]", slots);
+                    // formData.append("slots[]", slots);
 
                     const formDataHeaders = {
                         "Accept": "application/json",
@@ -238,7 +282,7 @@ export default function CreateListing() {
 
                     const data = await res.json();
                     if(data?.status) {
-                        const schedulesWithId = updatedSchedules.map(schedule => ({
+                        const schedulesWithId = inspectionSchedules.map(schedule => ({
                             ...schedule,
                             timeSlots: schedule.timeSlots.map((slot, index) => ({
                                 ...slot,
@@ -300,10 +344,13 @@ export default function CreateListing() {
 
     useEffect(function() {
         const fetchData = async function() {
-            const propertyTypeData = await fetchPropertyTypes(headers)
-            if(propertyTypeData?.success) {
-                setPropertyTypeData(propertyTypeData?.data[0])
-            }
+            const [propertyType, categoryData] = await Promise.all([
+                fetchPropertyTypes(headers),
+                fetchPropertyCategories(headers),
+            ]);
+
+            if(propertyType?.success) setPropertyTypesData(propertyType?.data[0])
+            if(categoryData?.success) setPropertyCategoryData(categoryData?.data[0])
         }
 
         fetchData();
@@ -329,18 +376,18 @@ export default function CreateListing() {
             
             if(id && data?.success) {
                 const listing: ListingType = data?.data;
-                setFormData({
-                    property_title: listing?.property_title || "",
-                    description: listing?.description || "",
-                    rent_price: listing?.property_detail?.rent_price || "",
-                    property_size: listing?.property_detail?.property_size || "",
-                    property_address: listing?.property_detail?.property_address || "",
-                    property_type_id: `${listing?.property_detail?.property_type_id}` || "",
-                    service_charge: listing?.property_detail?.service_charge || "",
-                    agent: listing?.user_name || "",
-                    bedrooms: `${listing?.property_detail?.bedrooms}` || "",
-                    bathrooms: `${listing?.property_detail?.bathrooms}` || "",
-                });
+
+                setValue("property_title", listing?.property_title || "");
+                setValue("description", listing?.description || "");
+                setValue("rent_price", listing?.property_detail?.rent_price || "");
+                setValue("property_size", listing?.property_detail?.property_size || "");
+                setValue("property_address", listing?.property_detail?.property_address || "");
+                setValue("property_type_id", `${listing?.property_detail?.property_type_id}` || "");
+                setValue("service_charge", listing?.property_detail?.service_charge || "");
+                setValue("bedrooms", `${listing?.property_detail?.bedrooms}` || "");
+                setValue("bathrooms", `${listing?.property_detail?.bathrooms}` || "");
+                setValue("property_category_id", `${listing?.property_category_id}` || "");
+                setValue("agent", listing?.user_name || "");
 
                 setSelectedAmenities(listing?.property_detail?.amenities);
                 setCoverImage({ ...coverImage, preview: listing?.property_cover })
@@ -389,53 +436,58 @@ export default function CreateListing() {
     }, [id]);
 
     
-    async function handleSubmitListing() {
+    const handleSubmitListing:SubmitHandler<FormDataType> = async function(formdata) {
+        if(!coverImage.file || !coverImage.preview) {
+            return toast.error("Property cover image is required");
+        }
+        if(galleryImages.length < 1) {
+            return toast.error("At least 1 Gallery image is required");
+        }
+        
         setLoading(true);
 
         try {
-            const FORM_DATA = new FormData();
-            FORM_DATA.append('property_ref_id', `#${generateId()}`);
-            FORM_DATA.append('property_title', formData.property_title);
-            FORM_DATA.append('bedrooms', formData.bedrooms);
+            const formData = new FormData();
+            formData.append('property_ref_id', `#${generateId()}`);
+            formData.append('property_title', formdata.property_title);
+            formData.append('bedrooms', formdata.bedrooms);
             // @ts-ignore
-            FORM_DATA.append('rent_price', +formData?.rent_price?.replaceAll(",", ""));
-            FORM_DATA.append('property_size', formData.property_size);
-            FORM_DATA.append('property_address', formData.property_address);
-            FORM_DATA.append('property_type_id', formData.property_type_id);
+            formData.append('rent_price', +formdata?.rent_price?.replaceAll(",", ""));
+            formData.append('property_size', formdata.property_size);
+            formData.append('property_address', formdata.property_address);
+            formData.append('property_type_id', formdata.property_type_id);
             // @ts-ignore
-            FORM_DATA.append('service_charge', +formData?.service_charge?.replaceAll(",", ""));
-            FORM_DATA.append('agent', formData.agent);
-            FORM_DATA.append('bedrooms', formData.bedrooms);
-            FORM_DATA.append('bathrooms', formData.bathrooms);
-            FORM_DATA.append('description', formData.description);
+            formData.append('service_charge', +formdata?.service_charge?.replaceAll(",", ""));
+            formData.append('agent', formdata.agent);
+            formData.append('bedrooms', formdata.bedrooms);
+            formData.append('bathrooms', formdata.bathrooms);
+            formData.append('description', formdata.description);
+            formData.append('property_category_id', formdata.property_category_id);
 
             // temps
-            FORM_DATA.append('property_category_id', "1");
-            FORM_DATA.append('user_id', "1");
+            formData.append('user_id', "1");
 
             if(selectedAmenities?.length > 0) {
-                // FORM_DATA.append('amenities[]', JSON.stringify(selectedAmenities));
                 selectedAmenities.forEach((data, index) => {
-                    FORM_DATA.append(`amenities[${index}][amenity]`, data.amenity);
-                    FORM_DATA.append(`amenities[${index}][amenity_icon]`, data.amenity_icon);
+                    formData.append(`amenities[${index}][amenity]`, data.amenity);
+                    formData.append(`amenities[${index}][amenity_icon]`, data.amenity_icon);
                 });
             }
 
             if(coverImage?.file) {
-                FORM_DATA.append('property_cover', coverImage?.file);
+                formData.append('property_cover', coverImage?.file);
             }
             if(galleryImages?.length > 0 && galleryImages?.every(img => img.file)) {
-                // FORM_DATA.append('media[]', JSON.stringify(galleryImages?.map(el => el.file)));
                 galleryImages.forEach((data, index) => {
-                    FORM_DATA.append(`media[${index}]`, data.file);
+                    formData.append(`media[${index}]`, data.file);
                 });
             }
 
             // ONLY ON EDIT
             if(id && removedImages?.length > 0) {
                 removedImages.forEach((public_id, index) => {
-                    FORM_DATA.append(`removed_media[${index}][resource_type]`, "image");
-                    FORM_DATA.append(`removed_media[${index}][cloudinary_id]`, public_id);
+                    formData.append(`removed_media[${index}][resource_type]`, "image");
+                    formData.append(`removed_media[${index}][cloudinary_id]`, public_id);
                 });
             }
 
@@ -447,13 +499,12 @@ export default function CreateListing() {
                         const starts_at = `${data.date} ${slot.start}:00`;
                         const ends_at = `${data.date} ${slot.end}:00`;
 
-                        FORM_DATA.append(`inspection_slots[${inspIndex * data.timeSlots.length + slotIndex}][starts_at]`, starts_at);
-                        FORM_DATA.append(`inspection_slots[${inspIndex * data.timeSlots.length + slotIndex}][ends_at]`, ends_at);
+                        formData.append(`inspection_slots[${inspIndex * data.timeSlots.length + slotIndex}][starts_at]`, starts_at);
+                        formData.append(`inspection_slots[${inspIndex * data.timeSlots.length + slotIndex}][ends_at]`, ends_at);
 
                         slots.push({ starts_at, ends_at })
                     });
                 });
-                // FORM_DATA.append('inspection_slots[]', JSON.stringify(slots));
             }
 
             const formDataHeaders = {
@@ -464,7 +515,7 @@ export default function CreateListing() {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id ? id : ""}`, {
                 method: "POST",
                 headers: formDataHeaders,
-                body: FORM_DATA
+                body: formData
             });
             shouldKick(res);
 
@@ -497,7 +548,8 @@ export default function CreateListing() {
                             <input
                                 type="text"
                                 className="form--input"
-                                value={formData.property_title}
+                                // value={formData.property_title}
+                                value={getValues("property_title")}
                                 readOnly
                             />
                         </div>
@@ -509,9 +561,10 @@ export default function CreateListing() {
                             <input
                                 type="date"
                                 className="form--input"
+                                placeholder="dd/mm/yyyy"
                                 value={schedule?.date}
-                                min={startOfWeek}
-                                max={endOfWeek}
+                                min={minDate}
+                                max={maxDate}
                                 onChange={handleScheduleDateChange}
                             />
                         </div>
@@ -521,20 +574,26 @@ export default function CreateListing() {
                                 Add Time Slot <Asterisk />
                             </label>
                             {schedule.timeSlots.map((slot, index) => (
+                                <>
+                                {console.log(slot)}
                                 <div key={index} className="form--flex">
                                     <input
                                         type="time"
                                         className="form--input"
                                         value={slot.start}
+                                        min={index === 0 ? getCurrentTime() : ''}
+                                        // max={index === slots.length - 1 ? '23:59' : slots[index + 1]?.start}
                                         onChange={(e) => handleTimeChange(index, 'start', e.target.value)}
                                     />
                                     <input
                                         type="time"
                                         className="form--input"
                                         value={slot.end}
+                                        min={slot.start}
                                         onChange={(e) => handleTimeChange(index, 'end', e.target.value)}
                                     />
                                 </div>
+                                </>
                             ))}
                         </div>
                             
@@ -563,7 +622,7 @@ export default function CreateListing() {
                     </div>
                 </div>
 
-                <div className="card form">
+                <form className="card form" onSubmit={handleSubmit(handleSubmitListing)}>
                     <h4 className="form--title">Property Description</h4>
                     
                     <div className="form--section">
@@ -571,13 +630,23 @@ export default function CreateListing() {
 
                             <div className="form--item">
                                 <label htmlFor="property_title" className="form--label">Property Title <Asterisk /></label>
-                                <input type="text" className="form--input" name="property_title" id="property_title" placeholder="Enter a title" value={formData.property_title} onChange={handleListingDataChange} />
+                                <input type="text" className="form--input" id="property_title" placeholder="Enter a title" {...register("property_title", {
+                                    required: 'Property Title is required',
+                                })} />
+                                <span className="form--error-message">
+                                    {formState.errors.property_title && formState.errors.property_title.message}
+                                </span>
                             </div>
 
                             <div className="form--item">
                                 <label htmlFor="" className="form--label">Property Description <Asterisk /></label>
-                                <TextareaAutosize name="description" className="form--input" minRows={4} placeholder="Enter description" value={formData.description} onChange={(e) => handleDescriptionLength(e.target.value)} />
-                                <span className="form--info" style={{ color: "#B4B4B4", alignSelf: "flex-end" }}>{formData.description?.length ?? 0} / 500 characters</span>
+                                <TextareaAutosize className="form--input" minRows={4} placeholder="Enter description" {...register("description", { required: "Description is required!", onChange: (e) => handleDescriptionLength(e.target.value) })} />
+                                <div className="flex-align-justify-spabtw" style={{ width: "100%" }}>
+                                    <span className="form--error-message">
+                                        {formState.errors.description && formState.errors.description.message}
+                                    </span>
+                                    <span className="form--info" style={{ color: "#B4B4B4", alignSelf: "flex-end", minWidth: "max-content" }}>{getValues("description")?.length ?? 0} / 500 characters</span>
+                                </div>
                             </div>
                         </div>
 
@@ -596,41 +665,85 @@ export default function CreateListing() {
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="property_type_id" className="form--label">Property Type <Asterisk /></label>
-                                    <select name="property_type_id" id="property_type_id" className="form--select" value={formData?.property_type_id} onChange={handleListingDataChange}>
-                                        <option hidden disabled selected>Property type</option>
-                                        {propertyTypeData && propertyTypeData?.map((type, i) => (
+                                    <select id="property_type_id" className="form--select" defaultValue="" {...register("property_type_id", {
+                                        required: "Property type is required!",
+                                    })}>
+                                        <option hidden selected value="">Select type</option>
+                                        {propertyTypesData && propertyTypesData?.map((type, i) => (
                                             <option value={type?.id} key={i}>{type.name}</option>
                                         ))}
                                     </select>
+                                    <span className="form--error-message">
+                                        {formState.errors.property_type_id && formState.errors.property_type_id?.message}
+                                    </span>
                                 </div>
 
                                 <div className="form--item">
+                                    <label htmlFor="property_category_id" className="form--label">Property Category <Asterisk /></label>
+                                    <select id="property_category_id" className="form--select" {...register("property_category_id", {
+                                        required: "Property category is required!"
+                                    })}>
+                                        <option hidden selected value="">Select category</option>
+                                        {propertyCategoryData && propertyCategoryData?.map((pcd, i) => (
+                                            <option value={pcd?.id} key={i}>{pcd.name}</option>
+                                        ))}
+                                    </select>
+                                    <span className="form--error-message">
+                                        {formState.errors.property_category_id && formState.errors.property_category_id.message}
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div className="form--flex">
+                                <div className="form--item">
                                     <label htmlFor="rent_price" className="form--label flex-align-cen">Rent Price <p className="form--info" style={{ color: "#B4B4B4" }}>(per annaul)</p> <Asterisk /></label>
-                                    <CurrencyInput placeholder="Enter rent price" name="rent_price" id="rent_price" value={formData.rent_price} onChange={(value) => setFormData({ ...formData, rent_price: value })} />
+                                    <div className="form--input-currency flex-align-cen">
+                                        <span className="form--currency-box">₦</span>
+                                        <input type="text" className="form--input" id="rent_price" placeholder="Enter rent price" {...register("rent_price", {
+                                            required: "Rent price is required",
+                                            onChange: (e) => setValue("rent_price", formatInputNumber(e?.target?.value))
+                                        })} />
+                                    </div>
+                                    <span className="form--error-message">
+                                        {formState.errors.rent_price && formState.errors.rent_price.message}
+                                    </span>
+                                </div>
+
+                                <div className="form--item">
+                                    <label htmlFor="service_charge" className="form--label">Service Charge <Asterisk /></label>
+                                    <div className="form--input-currency flex-align-cen">
+                                        <span className="form--currency-box">₦</span>
+                                        <input type="text" className="form--input" id="service_charge" placeholder="Enter service charge" {...register("service_charge", {
+                                            required: "Service charge is required",
+                                            onChange: (e) => setValue("service_charge", formatInputNumber(e?.target?.value))
+                                        })} />
+                                    </div>
+                                    <span className="form--error-message">
+                                        {formState.errors.service_charge && formState.errors.service_charge.message}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="bedrooms" className="form--label">Number of Bedrooms <Asterisk /></label>
-                                    <input type="number" name="bedrooms" id="bedrooms" className="form--input" placeholder="Enter number of bedrooms" value={formData.bedrooms} onChange={handleListingDataChange} />
+                                    <input type="number" id="bedrooms" className="form--input" placeholder="Enter number of bedrooms" {...register("bedrooms", {
+                                        required: "Bedrooms is required"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.bedrooms && formState.errors.bedrooms.message}
+                                    </span>
                                 </div>
 
-                                <div className="form--item">
-                                    <label htmlFor="service_charge" className="form--label">Service Charge <Asterisk /></label>
-                                    <CurrencyInput placeholder="Enter service charge" name="service_charge" id="service_charge" value={formData.service_charge} onChange={(value) => setFormData({ ...formData, service_charge: value })} />
-                                </div>
-                            </div>
-
-                            <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="bathrooms" className="form--label">Number of Bathrooms <Asterisk /></label>
-                                    <input type="number" name="bathrooms" id="bathrooms" className="form--input" placeholder="Enter number of bathrooms" value={formData.bathrooms} onChange={handleListingDataChange} />
-                                </div>
-
-                                <div className="form--item">
-                                    <label htmlFor="property_size" className="form--label flex-align-cen">Property Size <p className="form--info" style={{ color: "#B4B4B4" }}>(in sqm or sqft)</p> <Asterisk /></label>
-                                    <input type="text" name="property_size" id="property_size" className="form--input" placeholder="Enter property size" value={formData.property_size} onChange={handleListingDataChange} />
+                                    <input type="number" id="bathrooms" className="form--input" placeholder="Enter number of bathrooms" {...register("bathrooms", {
+                                        required: "bathroom is required"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.bathrooms && formState.errors.bathrooms.message}
+                                    </span>
                                 </div>
                             </div>
 
@@ -653,17 +766,35 @@ export default function CreateListing() {
 
                                 <div className="form--item">
                                     <label htmlFor="property_address" className="form--label">Property Address <Asterisk /></label>
-                                    <input type="text" name="property_address" id="property_address" className="form--input" placeholder="Enter property address" value={formData.property_address} onChange={handleListingDataChange} />
+                                    <input type="text" id="property_address" className="form--input" placeholder="Enter property address" {...register("property_address", {
+                                        required: "Property address is required"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.property_address && formState.errors.property_address.message}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="form--flex">
                                 <div className="form--item">
-                                    <label htmlFor="agent" className="form--label">Agent</label>
-                                    <input type="text" className="form--input" placeholder="Enter Agent" name="agent" value={formData.agent} onChange={handleListingDataChange} />
+                                    <label htmlFor="property_size" className="form--label flex-align-cen">Property Size <p className="form--info" style={{ color: "#B4B4B4" }}>(in sqm or sqft)</p> <Asterisk /></label>
+                                    <input type="text" id="property_size" className="form--input" placeholder="Enter property size" {...register("property_size", {
+                                        required: "Property size is required"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.property_size && formState.errors.property_size.message}
+                                    </span>
                                 </div>
 
-                                <div className="form--item"></div>
+                                <div className="form--item">
+                                    <label htmlFor="agent" className="form--label">Agent <Asterisk /></label>
+                                    <input type="text" className="form--input" placeholder="Enter Agent" {...register("agent", {
+                                        required: "Agent is required"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.agent && formState.errors.agent.message}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -691,10 +822,10 @@ export default function CreateListing() {
                     </div>
 
                     <div className="form--actions">
-                        <button className="form--submit filled" onClick={handleSubmitListing}>{id ? "Edit" : "Add New"}</button>
-                        <button className="form--submit outline" onClick={() => navigate(-1)}>Cancel</button>
+                        <button className="form--submit filled" type="submit">{id ? "Edit" : "Add New"}</button>
+                        <button className="form--submit outline" type="button" onClick={() => navigate(-1)}>Cancel</button>
                     </div>
-                </div>
+                </form>
             </section>
         </React.Fragment>
 	);

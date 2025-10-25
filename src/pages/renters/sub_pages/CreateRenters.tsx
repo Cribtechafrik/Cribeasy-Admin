@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { fetchCommunities, fetchEmploymentStatuses, fetchIdentityTypes } from "../../../utils/fetch";
 import type { Community_Type, Employment_Status_Type, Identity_type_Type } from "../../../utils/types";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 
 const breadCrumbs = [
@@ -16,6 +17,16 @@ const breadCrumbs = [
     { name: "Add New Renters", isCurrent: true },
 ];
 
+type FormDataType = {
+    full_name: string;
+    email: string;
+    phone_number: string;
+    password: string;
+    occupation: string;
+    identity_type_id: string;
+    community_id: string;
+    employment_status_id: string;
+}
 
 export default function CreateRenters() {
     const navigate = useNavigate();
@@ -28,16 +39,19 @@ export default function CreateRenters() {
     const [profileImage, setProfileImage] = useState({ preview: "", file: null });
     const [idUpload, setIdUpload] = useState({ preview: "", file: null });
 
-    const [formdata, setFormdata] = useState({
-        full_name: "",
-        email: "",
-        phone_number: "",
-        password: "",
-        occupation: "",
-        identity_type_id: "",
-        community_id: "",
-        employment_status_id: "",
-    });
+    // const [formdata, setFormdata] = useState({
+    //     full_name: "",
+    //     email: "",
+    //     phone_number: "",
+    //     password: "",
+    //     occupation: "",
+    //     identity_type_id: "",
+    //     community_id: "",
+    //     employment_status_id: "",
+    // });
+
+    const { register, handleSubmit, formState } = useForm<FormDataType>();
+    
 
     const handleImageChange = function(event: { target: { files: any[]; } }, name: string) {
         const file = event.target.files[0];
@@ -62,10 +76,10 @@ export default function CreateRenters() {
         }
     }
 
-    const handleRenterDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-        const { name, value } = e?.target;
-        setFormdata({ ...formdata, [name]: value });
-    }
+    // const handleRenterDataChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    //     const { name, value } = e?.target;
+    //     setFormdata({ ...formdata, [name]: value });
+    // }
 
     useEffect(function() {
         const fetchData = async () => {
@@ -83,7 +97,11 @@ export default function CreateRenters() {
         fetchData();
     }, []);
 
-    async function handleSubmitRenter() {
+    const handleSubmitRenter: SubmitHandler<FormDataType> = async function(formdata) {
+        if(!idUpload.file) {
+            return toast.error("Identity image is required");
+        }
+
         setLoading(true);
 
         try {
@@ -146,51 +164,85 @@ export default function CreateRenters() {
                     </div>
                 </div>
 
-                <div className="card form">
+                <form className="card form" onSubmit={handleSubmit(handleSubmitRenter)}>
                     <div className="form--section">
                         <div className="flex-col-gap">
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="full_name" className="form--label">Full Name <Asterisk /></label>
-                                    <input type="text" className="form--input" name="full_name" id="full_name" placeholder="Taiwo Matthew" value={formdata.full_name} onChange={handleRenterDataChange} />
+                                    <input type="text" className="form--input" id="full_name" placeholder="Taiwo Matthew" {...register("full_name", {
+                                        required: "Full name is required!"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.full_name && formState.errors.full_name.message}
+                                    </span>
                                 </div>
                                 <div className="form--item">
                                     <label htmlFor="email" className="form--label">Email <Asterisk /></label>
-                                    <input type="text" className="form--input" name="email" id="email" placeholder="example@mail.com" value={formdata.email} onChange={handleRenterDataChange} />
+                                    <input type="text" className="form--input" id="email" placeholder="example@mail.com" {...register("email", {
+                                        required: "Email is required!",
+                                        pattern: {
+                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+										    message: 'Email is invalid',
+                                        }
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.email && formState.errors.email.message}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="phone_number" className="form--label">Phone Number <Asterisk /></label>
-                                    <input type="text" className="form--input" name="phone_number" id="phone_number" placeholder="+2349044556701" value={formdata.phone_number} onChange={handleRenterDataChange} />
+                                    <input type="text" className="form--input" id="phone_number" placeholder="+2349044556701" {...register("phone_number", {
+                                        required: "Phone number is required!"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.phone_number && formState.errors.phone_number.message}
+                                    </span>
                                 </div>
 
                                 <div className="form--item">
                                     <label htmlFor="occupation" className="form--label">Occupation <Asterisk /></label>
-                                    <input type="text" className="form--input" name="occupation" id="occupation" placeholder="Farmer" value={formdata.occupation} onChange={handleRenterDataChange} />
+                                    <input type="text" className="form--input" id="occupation" placeholder="Farmer" {...register("occupation", {
+                                        required: "Occupation is required!"
+                                    })} />
+                                    <span className="form--error-message">
+                                        {formState.errors.occupation && formState.errors.occupation.message}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="community_id" className="form--label">Community <Asterisk /></label>
-                                    <select className="form--select" name="community_id" id="community_id" value={formdata?.community_id} onChange={handleRenterDataChange}>
-                                        <option selected hidden>All</option>
+                                    <select className="form--select" id="community_id" {...register("community_id", {
+                                        required: "Community is required!"
+                                    })}>
+                                        <option selected hidden value="">All</option>
                                         {communities && communities?.map((c, i) => (
                                             <option value={c?.id} key={i}>{c.name}</option>
                                         ))}
                                     </select>
+                                    <span className="form--error-message">
+                                        {formState.errors.community_id && formState.errors.community_id.message}
+                                    </span>
                                 </div>
 
                                 <div className="form--item">
                                     <label htmlFor="employment_status_id" className="form--label">Employment Status <Asterisk /></label>
-                                    <select className="form--select" name="employment_status_id" id="employment_status_id" value={formdata?.employment_status_id} onChange={handleRenterDataChange}>
-                                        <option selected hidden>All</option>
+                                    <select className="form--select" id="employment_status_id" {...register("employment_status_id", {
+                                        required: "Employment status is required!"
+                                    })}>
+                                        <option selected hidden value="">All</option>
                                         {employmentStatuses && employmentStatuses?.map((status, i) => (
                                             <option value={status?.id} key={i}>{status.employment_type}</option>
                                         ))}
                                     </select>
+                                    <span className="form--error-message">
+                                        {formState.errors.employment_status_id && formState.errors.employment_status_id.message}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -215,12 +267,17 @@ export default function CreateRenters() {
                             <div className="form--flex">
                                 <div className="form--item">
                                     <label htmlFor="identity_type_id" className="form--label colored">ID Type <Asterisk /></label>
-                                    <select name="identity_type_id" id="identity_type_id" className="form--select" value={formdata.identity_type_id} onChange={handleRenterDataChange}>
-                                        <option hidden selected>Id Type</option>
+                                    <select id="identity_type_id" className="form--select" {...register("identity_type_id", {
+                                        required: "Id Type is required!"
+                                    })}>
+                                        <option hidden selected value="">Id Type</option>
                                         {identityTypes && identityTypes?.map((type, i) => (
                                             <option value={type?.id} key={i}>{type.identity_type}</option>
                                         ))}
                                     </select>
+                                    <span className="form--error-message">
+                                        {formState.errors.identity_type_id && formState.errors.identity_type_id.message}
+                                    </span>
                                 </div>
 
                                 <div className="form--item">
@@ -238,10 +295,10 @@ export default function CreateRenters() {
                     </div>
 
                     <div className="modal--actions" style={{ maxWidth: "55rem" }}>
-                        <button className="modal--btn filled" onClick={handleSubmitRenter}>Add New Renter</button>
-                        <button className="modal--btn outline" onClick={() => navigate(-1)}>Cancel</button>
+                        <button className="modal--btn filled" type="submit">Add New Renter</button>
+                        <button className="modal--btn outline" type="button" onClick={() => navigate(-1)}>Cancel</button>
                     </div>
-                </div>
+                </form>
             </section>
         </React.Fragment>
     )

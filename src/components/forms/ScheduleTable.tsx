@@ -2,6 +2,7 @@ import { BsClock } from "react-icons/bs";
 import { RiDeleteBin2Line } from "react-icons/ri";
 import { formatTime } from "../../utils/helper";
 
+
 type InspectionScheduleType = {
     date: string;
     day: string;

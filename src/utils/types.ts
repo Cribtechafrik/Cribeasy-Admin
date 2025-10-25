@@ -69,6 +69,7 @@ export type ListingType = {
     is_boosted: number;
     is_booked?: number;
     property_category: string;
+    property_category_id: number;
     property_cover: string;
     property_detail: PropertyDetailsType;
     property_title: string;

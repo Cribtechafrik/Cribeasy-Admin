@@ -8,12 +8,17 @@ import Spinner from '../../components/elements/Spinner';
 import AuthImg from "../../assets/pngs/auth.png";
 import { toast } from 'sonner';
 import Logo from "../../assets/logo/logo.png";
+import { useForm, type SubmitHandler } from 'react-hook-form';
 
+
+type FormDataType = {
+    identifier: string;
+}
 
 export default function index() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({ identifier: "" });
+    // const [formData, setFormData] = useState({ identifier: "" });
     const [showModal, setShowModal] = useState(false);
 
     const headers = {
@@ -21,15 +26,18 @@ export default function index() {
         "Content-Type": "application/json"
     }
 
-    const handleFormChange = function (e: React.ChangeEvent<HTMLInputElement>) {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
+    const { register, handleSubmit, formState } = useForm<FormDataType>();
+    
 
-    async function handleForgotPassword() {
+    // const handleFormChange = function (e: React.ChangeEvent<HTMLInputElement>) {
+    //     const { name, value } = e.target;
+    //     setFormData({
+    //         ...formData,
+    //         [name]: value,
+    //     });
+    // };
+
+    const handleForgotPassword: SubmitHandler<FormDataType> = async function(formData) {
         setLoading(true);
 
         try {
@@ -41,11 +49,12 @@ export default function index() {
 
             const data = await res.json();
             if (res.status !== 200 || !data?.success) {
-                setTimeout(function () {
-                    localStorage.setItem("otp_identifier", formData.identifier);
-                    navigate("/otp-verification")
-                }, 1000);
-                throw new Error(data?.error?.message);
+                if(data?.error?.validation_errors) {
+                    const message = Object.entries(data?.error?.validation_errors)?.[0]?.[1]
+                    throw new Error((message ?? "Something went wrong!") as string);
+                } else {
+                    throw new Error(data?.error?.message);
+                }
             }
             
             toast.error(data?.message);
@@ -86,7 +95,7 @@ export default function index() {
             <section className="auth--section">
                 <div className="auth--container">
                     <div className="auth--form-box">
-                        <div className="auth--form">
+                        <form className="auth--form" onSubmit={handleSubmit(handleForgotPassword)}>
                             <span className='form--top'>
 						        <img className="auth--logo" src={Logo} alt="logo" />
                                 <h2 className="form--heading">Forgot Password</h2>
@@ -94,15 +103,24 @@ export default function index() {
                             </span>
                             <div className="form--item">
                                 <label htmlFor="email" className="form--label">Email <Asterisk /></label>
-                                <input type="email" className="form--input" placeholder='taiwo@gmail.com' required onChange={handleFormChange} name="identifier" id='identifier' value={formData.identifier} />
+                                <input type="email" className="form--input" placeholder='taiwo@gmail.com' id='identifier' {...register("identifier", {
+                                    required: 'Email is required',
+									pattern: {
+										value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+										message: 'Email is invalid',
+									},
+                                })} />
+                                <span className="form--error-message">
+                                    {formState.errors.identifier && formState.errors.identifier.message}
+                                </span>
                             </div>
 
-                            <button type="submit" className='form--submit' onClick={handleForgotPassword}>Reset Password</button>
+                            <button type="submit" className='form--submit'>Reset Password</button>
 
                             <div className="form--info" style={{ textAlign: "center" }}>
                                 <p>I remember my password <Link to='/login'>Login</Link></p>
                             </div>
-                        </div>
+                        </form>
                     </div>
 
                     <div className="auth--image">
