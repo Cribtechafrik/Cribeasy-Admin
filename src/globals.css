@@ -30,6 +30,7 @@ body {
     --white-2: #f5f5f5;
     --grey: #5c636d;
 
+    --color-brand-light: #2A72FB;
     --color-brand-primary: #00419C;
     --color-brand-dark: #132B4B;
 }
@@ -224,6 +225,10 @@ body:has(.global--overlay) {
 	font-size: 1rem;
 	color: #B4B4B4;
 	text-align: center;
+}
+
+.pointer {
+	cursor: pointer;	
 }
 
 .card {

@@ -96,7 +96,7 @@ export default function Create_Agents_Landloard() {
     }
 
     useEffect(function() {
-        const fetchData = async () => {
+        const fetchData = async function(){
             const [identityTypeData, communities] = await Promise.all([
                 fetchIdentityTypes(headers),
                 fetchCommunities(headers),
@@ -239,7 +239,7 @@ export default function Create_Agents_Landloard() {
                                     <div className="form--input-box">
                                         <input type={showPassword ? "text" : "password"} className="form--input" id="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" {...register("password", {
                                         required: "Password is required!",
-                                        maxLength: {
+                                        minLength: {
                                             value: 8,
                                             message: "Password must be more than 8 characters"
                                         }
@@ -351,7 +351,7 @@ export default function Create_Agents_Landloard() {
                                     />
                                 </div>
 
-                                <div className="form--check flex-align-cen" onClick={() => setValue("mark_as_verified", !getValues("mark_as_verified"))} style={{ cursor: "pointer" }}>
+                                <div className="form--check flex-align-cen pointer" onClick={() => setValue("mark_as_verified", !getValues("mark_as_verified"))}>
                                     <CheckBoxInput isChecked={getValues("mark_as_verified") ?? false} />
                                     <p className="form--info">Mark agent as verified</p>
                                 </div>

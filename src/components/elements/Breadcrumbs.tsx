@@ -21,10 +21,10 @@ export default function Breadcrumbs({ breadcrumArr }: Props) {
                     {el.isCurrent ? (
                         <p className="current">{el.name}</p>
                     ) : (el.link) && (
-                        <>
+                        <React.Fragment>
                             <Link to={el.link}>{el.name}</Link>
                             <BsChevronRight />
-                        </>
+                        </React.Fragment>
                     )}
                 </React.Fragment>
             ))}

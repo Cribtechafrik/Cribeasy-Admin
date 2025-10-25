@@ -104,7 +104,7 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
     }, [id]);
 
     useEffect(function() {
-        const fetchData = async () => {
+        const fetchData = async function(){
             const [identityTypeData, communities] = await Promise.all([
                 fetchIdentityTypes(headers),
                 fetchCommunities(headers),

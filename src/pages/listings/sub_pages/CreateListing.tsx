@@ -253,7 +253,7 @@ export default function CreateListing() {
         //    const updatedSchedules = [...inspectionSchedules, schedule];
         //    console.log(schedule.timeSlots, updatedSchedules);
 
-            (async () => {
+            (async function(){
                 setLoading(true);
                 try {
                     const formData = new FormData();
@@ -320,7 +320,7 @@ export default function CreateListing() {
             const newSchedules = inspectionSchedules?.filter((_, i) => i !== index);
             setInspectionSchedules(newSchedules);
         } else if(id && inspectionSchedules?.length > 0) {
-            (async () => {
+            (async function(){
                 setLoading(true);
                 const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/slots/${slotId}`, {
                     method: "DELETE",
@@ -574,8 +574,6 @@ export default function CreateListing() {
                                 Add Time Slot <Asterisk />
                             </label>
                             {schedule.timeSlots.map((slot, index) => (
-                                <>
-                                {console.log(slot)}
                                 <div key={index} className="form--flex">
                                     <input
                                         type="time"
@@ -593,7 +591,6 @@ export default function CreateListing() {
                                         onChange={(e) => handleTimeChange(index, 'end', e.target.value)}
                                     />
                                 </div>
-                                </>
                             ))}
                         </div>
                             
@@ -811,7 +808,7 @@ export default function CreateListing() {
 
                         <div className="flex-align-cen">
                             <p className="form--info" style={{ marginRight: "4rem" }}>{id ? "Edit" : "Add New"} Time Slot</p>
-                            <button className="page--btn-sm" onClick={handleShowScheduleModal}><AiOutlinePlus /> Add</button>
+                            <button type="button" className="page--btn-sm" onClick={handleShowScheduleModal}><AiOutlinePlus /> Add</button>
                         </div>
 
                         <ScheduleTable

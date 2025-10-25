@@ -41,7 +41,7 @@ export default function ImageUpload({ title, text, name, preview, handleChange, 
     };
 
     return (
-        <span
+        <div
             onDrop={handleOnDrop}
             onDragLeave={handleOnDragLeave}
             onDragOver={handleOnDragOver}
@@ -78,6 +78,6 @@ export default function ImageUpload({ title, text, name, preview, handleChange, 
                     </div>
                 )}
             </label>
-        </span>
+        </div>
     )
 }

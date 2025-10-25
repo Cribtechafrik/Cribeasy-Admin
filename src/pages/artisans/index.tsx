@@ -321,7 +321,7 @@ export default function index() {
     }, [activeTab, paginationDetails?.currentPage, paginationDetails?.perPage, filterSavedData]);
 
     useEffect(function() {
-        const fetchData = async () => {
+        const fetchData = async function(){
             const [serviceTypes, communities] = await Promise.all([
                 fetchServiceTypes(headers),
                 fetchCommunities(headers),
@@ -340,7 +340,7 @@ export default function index() {
             setServiceFocus([]);
         }
 
-        const fetchData = async () => {
+        const fetchData = async function(){
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/service-types/${filterUnsavedData?.service_type}/focus`, {
                 method: "GET",
                 headers,
