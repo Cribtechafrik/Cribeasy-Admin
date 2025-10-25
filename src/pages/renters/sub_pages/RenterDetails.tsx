@@ -13,7 +13,6 @@ import Confirm from '../../../components/modals/Confirm';
 import { IoCheckmarkCircle } from 'react-icons/io5';
 import Asterisk from '../../../components/elements/Asterisk';
 import { formatDate, formatDateTime } from '../../../utils/helper';
-import { useNavigate } from 'react-router-dom';
 
 interface Props {
     id: number;
@@ -23,7 +22,7 @@ interface Props {
 }
 
 export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetchTable }: Props) {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
     const [loading, setLoading] = useState({ modal: false, main: false, booking: false })
     const [showModal, setShowModal] = useState({ delete_confirm: false, delete_completed: false });
@@ -329,9 +328,9 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
                         )}
                     </div>
 
-                    <div className="modal--actions">
+                    <div className="modal--actions" style={{ maxWidth: "45rem" }}>
                         <button className="modal--btn black-outline" onClick={handleOpenEdit}>Edit</button>
-                        <button className="modal--btn outline" onClick={() => navigate(`/dashboard/renters/${id}/reset-credentials`)}>Reset Credentials</button>
+                        {/* <button className="modal--btn outline" onClick={() => navigate(`/dashboard/renters/${id}/reset-credentials`)}>Reset Credentials</button> */}
                         <button className="modal--btn remove" onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
                     </div>
                 </div>

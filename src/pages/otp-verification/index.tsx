@@ -8,10 +8,9 @@ import Logo from "../../assets/logo/logo.png";
 
 
 export default function index() {
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({ otp: "", identifier: localStorage.getItem("otp_identifier") || /* temp */ "cribeasyemailssetups@gmail.com" });
-
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({ otp: "", identifier: localStorage.getItem("otp_identifier") });
 
     const headers = {
         "Accept": "application/json",
@@ -62,7 +61,6 @@ export default function index() {
 
     async function handleRequestOtp() {
         setLoading(true);
-        // handleResetResponse();
 
         try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/resend-password-otp`, {

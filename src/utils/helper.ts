@@ -54,3 +54,16 @@ export function formatDateTime(dateTimeString: string): string {
 		return `${momentDate.format('dddd, MMM D, h:mm A')}`;
 	}
 }
+
+
+export function getCurrentTime() {
+	const now = new Date();
+	const hours = now.getHours().toString().padStart(2, '0');
+	const minutes = now.getMinutes().toString().padStart(2, '0');
+	return `${hours}:${minutes}`;
+}
+
+
+export function formatInputNumber(value: string) {
+	return value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}

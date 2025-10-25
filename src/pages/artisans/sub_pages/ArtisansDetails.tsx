@@ -396,7 +396,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
 
                     <div className="modal--actions">
                         <button className="modal--btn black-outline" onClick={handleOpenEdit}>Edit</button>
-                        <button className="modal--btn outline" onClick={() => {}}>Reset Creditials</button>
+                        {/* <button className="modal--btn outline" onClick={() => {}}>Reset Creditials</button> */}
                         <button className={`modal--btn ${artisansData?.is_active == 1 ? "outline-remove" : "filled"}`} onClick={() => setShowModal({ ...showModal, confirm: true })}>
                             {artisansData?.is_active == 1 ? "Deactivate" : "Activate"}
                         </button>
