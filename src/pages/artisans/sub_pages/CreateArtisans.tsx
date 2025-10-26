@@ -6,7 +6,6 @@ import ImageUpload from "../../../components/layout/ImageUpload";
 import Asterisk from "../../../components/elements/Asterisk";
 import { ImEye, ImEyeBlocked } from "react-icons/im";
 import type { Community_Type, Identity_type_Type, Service_types_Type } from "../../../utils/types";
-import { experience_level } from "../../../utils/data";
 import { fetchCommunities, fetchIdentityTypes, fetchServiceTypes } from "../../../utils/fetch";
 import { useAuthContext } from "../../../context/AuthContext";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -14,7 +13,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import MultipleImageUpload from "../../../components/layout/MultipleImageUpload";
 import CheckBoxInput from "../../../components/forms/CheckBoxInput";
-// import WorkingHour from "../../../components/elements/WorkingHour";
+import WorkingHour from "../../../components/elements/WorkingHour";
 
 
 const breadCrumbs = [
@@ -31,7 +30,7 @@ type FormDataType = {
     mark_as_verified: false,
     is_active: string;
     has_verified_docs: string;
-    experience_level: string;
+    years_experience: string;
     community_id: string;
     service_description: string;
     complete_address: string;
@@ -54,6 +53,24 @@ export default function CreateArtisans() {
 	const [loading, setLoading] = useState({ main: false, focus: false });
     const [showPassword, setShowPassword] = useState(false);
     
+    // const [workingHours, setWorkingHours] = useState<{
+    const [workingHours, _] = useState<{
+        Mon: boolean;
+        Tues: boolean;
+        Wed: boolean;
+        Thur: boolean;
+        Fri: boolean;
+        Sat: boolean;
+        Sun: boolean;
+    }>({
+        Mon: false,
+        Tues: false,
+        Wed: false,
+        Thur: false,
+        Fri: false,
+        Sat: false,
+        Sun: false,
+    })
     const [profileImage, setProfileImage] = useState({ preview: "", file: null });
     const [idUpload, setIdUpload] = useState({ preview: "", file: null });
     const [proofOfWorksGallery, setProofOfWorksGallery] = useState<{
@@ -174,17 +191,27 @@ export default function CreateArtisans() {
             formData.append('email', formdata.email?.toLowerCase());
             formData.append('company_name', formdata.company_name);
             formData.append('identity_type_id', formdata.identity_type_id);
+            formData.append('service_type_id', formdata.service_type_id);
             formData.append('community_id', formdata?.community_id);
+            formData.append('service_description', formdata?.service_description);
+            formData.append('bio_description', formdata?.bio_description);
+            formData.append('years_experience', formdata?.years_experience);
+            formData.append('working_hours', `${Object.keys(workingHours)?.filter(val => val)?.length}`);
 
             if(profileImage?.file) {
-                formData.append('property_cover', profileImage?.file);
+                formData.append('profile_image', profileImage?.file);
             }
             if(idUpload?.file) {
-                formData.append('property_cover', idUpload?.file);
+                formData.append('proof_of_identity', idUpload?.file);
             }
             if(proofOfWorksGallery?.length > 0 && proofOfWorksGallery?.every(img => img.file)) {
                 proofOfWorksGallery.forEach((data, index) => {
-                    formData.append(`media[${index}]`, data.file);
+                    formData.append(`proof_of_work[${index}]`, data.file);
+                });
+            }
+            if(serviceFocus?.length > 0) {
+                serviceFocus.forEach((data, index) => {
+                    formData.append(`service_focus_ids[${index}]`, `${data.id}`);
                 });
             }
 
@@ -202,7 +229,12 @@ export default function CreateArtisans() {
 
             const data = await res.json();
             if (res.status !== 201 || !data?.success) {
-                throw new Error(data?.error?.message);
+                if(data?.error?.validation_errors) {
+                    const message = Object.entries(data?.error?.validation_errors)?.[0]?.[1]
+                    throw new Error((message ?? "Something went wrong!") as string);
+                } else {
+                    throw new Error(data?.error?.message);
+                }
             }
 
             toast.success("Artisans created successfully")
@@ -332,17 +364,12 @@ export default function CreateArtisans() {
                             </div>
 
                             <div className="form--item">
-                                <label htmlFor="experience_level" className="form--label">Years of Experience <Asterisk /></label>
-                                <select className="form--select" id="experience_level" {...register("experience_level", {
-                                    required: "Experience level is required!"
-                                })}>
-                                    <option selected hidden value="">Select Experience Level</option>
-                                    {experience_level?.map((level, i) => (
-                                        <option value={level?.value} key={i}>{level.name}</option>
-                                    ))}
-                                </select>
+                                <label htmlFor="years_experience" className="form--label">Years of Experience <Asterisk /></label>
+                                <input type="number" className="form--input" id="years_experience" min={0} max={30} placeholder="Years of experience" {...register("years_experience", {
+                                    required: "Years of experience is required!"
+                                })} />
                                 <span className="form--error-message">
-                                    {formState.errors.experience_level && formState.errors.experience_level.message}
+                                    {formState.errors.years_experience && formState.errors.years_experience.message}
                                 </span>
                             </div>
 
@@ -431,13 +458,13 @@ export default function CreateArtisans() {
                                 <label className="form--label">Working Hours</label>
                                 
                                 <div className="flex-align-justify-spabtw" style={{ width: "100%" }}>
-                                    {/* <WorkingHour day="Mon" />
+                                    <WorkingHour day="Mon" />
                                     <WorkingHour day="Tues" />
                                     <WorkingHour day="Wed" />
                                     <WorkingHour day="Thur" />
                                     <WorkingHour day="Fri" />
                                     <WorkingHour day="Sat" />
-                                    <WorkingHour day="Sun" /> */}
+                                    <WorkingHour day="Sun" />
                                 </div>
                             </div>
 

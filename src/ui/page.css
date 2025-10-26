@@ -54,6 +54,19 @@
 	color: #fff;
 	background-color: #F56464;
 }
+.page--btn.remove-outline {
+	color: #F56464;
+    box-shadow: inset 0 0 0 0.1rem #F56464;
+}
+.page--btn.active {
+	color: #079455;
+	background-color: #E4F4E5;
+}
+.page--btn.resolved {
+	color: #fff;
+	background-color: #BEBEBE;
+}
+
 
 .page--tabs {
     display: flex;
@@ -397,9 +410,13 @@
 
 
 
-.user--details-top .heading {
+.user--details-top .heading,
+.user--details-top .description {
     font-size: 1.68rem;
     font-weight: 600;
+}
+.user--details-top .description {
+    color: #727272;
 }
 
 .user--details-top svg,
@@ -518,6 +535,14 @@
     color: #535862;
     font-weight: 600;
     font-size: 1.4rem;
+}
+
+
+.report-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 4rem;
+    justify-content: space-between;
 }
 
 

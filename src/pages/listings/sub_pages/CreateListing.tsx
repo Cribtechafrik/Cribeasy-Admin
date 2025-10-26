@@ -521,7 +521,12 @@ export default function CreateListing() {
 
             const data = await res.json();
             if (res.status !== (id ? 200 : 201) || !data?.success) {
-                throw new Error(data?.error?.message);
+                if(data?.error?.validation_errors) {
+                    const message = Object.entries(data?.error?.validation_errors)?.[0]?.[1]
+                    throw new Error((message ?? "Something went wrong!") as string);
+                } else {
+                    throw new Error(data?.error?.message);
+                }
             }
 
             toast.success(`Property ${id ? "Updated" : "Created"} Successfully!`);

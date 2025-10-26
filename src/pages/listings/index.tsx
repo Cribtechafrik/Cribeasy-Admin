@@ -43,7 +43,7 @@ type ListingSummaryType = {
 }
 
 type FilterDataType = {
-    property_type_id: string;
+    property_type: string;
     category: string;
     max_price: string;
     min_price: string;
@@ -78,7 +78,7 @@ export default function index() {
     });
 
     const [filterUnsavedData, setFilterUnsavedData] = useState<FilterDataType>({
-        property_type_id: "",
+        property_type: "",
         category: "",
         max_price: "",
         min_price: "",
@@ -150,7 +150,7 @@ export default function index() {
         }
 
         setFilterUnsavedData({
-            property_type_id: "",
+            property_type: "",
             category: "",
             max_price: "",
             min_price: "",
@@ -298,8 +298,8 @@ export default function index() {
                             </div>
 
                             <div className="form--item">
-                                <label htmlFor="property_type_id" className="form--label colored">Property Type</label>
-                                <select className="form--select" name="property_type_id" id="property_type_id" value={filterUnsavedData?.property_type_id} onChange={handleFilterDataChange}>
+                                <label htmlFor="property_type" className="form--label colored">Property Type</label>
+                                <select className="form--select" name="property_type" id="property_type" value={filterUnsavedData?.property_type} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
                                     {propertyTypesData && propertyTypesData?.map((type, i) => (
                                         <option value={type?.id} key={i}>{type.name}</option>

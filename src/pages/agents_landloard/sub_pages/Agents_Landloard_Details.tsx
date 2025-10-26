@@ -23,7 +23,22 @@ import { ImEye, ImEyeBlocked } from 'react-icons/im';
 import { generateStars } from "../../../utils/data.tsx";
 import HalfScreen from '../../../components/modals/HalfScreen.tsx';
 import Update_Agents_Landloard from "./Update_Agents_Landloard.tsx";
+import { PiDotOutlineFill } from 'react-icons/pi';
 
+
+type User_Report_Type = {
+    agent_landlord: string;
+    agent_landlord_id: number;
+    listing_title: string;
+    description: string;
+    id: number;
+    reason: string;
+    user_id: number;
+    user_that_made_the_report: string;
+    status: string;
+    reported_date: string;
+    resolved_date: string;
+}
 
 export default function Agents_Landloard_Details() {
     const { id } = useParams();
@@ -33,7 +48,7 @@ export default function Agents_Landloard_Details() {
     const [tableLoader, setTableLoader] = useState(true)
     const [showModal, setShowModal] = useState({ confirm: false, completed: false, delete_confirm: false, delete_completed: false, edit: false });
     const [agent_landlordData, setAgent_LandlordData] = useState<Agent_Landlord_Type | null>(null);
-    const [userReports, setUserReports] = useState([]);
+    const [userReports, setUserReports] = useState<User_Report_Type[]>([]);
     const [userProperties, setUserProperties] = useState<ListingType[]>([]);
     const [paginationDetails, setPaginationDetails] = useState({
         currentPage: 1,
@@ -479,9 +494,51 @@ export default function Agents_Landloard_Details() {
                             </div>
 
                             {userReports?.length > 0 ? (
-                                <div></div>
+                                <div className="flex-col-1">
+                                    {userReports?.map((report, i) => (
+                                        <div className="card report-card" key={i}>
+                                            <div className="flex-align-top gap-1-2">
+                                                <Intials
+                                                    hasImage={!!agent_landlordData?.profile_image}
+                                                    imageUrl={agent_landlordData?.profile_image ?? ""}
+                                                    names={[agent_landlordData?.first_name ?? "", agent_landlordData?.last_name ?? ""]}
+                                                />
+
+                                                <div className="flex-col-0-8 user--details-top">
+                                                    <div className="flex-align-cen">
+                                                        <h5 className="heading">{agent_landlordData?.full_name}</h5>
+                                                        <PiDotOutlineFill />
+                                                        <div className="heading">{report?.listing_title ?? "--"}</div>
+                                                        <PiDotOutlineFill />
+
+                                                        <div className="details--info flex-align-cen gap-0-6">
+                                                            <p className="text">Status:</p>
+                                                            <span className={`status status--active`}>
+                                                                <p>{report?.reason}</p>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <p className="description">"{report?.description}"</p>
+                                                    
+                                                    <div className="details--info flex-align-cen gap-0-6">
+                                                        <span className={`status status--pending`}>
+                                                            <p>Pending Review</p>
+                                                        </span>
+                                                        <p className="text">Reported 2 weeks ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="page--actions">
+                                                <button className={`page--btn ${report?.status == "resolved" ? "resolved" : "active"}`}>Resolve</button>
+                                                <button className='page--btn remove-outline'>Suspend</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             ) : (
-                                <p className='no-data' style={{ textAlign: "center" }}>No reports yet!</p>
+                                <p className='no-data'>No reports yet!</p>
                             )}
                         </div>
                     </div>

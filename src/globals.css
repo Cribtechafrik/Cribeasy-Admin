@@ -188,7 +188,14 @@ body:has(.global--overlay) {
 
 .flex-align-cen {
 	display: flex;
+	flex-direction: row;
 	align-items: center;
+	gap: 0.28rem;
+}
+.flex-align-top {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
 	gap: 0.28rem;
 }
 
