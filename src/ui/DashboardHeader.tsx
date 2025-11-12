@@ -10,6 +10,7 @@ import Dropdown from "../components/layout/Dropdown";
 import { createPortal } from "react-dom";
 import Spinner from "../components/elements/Spinner";
 import { useDataContext } from "../context/DataContext";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 
 export default function DashboardHeader() {
@@ -57,6 +58,8 @@ export default function DashboardHeader() {
                             <p className='auth--name'>{`${auth?.first_name} ${auth?.last_name}`}</p>
                             <p className='auth--role'>{auth?.role}</p>
                         </div>
+
+                        <MdOutlineKeyboardArrowDown style={{ alignSelf: "flex-start", marginTop: "0.28rem" }} />
 
                         {isShownDropdown && (
                             <Dropdown handleToggle={handleToggleDropdown} setLoading={setLoading} />

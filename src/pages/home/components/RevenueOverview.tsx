@@ -2,23 +2,40 @@ import ReactApexChart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 
 import { formatNumber } from "../../../utils/helper";
+import { SpinnerMini } from '../../../components/elements/Spinner';
+import { useEffect, useState } from 'react';
+import { useAuthContext } from '../../../context/AuthContext';
 
-const revenueData = [
-  { month: "Jan", value: 1293 },
-  { month: "Feb", value: 849 },
-  { month: "Mar", value: 298 },
-  { month: "Apr", value: 389 },
-  { month: "May", value: 100 },
-  { month: "Jun", value: 398 },
-  { month: "Jul", value: 1000 },
-  { month: "Aug", value: 393 },
-  { month: "Sep", value: 932 },
-  { month: "Oct", value: 1002 },
-  { month: "Nov", value: 939 },
-  { month: "Dec", value: 249 },
-];
+// const revenueInit = [
+//   { month: "Jan", value:0 },
+//   { month: "Feb", value:0 },
+//   { month: "Mar", value:0 },
+//   { month: "Apr", value:0 },
+//   { month: "May", value:0 },
+//   { month: "Jun", value:0 },
+//   { month: "Jul", value:0 },
+//   { month: "Aug", value:0 },
+//   { month: "Sep", value:0 },
+//   { month: "Oct", value:0 },
+//   { month: "Nov", value:0 },
+//   { month: "Dec", value:0 },
+// ];
+
+type RevenueDataType = {
+    month: string;
+    value: number;
+}
+
 
 export default function RevenueOverview() {
+    const { headers, shouldKick } = useAuthContext();
+    
+    const [loading, setLoading] = useState(false);
+    const [revenueData, setRevenueData] = useState<RevenueDataType[]>([])
+    const [period, setPeriod] = useState("this_year");
+    
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
     const series: ApexAxisChartSeries = [{
         data: revenueData.map((data) => data.value),
         name: 'Overview',
@@ -68,7 +85,7 @@ export default function RevenueOverview() {
             },
         },
         xaxis: {
-            categories: revenueData.map((data) => data.month),
+            categories: revenueData.map((data) => data.month) || months,
             labels: {
                 style: {
                     fontSize: "11px",
@@ -96,20 +113,59 @@ export default function RevenueOverview() {
         }
     }
 
+        async function handleFetchRevenueOverview() {
+        setLoading(true);
+
+        try {
+			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/payments-analytics-graph?period=${period}`, {
+				method: "GET",
+				headers,
+			});
+            shouldKick(res);
+
+			const data = await res.json();
+			if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            const revenueFormatted = data?.data?.map((data: any) => {
+                const month = Object.keys(data)[0];
+                return { month, value: data[month] }; 
+            })
+            setRevenueData(revenueFormatted ?? []);
+		} catch (err: any) {
+			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+			console.error(message);
+		} finally {
+			setLoading(false);
+		}
+    }
+
+    useEffect(function() {
+        if(period) {
+            handleFetchRevenueOverview();
+        }
+    }, [period]);
+
+
     return (
         <div className="card">
             <div className="section--top">
                 <div className="section--heading">
                     <h2>Revenue Overview</h2>
-                    <select className="form--select">
-                        <option>This Year</option>
-                        <option>Last Year</option>
+                    <select className="form--select" value={period} onChange={(e) => setPeriod(e.target.value)}>
+                        <option value="this_year">This Year</option>
+                        <option value="last_year">Last Year</option>
                     </select>
                 </div>
             </div>
 
             <div className="chart-element" id="chart">
-                <ReactApexChart options={options} series={series} type='line' height={180} />
+                {loading ? (
+                    <SpinnerMini />
+                ) : (
+                    <ReactApexChart options={options} series={series} type='line' height={220} />
+                )}
             </div>
             <div id="html-dist"></div>
         </div>

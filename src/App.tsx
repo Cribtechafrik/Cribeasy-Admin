@@ -27,6 +27,7 @@ import Community from "./pages/community"
 import CreateListing from "./pages/listings/sub_pages/CreateListing"
 import CreateArtisans from "./pages/artisans/sub_pages/CreateArtisans"
 import CreateRenters from "./pages/renters/sub_pages/CreateRenters"
+import SupportTicketDetail from "./pages/support/sub_pages/SupportTicketDetail";
 
 import Create_Agents_Landloard from "./pages/agents_landloard/sub_pages/Create_Agents_Landloard"
 import Agents_Landloard_Details from "./pages/agents_landloard/sub_pages/Agents_Landloard_Details"
@@ -75,7 +76,10 @@ export default function App() {
 
 						<Route path="/dashboard/payments" element={<Payments />}></Route>
 						<Route path="/dashboard/settings" element={<Settings />}></Route>
-						<Route path="/dashboard/support" element={<Support />}></Route>
+
+						<Route path="/dashboard/support-tickets" element={<Support />}></Route>
+						<Route path="/dashboard/support-tickets/:id/details" element={<SupportTicketDetail />}></Route>
+
 						<Route path="/dashboard/community" element={<Community />}></Route>
 						{/* <Route path="/dashboard/analytics" element={<Analytics />}></Route> */}
 						{/* <Route path="/dashboard/notifications" element={<Notifications />}></Route> */}

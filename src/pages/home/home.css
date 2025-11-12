@@ -133,13 +133,13 @@
 }
 .listing--info .title,
 .payment--info .title {
-    font-weight: 500;
-    font-size: 1.45rem;
+    font-weight: 600;
+    font-size: 1.5rem;
 }
 .listing--info .description,
 .payment--info .description,
 .payment--info .date {
-    font-size: 1.3rem;
+    font-size: 1.32rem;
     color: #535862;
 }
 .listing--info .value,
@@ -152,6 +152,26 @@
     color: #666666;
     font-weight: 500;
 }
+
+
+.task--group {
+    margin-top: 2.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+
+.task-card .title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.28rem;
+}
+.task-card .description {
+    font-size: 1.26rem;
+    color: #989898;
+}
+
 
 
 

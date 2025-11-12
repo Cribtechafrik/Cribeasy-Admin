@@ -10,7 +10,6 @@ export async function fetchPropertyTypes({ headers }: { headers: HeaderType }) {
         });
 
         const data = await res.json();
-        console.log(data)
         if (res.status !== 200 || !data?.success) {
             throw new Error(data?.error?.message);
         }
@@ -31,7 +30,6 @@ export async function fetchAmenities({ headers }: { headers: HeaderType }) {
         });
 
         const data = await res.json();
-        console.log(data)
         if (res.status !== 200 || !data?.success) {
             throw new Error(data?.error?.message);
         }
@@ -51,7 +49,6 @@ export async function fetchPropertyCategories({ headers }: { headers: HeaderType
         });
 
         const data = await res.json();
-        console.log(data)
         if (res.status !== 200 || !data?.success) {
             throw new Error(data?.error?.message);
         }
@@ -71,7 +68,6 @@ export async function fetchIdentityTypes({ headers }: { headers: HeaderType }) {
         });
 
         const data = await res.json();
-        console.log(data)
         if (res.status !== 200 || !data?.success) {
             throw new Error(data?.error?.message);
         }
@@ -91,7 +87,6 @@ export async function fetchEmploymentStatuses({ headers }: { headers: HeaderType
         });
 
         const data = await res.json();
-        console.log(data)
         if (res.status !== 200 || !data?.success) {
             throw new Error(data?.error?.message);
         }
@@ -112,7 +107,6 @@ export async function fetchServiceTypes({ headers }: { headers: HeaderType }) {
         });
 
         const data = await res.json();
-        console.log(data)
         if (res.status !== 200 || !data?.success) {
             throw new Error(data?.error?.message);
         }
@@ -133,7 +127,6 @@ export async function fetchCommunities({ headers }: { headers: HeaderType }) {
         });
 
         const data = await res.json();
-        console.log(data)
         if (res.status !== 200 || !data?.success) {
             throw new Error(data?.error?.message);
         }
@@ -153,7 +146,6 @@ export async function fetchPlans({ headers }: { headers: HeaderType }) {
         });
 
         const data = await res.json();
-        console.log(data)
         if (res.status !== 200 || !data?.success) {
             throw new Error(data?.error?.message);
         }

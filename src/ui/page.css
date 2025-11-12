@@ -58,6 +58,10 @@
 	color: #F56464;
     box-shadow: inset 0 0 0 0.1rem #F56464;
 }
+.page--btn.primary {
+	color: #fff;
+	background-color: var(--color-brand-primary);
+}
 .page--btn.active {
 	color: #079455;
 	background-color: #E4F4E5;
@@ -544,6 +548,178 @@
     gap: 4rem;
     justify-content: space-between;
 }
+
+
+
+
+
+
+
+
+/* support tickets */
+
+
+.support--display {
+    display: grid;
+    grid-template-columns: 1.9fr 1fr;
+    gap: 8rem;
+}
+
+
+
+.display--card {
+	padding: 1.8rem;
+	border: 1.4px solid #ddd;
+	width: 100%;
+	border-radius: 1rem;
+	background-color: #fff;
+}
+.display--card .title {
+	font-size: 1.6rem;
+	font-weight: 600;
+}
+.display--card .subtext {
+	margin-top: 0.48rem;
+	font-size: 1.4rem;
+	color: #888;
+}
+
+.support--display .details--card {
+	background-color: #F2F2F2;
+	padding: 1.4rem;
+	border-radius: 0.68rem;
+
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	font-weight: 600;
+	font-size: 1.58rem;
+	width: 100%;
+}
+.support--display .details--card svg {
+	font-size: 2rem;
+}
+
+
+
+.details--card.status--high {
+	background-color: #ffe4e4;
+}
+.details--card.status--resolved {
+	background-color: #d3ffe5;
+}
+.details--card.status--meduim,
+.details--card.status--pending {
+	background-color: #FFFAEB;
+}
+.details--card.status--low,
+.details--card.status--open {
+	background-color: #DBEAFE;
+}
+.attachment--flex {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+}
+.attachment--flex img {
+    width: 100%;
+    border-radius: 0.48rem;
+    background-color: #eee;
+}
+.ticket--messages {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    align-items: flex-start;
+}
+.message--container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    align-items: center;
+    gap: 1rem;
+}
+.message--card {
+    width: 100%;
+    padding: 1.4rem;
+    border-radius: 0.8rem;
+    background-color: #F3F3F3;
+    font-size: 1.48rem;
+    font-weight: 500;
+}
+.message--card aside {
+    font-size: 1rem;
+    color: #989898;
+    text-align: end;
+    margin-left: auto;
+}
+
+
+
+/* ============================================= */
+/* QUILL RICH TEXT EDITOR STYLES */
+/* ============================================= */
+
+.quill {
+	width: 100% !important;
+}
+.ql-toolbar.ql-snow {
+	border-color: transparent !important;
+	display: inline-flex;
+	align-items: center;
+	padding: 0 !important;
+	margin-bottom: 2rem !important;
+}
+.ql-toolbar.ql-snow .ql-formats,
+.ql-toolbar.ql-snow .ql-formats:hover {
+	color: var(--color-brand-dark) !important;
+}
+.ql-toolbar.ql-snow .ql-formats:not(:last-child) {
+	border-right: 1.4px solid #ddd !important;
+	padding-right: 0.8rem;
+	margin-right: 0.6rem;
+}
+.ql-picker-options {
+	margin-top: 1rem !important;
+}
+.ql-font.ql-picker .ql-picker-label,
+.ql-size.ql-picker .ql-picker-label {
+	border: 1.4px solid #ddd !important;
+	border-radius: 0.6rem;
+	padding: 0.6rem;
+	height: unset !important;
+	margin-top: -0.6rem !important;
+	color: var(--color-brand-dark);
+	background-color: #fff !important;
+}
+.ql-font.ql-picker .ql-picker-label.ql-active,
+.ql-font.ql-picker .ql-picker-label:hover,
+.ql-size.ql-picker .ql-picker-label:hover {
+	color: var(--color-brand-dark) !important;
+}
+.quill .ql-editor {
+	width: 100% !important;
+	font-family: inherit !important;
+    min-height: 15rem !important;
+}
+.ql-container.ql-snow {
+	border: 1.4px solid #ddd !important;
+	border-radius: 1rem;
+	background-color: #fff !important;
+	min-height: 15rem !important;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* ================================================== */

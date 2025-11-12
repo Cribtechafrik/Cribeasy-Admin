@@ -225,7 +225,6 @@ export default function index() {
 		}
     }
 
-    // fetchAmenities
     async function handleFetchRenters() {
         setTableLoading(true);
 
