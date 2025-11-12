@@ -306,8 +306,8 @@ export default function SupportTicketDetail() {
                                                             key={index}
                                                             original={img?.url}
                                                             thumbnail={img?.url}
-                                                            width="10rem"
-                                                            height="10rem"
+                                                            width="1024"
+                                                            height="768"
                                                         >
                                                             {({ ref, open }) => (
                                                                 <img ref={ref} onClick={open} src={img.url} alt={msg.sender_name} />

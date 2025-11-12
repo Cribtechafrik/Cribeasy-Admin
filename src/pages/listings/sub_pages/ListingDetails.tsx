@@ -188,8 +188,8 @@ export default function ListingDetails({ id, refetchTable }: { id: number, refet
                         <Item
                             original={listingData?.property_cover}
                             thumbnail={listingData?.property_cover}
-                            width="auto"
-                            height="auto"
+                            width="1024"
+                            height="768"
                         >
                             {({ ref, open }) => (             
                                 <img ref={ref} onClick={open} className="details--cover-img" src={listingData?.property_cover} alt={listingData?.property_title} />
@@ -258,8 +258,8 @@ export default function ListingDetails({ id, refetchTable }: { id: number, refet
                                                 key={i}
                                                 original={imgSrc?.cloudinary_url}
                                                 thumbnail={imgSrc?.cloudinary_url}
-                                                width="auto"
-                                                height="auto"
+                                                width="1024"
+                                                height="768"
                                             >
                                                 {({ ref, open }) => (
                                                     <img ref={ref} onClick={open} src={imgSrc?.cloudinary_url} alt={imgSrc?.cloudinary_id ?? listingData?.property_title} />

@@ -379,8 +379,8 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                             key={i}
                                             original={imgSrc?.cloudinary_public}
                                             thumbnail={imgSrc?.cloudinary_public}
-                                            width="auto"
-                                            height="auto"
+                                            width="1024"
+                                            height="768"
                                         >
                                             {({ ref, open }) => (
                                                 <img ref={ref} onClick={open} src={imgSrc?.cloudinary_public} alt={imgSrc?.cloudinary_id ?? artisansData?.full_name} />
