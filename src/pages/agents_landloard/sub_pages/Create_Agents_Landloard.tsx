@@ -257,7 +257,7 @@ export default function Create_Agents_Landloard() {
 
                             <div className="form--flex">
                                 <div className="form--item">
-                                    <label htmlFor="company_name" className="form--label flex-align-cen">Company Name <span className="form--info">(Optional)</span></label>
+                                    <label htmlFor="company_name" className="form--label flex-align-cen">Company Name {role === "agent" ? <Asterisk /> : <span className="form--info">(Optional)</span>}</label>
                                     <input type="text" className="form--input" id="company_name" placeholder="Real estate company LTD " {...register("company_name", {
                                         required: "Company Name is required!"
                                     })} />
@@ -271,7 +271,7 @@ export default function Create_Agents_Landloard() {
                                     <select className="form--select" id="community_id" {...register("community_id", {
                                         required: "Community is required!"
                                     })}>
-                                        <option selected hidden>All</option>
+                                        <option selected hidden>Select a community</option>
                                         {communities && communities?.map((c, i) => (
                                             <option value={c?.id} key={i}>{c.name}</option>
                                         ))}
@@ -319,8 +319,10 @@ export default function Create_Agents_Landloard() {
 
                                 <div className="form--item">
                                     <label htmlFor="lasrera" className="form--label colored">LASRERA Number <Asterisk /></label>
-                                    <input type="text" className="form--input" id="lasrera" placeholder="Enter a LASRERA number" {...register("lasrera", {
-                                        required: "LASRERA number is required!"
+                                    <input type="number" className="form--input" id="lasrera" placeholder="Enter a LASRERA number" {...register("lasrera", {
+                                        required: "LASRERA number is required!",
+                                        maxLength: 7,
+                                        max: 7
                                     })} />
                                     <span className="form--error-message">
                                         {formState.errors.lasrera && formState.errors.lasrera.message}

@@ -1,32 +1,32 @@
 import { Link } from "react-router-dom";
-import { hexToRgba } from "../../../utils/helper";
+import { formatDateTime, hexToRgba } from "../../../utils/helper";
 
 interface Props {
-    title: string;
-    value: string;
+    value: number;
     valueColor?: string;
-    link: string;
     data?: any[];
 }
 
-export default function TasksComponent({ title, value, valueColor, link, data }: Props) {
+export default function ServiceRequests({ value, valueColor, data }: Props) {
   return (
     <div className="card">
         <div className="section--top">
             <div className="section--heading">
-                <h2>{title}</h2>
+                <h2>Service Requests</h2>
                 <span className="top--info" style={valueColor ? { color: valueColor, backgroundColor: `${hexToRgba(valueColor, "0.085")}` } : { color: "#454545", backgroundColor: "#eee" }}>{value} Today</span>
             </div>
         </div>
 
-
         <div className="task--group">
             {data ? data?.map((data: any, i) => (
-                <Link to={link} className="task-card" key={i}>
-                    <p>{data?.title}</p>
+                <Link to={`dashboard/artisans`} key={i} className="flex-align-justify-spabtw">
+                    <div className="task-card">
+                        <p className="title">{data?.service_name}</p>
+                        <p className="description">{formatDateTime(data?.job_date)} - {data?.artisan?.first_name} {data?.artisan?.last_name}</p>
+                    </div>
                 </Link>
             )) : (
-                <p className="no-data">No {title} yet!</p>
+                <p className="no-data">No request yet!</p>
             )}
         </div>
     </div>

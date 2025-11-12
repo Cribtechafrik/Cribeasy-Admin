@@ -238,3 +238,33 @@ export type InspectionType = {
     renter_profile_image: string;
     cancelled_by: string;
 }
+
+export type TicketMessage = {
+    id: number;
+    message: string;
+    sender_id: number;
+    sender_name: string;
+    sender_image: string;
+    sender_type: string;
+    attachments: {
+        id: number;
+        url: string;
+        public_id: string;
+    }[];
+    created_at: string;
+}
+
+export type SupportTicketType = {
+    id?: number;
+    reportID?: string;
+    requester_name: string;
+    requester_image: string;
+    user_type: string;
+    subject: string;
+    category: string;
+    priority: string;
+    status: string;
+
+    created_at?: string;
+    messages?: TicketMessage[]
+}

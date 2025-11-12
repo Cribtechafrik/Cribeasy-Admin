@@ -123,12 +123,15 @@ textarea::placeholder {
 	color: #aaa;
 }
 
+option[hidden] {
+	color: #aaa;
+}
+
 button {
 	border: none;
 	cursor: pointer;
 	background-color: transparent;
 }
-
 
 body:has(.modal),
 body:has(.spinner--container),
@@ -763,17 +766,20 @@ span.auth--img {
 	font-size: 1.34rem;
 	text-transform: capitalize;
 }
+.status--high,
 .status--inactive,
 .status--failed,
 .status--rented {
 	border-color: #de8282;
 	background-color: #ffe4e4;
 }
+.status--high p,
 .status--inactive p,
 .status--failed p,
 .status--rented p {
 	color: #ff0000;
 }
+.status--resolved,
 .status--active,
 .status--accepted,
 .status--completed,
@@ -785,6 +791,7 @@ span.auth--img {
 }
 
 .status--active p,
+.status--resolved p,
 .status--accepted p,
 .status--completed p,
 .status--published p,
@@ -793,6 +800,7 @@ span.auth--img {
 	color: #067647;
 }
 
+.status--meduim,
 .status--pending,
 .status--unverified,
 .status--unpublished,
@@ -800,6 +808,7 @@ span.auth--img {
 	border-color: #FEDF89;
 	background-color: #FFFAEB;
 }
+.status--medium p,
 .status--pending p,
 .status--unverified p,
 .status--unpublished p,
@@ -812,10 +821,14 @@ span.auth--img {
 	background-color: #eee;
 	border-color: #ccc;
 }
+.status--low,
+.status--open,
 .status--premium {
 	border-color: #132B4B;
 	background-color: #DBEAFE;
 }
+.status--low p,
+.status--open p,
 .status--premium p {
 	color: #132B4B;
 }
@@ -869,12 +882,6 @@ span.auth--img {
 	font-size: 5rem;
 	color: #D92D20;
 }
-
-
-
-
-
-
 
 
 

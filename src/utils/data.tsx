@@ -3,7 +3,7 @@ import { BiSwim, BiUser } from "react-icons/bi";
 // import { BsBarChartLine } from "react-icons/bs";
 import { FaDumbbell, FaWifi } from "react-icons/fa";
 import { FaToiletPortable } from "react-icons/fa6";
-import { GoGear, GoShieldCheck } from "react-icons/go";
+import { GoShieldCheck } from "react-icons/go";
 import {} from "react-icons/hi";
 import { HiOutlineChatBubbleLeftRight, HiOutlineUsers } from "react-icons/hi2";
 import { IoGrid, IoList, IoWaterOutline } from "react-icons/io5";
@@ -48,14 +48,14 @@ export const MENU_ITEMS = [
 		link: "/dashboard/payments",
 		icon: <TbCreditCard />,
 	},
-	{
-		title: "Settings",
-		link: "/dashboard/settings",
-		icon: <GoGear />,
-	},
+	// {
+	// 	title: "Settings",
+	// 	link: "/dashboard/settings",
+	// 	icon: <GoGear />,
+	// },
 	{
 		title: "Support",
-		link: "/dashboard/support",
+		link: "/dashboard/support-tickets",
 		icon: <HiOutlineChatBubbleLeftRight />,
 	},
 	{
