@@ -838,6 +838,12 @@ span.auth--img {
 }
 
 
+.table--title {
+    font-size: 1.84rem;
+    font-weight: 600;
+    color: var(--color-brand-dark);
+    margin-bottom: 2rem;
+}
 .table-spinner-container {
 	width: 100%;
 	padding: 10rem 2rem;

@@ -72,6 +72,18 @@
 }
 
 
+.page--tabs.tabs {
+    background-color: transparent;
+    margin-bottom: 1rem;
+    gap: 3rem;
+    padding: 0;
+    padding-bottom: 0.8rem;
+    border-bottom: 1.4px solid #eee;
+}
+.tabs .page--tab {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
 .page--tabs {
     display: flex;
     align-items: center;

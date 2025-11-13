@@ -5,6 +5,7 @@ import { formatNumber } from "../../../utils/helper";
 import { SpinnerMini } from '../../../components/elements/Spinner';
 import { useEffect, useState } from 'react';
 import { useAuthContext } from '../../../context/AuthContext';
+import ErrorComponent from '../../../components/layout/ErrorComponent';
 
 // const revenueInit = [
 //   { month: "Jan", value:0 },
@@ -30,7 +31,8 @@ type RevenueDataType = {
 export default function RevenueOverview() {
     const { headers, shouldKick } = useAuthContext();
     
-    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [revenueData, setRevenueData] = useState<RevenueDataType[]>([])
     const [period, setPeriod] = useState("this_year");
     
@@ -75,7 +77,7 @@ export default function RevenueOverview() {
             },
             yaxis: {
                 lines: {
-                    show: true,
+                    show: false,
                 },
             },
         },
@@ -113,8 +115,9 @@ export default function RevenueOverview() {
         }
     }
 
-        async function handleFetchRevenueOverview() {
+    async function handleFetchRevenueOverview() {
         setLoading(true);
+        setError(false)
 
         try {
 			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/payments-analytics-graph?period=${period}`, {
@@ -136,6 +139,7 @@ export default function RevenueOverview() {
 		} catch (err: any) {
 			const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
 			console.error(message);
+            setError(true)
 		} finally {
 			setLoading(false);
 		}
@@ -161,9 +165,9 @@ export default function RevenueOverview() {
             </div>
 
             <div className="chart-element" id="chart">
-                {loading ? (
-                    <SpinnerMini />
-                ) : (
+                {(error && !loading) && <ErrorComponent />}
+                {(loading && !error) && <SpinnerMini />}
+                {(!loading && !error) && (
                     <ReactApexChart options={options} series={series} type='line' height={220} />
                 )}
             </div>

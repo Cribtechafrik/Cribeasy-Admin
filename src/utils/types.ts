@@ -14,6 +14,9 @@ export type AuthType = {
 export type Count = {
     count: number
 }
+export type Amount = {
+    amount: number | string;
+}
 
 export type Amenities_Type = {
     id: number;
@@ -267,4 +270,19 @@ export type SupportTicketType = {
 
     created_at?: string;
     messages?: TicketMessage[]
+}
+
+
+export type TransactionType = {
+    id: number;
+    amount: string;
+    status: string;
+    transaction_type: string;
+    transaction_category: string;
+    paid_at: string;
+    charge: string;
+    net_amount: string;
+    reference: string;
+    user: string;
+    user_type: string;
 }
