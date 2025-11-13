@@ -35,7 +35,8 @@ export const custom_styles = {
     cells: {
         style: {
             textAlign: 'center',
-            backgroundColor: '#F9FAFB',
+            // backgroundColor: '#F9FAFB',
+            backgroundColor: '#fff',
             scrollbarWidth: "none"
         }
     },

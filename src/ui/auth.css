@@ -95,6 +95,7 @@
     font-weight: 600;
     color: var(--color-brand-dark);
 }
+
 .form--item {
     display: flex;
     flex-direction: column;
