@@ -90,7 +90,7 @@ export default function RecentPaymentAtivities() {
     }, [])
 
     return (
-        <div className="page--table" style={{ marginTop: "4rem", gap: "2rem" }}>
+        <div className="page--table" style={{ marginTop: "3rem", gap: "2rem" }}>
             <h4 className="table--title">Recent Activities</h4>
             <DataTable
                 data={recentPaymentData as TransactionType[]}

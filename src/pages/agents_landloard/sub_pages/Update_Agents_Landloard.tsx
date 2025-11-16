@@ -146,10 +146,31 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
 
 
     async function handleUpdateUser() {
-    // `${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords/${id}/profile-update`
         setLoading({ ...loading, modal: true });
 
         try {
+            const { community_id, company_name, is_active } = agent_landlord_data;
+    
+                const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords/${id}/profile-update`, {
+                    method: "PUT",
+                    headers: headers,
+                    body: JSON.stringify({ community_id, company_name, is_active })
+                });
+                shouldKick(res);
+    
+                const data = await res.json();
+                if (res.status !== 200 || !data?.success) {
+                    // throw new Error(data?.error?.message);
+                    if(data?.error?.validation_errors) {
+                        const message = Object.entries(data?.error?.validation_errors)?.[0]?.[1]
+                        throw new Error((message ?? "Something went wrong!") as string);
+                    } else {
+                        throw new Error(data?.error?.message);
+                    }
+                }
+    
+                toast.success(`${agent_landlord_data?.role} Edited Successfully!`);
+                closeEditModal();
             refetchData();
         } catch(err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
@@ -272,7 +293,7 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
                                 </div>
 
                                 <div className="form--item">
-                                    <label htmlFor="lasrera" className="form--label">LASRERA Number <Asterisk /></label>
+                                    <label htmlFor="lasrera" className="form--label">LASRERA Number (Optional)</label>
                                     <input type="text" className="form--input" name="lasrera" id="lasrera" placeholder="Enter a LASRERA number" value={agent_landlord_data.lasrera} onChange={handleUsersDataChange} />
                                 </div>
                             </div>

@@ -1,8 +1,12 @@
+import { useBroadcastNotification } from "../../hooks/useBroadcastNotification"
 
 export default function index() {
-  return (
-    <div>
-      
-    </div>
-  )
+    useBroadcastNotification();
+
+    return (
+        <div className="">
+            <p>Notification</p>
+        </div>
+    )
+
 }

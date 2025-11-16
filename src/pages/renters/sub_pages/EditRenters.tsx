@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function EditRenters({ id, closeEditModal, refetchTable }: Props) {
-    const { headers, token, shouldKick } = useAuthContext();
+    const { headers, shouldKick } = useAuthContext();
 
     const [identityTypes, setIdentityTypes] = useState<Identity_type_Type[]>([]);
     const [employmentStatuses, setEmploymentStatuses] = useState<Employment_Status_Type[]>([]);
@@ -116,31 +116,40 @@ export default function EditRenters({ id, closeEditModal, refetchTable }: Props)
         setLoading({ ...loading, modal: true });
 
         try {
-            const formData = new FormData();
-            formData.append('occupation', renterData.occupation);
-            formData.append('community_id', renterData?.community_id);
-            formData.append('is_active', renterData?.is_active || "0");
-            formData.append('employment_status_id', renterData?.employment_status_id);
+            // const formData = new FormData();
+            // formData.append('occupation', renterData.occupation);
+            // formData.append('community_id', renterData?.community_id);
+            // formData.append('is_active', renterData?.is_active || "0");
+            // formData.append('employment_status_id', renterData?.employment_status_id);
 
-            if(profileImage?.file) {
-                formData.append('profile_image', profileImage?.file);
-            }
+            // if(profileImage?.file) {
+            //     formData.append('profile_image', profileImage?.file);
+            // }
             
-            const formDataHeaders = {
-                "Accept": "application/json",
-                Authorization: `Bearer ${token}`
-            }
+            // const formDataHeaders = {
+            //     "Accept": "application/json",
+            //     Authorization: `Bearer ${token}`
+            // }
+
+            const { community_id, occupation, is_active, employment_status_id } = renterData;
 
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/renters/${id}/profile-update`, {
                 method: "PUT",
-                headers: formDataHeaders,
-                body: formData
+                headers: headers,
+                
+                body: JSON.stringify({ community_id, occupation, is_active, employment_status_id })
             });
             shouldKick(res);
 
             const data = await res.json();
             if (res.status !== 200 || !data?.success) {
-                throw new Error(data?.error?.message);
+                // throw new Error(data?.error?.message);
+                if(data?.error?.validation_errors) {
+                    const message = Object.entries(data?.error?.validation_errors)?.[0]?.[1]
+                    throw new Error((message ?? "Something went wrong!") as string);
+                } else {
+                    throw new Error(data?.error?.message);
+                }
             }
 
             toast.success(`Renter Edited Successfully!`);

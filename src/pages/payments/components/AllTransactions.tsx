@@ -15,7 +15,7 @@ export default function AllTransactions() {
 
     const [tableLoading, setTableLoading] = useState(true)
     const [error, setError] = useState(false);
-    const [recentPaymentData, setRecentPaymentData] = useState<TransactionType[]>([]);
+    const [transactions, setTransactions] = useState<TransactionType[]>([]);
     const [userType, setUserType] = useState("");
     const [period, setPeriod] = useState("");
     const [status, setStatus] = useState("");
@@ -48,7 +48,7 @@ export default function AllTransactions() {
             minWidth: "18rem"
         },
         {
-            name: "Amount",
+            name: "AMOUNT",
             selector: (row: TransactionType) => formatNumber(+row?.amount, 0) 
         },
         {
@@ -102,7 +102,7 @@ export default function AllTransactions() {
                 throw new Error(data?.error?.message);
             }
 
-            setRecentPaymentData(data?.data);
+            setTransactions(data?.data);
             setPaginationDetails({ ...paginationDetails, totalCount: data?.total })
         } catch (err: any) {
             // const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
@@ -117,7 +117,7 @@ export default function AllTransactions() {
     }, [userType, paymentType, status, period]);
 
     return (
-        <div className="page--table" style={{ marginTop: "4rem" }}>
+        <div className="page--table" style={{ marginTop: "3rem" }}>
             <div className="flex-align-justify-spabtw">
                 <h4 className="table--title">All Transactions</h4>
 
@@ -160,7 +160,7 @@ export default function AllTransactions() {
 
 
             <DataTable
-                data={recentPaymentData as TransactionType[]}
+                data={transactions as TransactionType[]}
                 columns={columns as any}
                 responsive
                 pagination

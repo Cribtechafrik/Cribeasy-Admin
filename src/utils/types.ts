@@ -5,6 +5,7 @@ export type HeaderType = {
 }
 
 export type AuthType = {
+    id?: string;
     first_name: string;
     last_name: string;
     role: string;
@@ -285,4 +286,74 @@ export type TransactionType = {
     reference: string;
     user: string;
     user_type: string;
+}
+
+export type WithdrawalType = {
+    id: number;
+    amount: string;
+    status: string;
+    transaction_type: string;
+    transaction_category: string;
+    paid_at: string;
+    charge: string;
+    net_amount: string;
+    reference: string;
+    user: string;
+    user_type: string;
+    bank_name: string;
+    account_number: number | null;
+    account_name: string;
+}
+
+
+export type Subscription_BoostType = {
+    id: number;
+    amount: string;
+    plan_name: string;
+    user: string;
+    status: string;
+    starts_at: string;
+    ends_at: string;
+    property_name: string;
+    duration: string;
+}
+
+export type CommunityType = {
+    id: number;
+    community: string;
+    slug: string;
+    cloudinary_path: string;
+    cloudinary_public: string | null;
+    renters: number;
+    agents: number;
+    artisan: number;
+}
+
+export type CommunityDetailType = {
+    id: number;
+    name: string;
+    image: string;
+    community: string;
+    cloudinary_path: string;
+    description: string;
+    landmarks: string[];
+    members:{
+        id: number;
+        profile_image: string | null;
+    }[];
+    count: number;
+}
+
+export type LandmardType = {
+    id: number;
+    community_id: number;
+    name: string;
+}
+
+
+export type CommunityUserType = {
+    "id": number;
+    "name": string;
+    "role": string;
+    "joined_community_at": string | null;
 }

@@ -21,13 +21,15 @@ import Support from "./pages/support"
 import Community from "./pages/community"
 // import Analytics from "./pages/analytics"
 // import Ratings_reviews from "./pages/ratings-reviews"
-// import Notifications from "./pages/notifications"
+import Notifications from "./pages/notifications"
 // import Coupons from "./pages/coupons"
 
 import CreateListing from "./pages/listings/sub_pages/CreateListing"
 import CreateArtisans from "./pages/artisans/sub_pages/CreateArtisans"
 import CreateRenters from "./pages/renters/sub_pages/CreateRenters"
 import SupportTicketDetail from "./pages/support/sub_pages/SupportTicketDetail";
+import CommunityDetails from "./pages/community/sub_pages/CommunityDetails";
+import CreateCommunity from "./pages/community/sub_pages/CreateCommunity";
 
 import Create_Agents_Landloard from "./pages/agents_landloard/sub_pages/Create_Agents_Landloard"
 import Agents_Landloard_Details from "./pages/agents_landloard/sub_pages/Agents_Landloard_Details"
@@ -81,8 +83,12 @@ export default function App() {
 						<Route path="/dashboard/support-tickets/:id/details" element={<SupportTicketDetail />}></Route>
 
 						<Route path="/dashboard/community" element={<Community />}></Route>
+						<Route path="/dashboard/community/create" element={<CreateCommunity />}></Route>
+						<Route path="/dashboard/community/:id" element={<CommunityDetails />}></Route>
+						<Route path="/dashboard/community/id?edit" element={<Community />}></Route>
+
+						<Route path="/dashboard/notifications" element={<Notifications />}></Route>
 						{/* <Route path="/dashboard/analytics" element={<Analytics />}></Route> */}
-						{/* <Route path="/dashboard/notifications" element={<Notifications />}></Route> */}
 						{/* <Route path="/dashboard/ratings-reviews" element={<Ratings_reviews />}></Route> */}
 						{/* <Route path="/dashboard/coupons" element={<Coupons />}></Route> */}
 					</Route>

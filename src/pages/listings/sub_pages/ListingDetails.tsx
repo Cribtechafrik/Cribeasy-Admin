@@ -306,18 +306,22 @@ export default function ListingDetails({ id, refetchTable }: { id: number, refet
 
                             <div className="details--info" style={{ width: "100%" }}>
                                 <h5 className="title form--label">Inspection Slot</h5>
-                                <div className="slot--flex">
-                                    {inspectionSlots?.map((slot, i) => (
-                                        <div key={i} className="flex-align-justify-spabtw">
-                                            <p className="form--label">{slot?.day}: </p>
-                                            {slot?.timeSlots?.map((time, i) => (
-                                                <span className="text" key={i}>
-                                                    {formatTime(time?.start)} - {formatTime(time?.end)}{i < slot?.timeSlots?.length - 1 ? ", " : ""}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    ))}
-                                </div>
+                                {inspectionSlots.length > 0 ? (
+                                    <div className="slot--flex">
+                                        {inspectionSlots?.map((slot, i) => (
+                                            <div key={i} className="flex-align-justify-spabtw">
+                                                <p className="form--label">{slot?.day}: </p>
+                                                {slot?.timeSlots?.map((time, i) => (
+                                                    <span className="text" key={i}>
+                                                        {formatTime(time?.start)} - {formatTime(time?.end)}{i < slot?.timeSlots?.length - 1 ? ", " : ""}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="no-data">No Inspection Slots</p>
+                                )}
                             </div>
                         </div>
                     </div>

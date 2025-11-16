@@ -5,8 +5,8 @@ import Breadcrumbs from '../../../components/elements/Breadcrumbs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthContext } from '../../../context/AuthContext';
 import { toast } from 'sonner';
-import { BsFillFlagFill } from 'react-icons/bs';
-import { PiExport } from 'react-icons/pi';
+// import { BsFillFlagFill } from 'react-icons/bs';
+// import { PiExport } from 'react-icons/pi';
 import { Intials } from '../../../components/layout/IntialsImage';
 import { MdOutlineAccessTimeFilled, MdPhone } from 'react-icons/md';
 import { HiEnvelope } from 'react-icons/hi2';
@@ -70,10 +70,10 @@ export default function InspectionDetails() {
                             <Breadcrumbs breadcrumArr={breadCrumbs} />
                         </div>
 
-                        <div className="flex-align-cen gap-1" style={{ flexWrap: "wrap" }}>
+                        {/* <div className="flex-align-cen gap-1" style={{ flexWrap: "wrap" }}>
                             <button className="page--btn outline"><PiExport /> Export</button>
                             <button className="page--btn remove gap-1"><BsFillFlagFill style={{ fontSize: "1.4rem" }} /> Flag</button>
-                        </div>
+                        </div> */}
                     </div>
 
 
@@ -157,7 +157,7 @@ export default function InspectionDetails() {
                                     </div>
 
                                     {inspectionData?.notes && (
-                                        <div className="inspection--note">
+                                        <div className="section--note">
                                             <p>Notes</p>
                                             <p>{inspectionData?.notes}</p>
                                         </div>

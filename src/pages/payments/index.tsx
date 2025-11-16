@@ -12,6 +12,9 @@ import RevenueOverview from "../home/components/RevenueOverview";
 import RecentPaymentAtivities from "./components/RecentPaymentAtivities";
 import Tab from '../../components/elements/Tab';
 import AllTransactions from "./components/AllTransactions";
+import Withdrawals from "./components/Withdrawals";
+import Subscription_And_Boost from "./components/Subscription_And_Boost";
+// import Refund from "./components/Refund";
 
 const breadCrumbs = [
     { name: "Payments", isCurrent: true },
@@ -31,13 +34,11 @@ export default function index() {
     const queryParams = new URLSearchParams(location.search);
     const tabParams = queryParams.get("tab")
     ///////////////////////////////////////////////////////
-
     const { headers, shouldKick } = useAuthContext();
     
-    const [mainLoading, setMainLoading] = useState(true);
+    const [mainLoading, setMainLoading] = useState(false);
     const [period, setPeriod] = useState("all_time");
     const [activeTab, setActiveTab] = useState("");
-
     const [analyticsSummary, setAnalyticsSummary] = useState<PaymentAnalyticsType | null>(null);
 
 
@@ -76,12 +77,11 @@ export default function index() {
     }
 
     useEffect(function() {
-        handleFetchAnalytics();
-    }, [period]);
+        if(activeTab == "overview") {
+            handleFetchAnalytics();
+        }
 
-
-
-
+    }, [period, activeTab]);
 
     return (
         <React.Fragment>
@@ -102,7 +102,7 @@ export default function index() {
                         {/* <Tab title="Commissions" active={activeTab == "commission"} onClick={() => navigate("?tab=commission")} /> */}
                         <Tab title="Withdrawals" active={activeTab == "withdrawal"} onClick={() => navigate("?tab=withdrawal")} />
                         <Tab title="Sunscriptions & Boost" active={activeTab == "subscription_and_boost"} onClick={() => navigate("?tab=subscription_and_boost")} />
-                        <Tab title="Refund" active={activeTab == "refund"} onClick={() => navigate("?tab=refund")} />
+                        {/* <Tab title="Refund" active={activeTab == "refund"} onClick={() => navigate("?tab=refund")} /> */}
                     </div>
                 </div>
 
@@ -130,9 +130,13 @@ export default function index() {
                         </React.Fragment>
                     )}
 
-                    {activeTab == "transaction" && (
-                        <AllTransactions />
-                    )}
+                    {activeTab == "transaction" && <AllTransactions />}
+
+                    {activeTab == "withdrawal" && <Withdrawals />}
+
+                    {activeTab == "subscription_and_boost" && <Subscription_And_Boost />}
+
+                    {/* {activeTab == "refund" && <Refund />} */}
                 </div>
             </section>
         </React.Fragment>

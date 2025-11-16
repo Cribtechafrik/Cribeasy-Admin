@@ -1,12 +1,10 @@
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import { BiSwim, BiUser } from "react-icons/bi";
-// import { BsBarChartLine } from "react-icons/bs";
 import { FaDumbbell, FaWifi } from "react-icons/fa";
 import { FaToiletPortable } from "react-icons/fa6";
 import { GoShieldCheck } from "react-icons/go";
-import {} from "react-icons/hi";
 import { HiOutlineChatBubbleLeftRight, HiOutlineUsers } from "react-icons/hi2";
-import { IoGrid, IoList, IoWaterOutline } from "react-icons/io5";
+import { IoGridOutline, IoList, IoNotificationsOutline, IoWaterOutline } from "react-icons/io5";
 import { LuCircleParking, LuCrown, LuSearch } from "react-icons/lu";
 import { MdBalcony, MdOutlineKitchen, MdOutlinePets } from "react-icons/md";
 import { TbAirConditioning, TbCreditCard, TbUsersGroup } from "react-icons/tb";
@@ -16,7 +14,7 @@ export const MENU_ITEMS = [
 	{
 		title: "Dashboard",
 		link: "/",
-		icon: <IoGrid />,
+		icon: <IoGridOutline />,
 	},
 	{
 		title: "Listings",
@@ -73,11 +71,11 @@ export const MENU_ITEMS = [
 	// 	link: "/dashboard/ratings-reviews",
 	// 	icon: <HiOutlineStar />,
 	// },
-	// {
-	//     title: "Notifications",
-	//     link: "/dashboard/notifications",
-	//     icon: <IoNotificationsOutline />
-	// },
+	{
+	    title: "Notifications",
+	    link: "/dashboard/notifications",
+	    icon: <IoNotificationsOutline />
+	},
 	// {
 	// 	title: "Coupons",
 	// 	link: "/dashboard/coupons",

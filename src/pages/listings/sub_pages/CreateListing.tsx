@@ -72,20 +72,6 @@ export default function CreateListing() {
     const { register, handleSubmit, formState, getValues, setValue, watch } = useForm<FormDataType>();
     watch("description");
 
-    // const [formData, setFormData] = useState<FormDataType>({
-    //     property_title: "",
-    //     description: "",
-    //     rent_price: "",
-    //     property_size: "",
-    //     property_address: "",
-    //     property_type_id: "",
-    //     property_category_id: "",
-    //     service_charge: "",
-    //     agent: "",
-    //     bedrooms: "",
-    //     bathrooms: "",
-    // });
-
     const [selectedAmenities, setSelectedAmenities] = useState<AmenitiesType[]>([]);
     const [inspectionSchedules, setInspectionSchedules] = useState<InspectionScheduleType[]>([])
 
@@ -185,10 +171,14 @@ export default function CreateListing() {
         //     newSlots[index][field] = value;
         // }
 
+        console.log(schedule.date)
+
         if (newSlots[index]) {
             const currentTime = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            console.log(newSlots[index])
+
             if (field === 'start') {
-                if (value < currentTime && index === 0) {
+                if (value < (currentTime) && index === 0) {
                     toast.error("Start time cannot be earlier than the current time");
                     return;
                 }

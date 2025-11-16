@@ -38,7 +38,7 @@ export function Intials({ hasImage, imageUrl, names, showOnline=false }: { hasIm
 
 
 export function IntialsAndUploader({ hasImage, imageUrl, isPreview, names, handleChange, handleRemove }: {
-    hasImage?: boolean, imageUrl?: string, names: string[]; isPreview: boolean;
+    hasImage?: boolean, imageUrl?: string, names?: string[]; isPreview: boolean;
     handleChange: (e: { target: { files: File } } | any) => void;
     handleRemove: () => void;
 }) {
