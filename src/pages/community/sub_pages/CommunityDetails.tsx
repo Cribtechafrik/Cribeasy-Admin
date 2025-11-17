@@ -84,8 +84,10 @@ export default function CommunityDetails() {
         },
         {
             name: "ACTION",
+            // @ts-ignore
             selector: (row: CommunityUserType) => (
-                <div className="table--action" onClick={() => navigate(`/dashboard/${(row?.role == "agent" || row?.role == "landlord" ? "agents-landlords" : row?.role+"s")}`)}>
+                // <div className="table--action" onClick={() => navigate(`/dashboard/${(row?.role == "agent" || row?.role == "landlord" ? "agents-landlords" : row?.role+"s")}`)}>
+                <div className="table--action" onClick={() => {}}>
                     <BsEye />
                 </div>
             ),
@@ -203,8 +205,8 @@ export default function CommunityDetails() {
             <HalfScreen title="Edit Community" setClose={() => setShowModal({ ...showModal, edit: false })}>
                 <UpdateCommunity
                     id={id}
-                    closeEditModal={() => setShowModal({ ...showModal, edit: false })}
                     refetchData={handleFetchData}
+                    closeEditModal={() => setShowModal({ ...showModal, edit: false })}
                 />
             </HalfScreen>
         )}
@@ -213,7 +215,7 @@ export default function CommunityDetails() {
             <section className="section--page">
                 <div className="page--top">
                     <div className="page--heading">
-                        <h4 className="title">Agents/Landloard Details</h4>
+                        <h4 className="title">Community Details</h4>
                         <Breadcrumbs breadcrumArr={breadCrumbs} />
                     </div>
                 </div>
@@ -250,7 +252,9 @@ export default function CommunityDetails() {
                                     </div>
 
                                     <div className="community--details flex-col-3">
-                                        <img src={communityData.image} />
+                                        <span className='community--img'>
+                                            <img src={communityData.image} alt={communityData?.name} />
+                                        </span>
 
                                         <div className="flex-col-1">
                                             <h4 className="form--label colored">Community Details</h4>
@@ -340,7 +344,7 @@ export default function CommunityDetails() {
                 {activeTab === "overview" && (
                     <div className="modal--actions" style={{ maxWidth: "40rem" }}>
                         <button className="modal--btn filled" onClick={() => setShowModal({ ...showModal, edit: true })}>Edit</button>
-                        <button className="modal--btn outline" onClick={() => navigate(-1)}>Cancel</button>
+                        <button className="modal--btn outline" onClick={() => navigate("/dashboard/community")}>Cancel</button>
                     </div>
                 )}
             </section>
