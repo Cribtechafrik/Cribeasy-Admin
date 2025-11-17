@@ -728,12 +728,40 @@
 
 
 
+.community--landmark-flex {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.community--landmark-item {
+    background-color: #0D94881A;
+    color: #0D9488;
+    border: none;
+    border-radius: 1.4rem;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+.community--landmark-item svg {
+    font-size: 2rem;
+    cursor: pointer;
+}
 
-.community--details img {
+.community--details .community--img {
+    height: 25rem;
+    background-color: #eee;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+.community--details .community--img img {
     max-height: 25rem;
     width: 100%;
     object-fit: cover;
-    border-radius: 1rem;
 }
 .landmark--details {
     max-width: 45rem;
@@ -767,6 +795,36 @@
     cursor: pointer;
 }
 
+.landmark--input {
+    width: 100%;
+    /* display: flex; */
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    align-items: center;
+    gap: 2.84rem;
+}
+
+.landmark--input .form--input {
+    width: 100%;
+}
+
+.add--btn {
+    border: none;
+    background-color: transparent;
+    align-self: flex-start;
+
+    display: flex;
+    align-items: center;
+    gap: 0.48rem;
+    font-size: 1.48rem;
+    color: var(--color-brand-dark);
+    font-weight: 600;
+    margin-top: 1rem;
+}
+.add--btn svg {
+    color: var(--color-brand-primary);
+    font-size: 1.8rem;
+}
 
 
 /* ================================================== */

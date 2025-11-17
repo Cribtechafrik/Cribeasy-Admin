@@ -344,7 +344,7 @@ export type CommunityDetailType = {
     count: number;
 }
 
-export type LandmardType = {
+export type LandmarkType = {
     id: number;
     community_id: number;
     name: string;

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../components/elements/Breadcrumbs";
 import { AiOutlinePlus } from "react-icons/ai";
 import React, { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ type AnalyticsType = {
 
 
 export default function index() {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
 
     const [period, setPeriod] = useState("all_time");
@@ -62,20 +62,10 @@ export default function index() {
             name: "ARTISAN",
             selector: (row: CommunityType) => row?.artisan,
         },
-        // {
-        //     name: "STATUS",
-        //     selector: (row: CommunityType) => (
-        //         <span className={`status status--${row?.is_active == 1 ? "active" : "inactive"}`}>
-        //             <p>{row?.is_active == 1 ? "active" : "inactive"}</p>
-        //         </span>
-        //     )
-        // },
         {
             name: "ACTIONS",
-            // @ts-ignore
             selector: (row: CommunityType) => (
-                // <div className="table--action" onClick={() => navigate(`/dashboard/community/${row?.id}`)}>
-                <div className="table--action" onClick={() => {}}>
+                <div className="table--action" onClick={() => navigate(`/dashboard/community/${row?.id}`)}>
                     <BsEye />
                 </div>
             ),
