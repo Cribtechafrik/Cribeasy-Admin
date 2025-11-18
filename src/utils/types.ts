@@ -188,7 +188,9 @@ export type ArtisansType = {
     company_name: string | null;
     service_type: string | null;
     proof_of_work: ImageUrl[];
+    userServiceFocuses: string[];
     revenue: number;
+    years_experience: string;
 }
 
 

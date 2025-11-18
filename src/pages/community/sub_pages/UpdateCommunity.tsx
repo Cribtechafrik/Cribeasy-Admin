@@ -20,7 +20,7 @@ interface Props {
 
 export default function UpdateCommunity({ id, closeEditModal, refetchData }: Props) {
     // const navigate = useNavigate();
-    const { headers } = useAuthContext();
+    const { headers, token, shouldKick } = useAuthContext();
     const [loading, setLoading] = useState({ main: false, modal: true });
     const [showModal, setShowModal] = useState({ add: false, completed: false });
 
@@ -89,6 +89,7 @@ export default function UpdateCommunity({ id, closeEditModal, refetchData }: Pro
                 method: "DELETE",
                 headers,
             });
+            shouldKick(res);
 
             const data = await res.json();
             if (res.status !== 200 || !data?.success) {
@@ -107,7 +108,6 @@ export default function UpdateCommunity({ id, closeEditModal, refetchData }: Pro
         }
     }
 
-
     async function handleCreateLandmark() {
         if (!landmark_name) return toast.error("Landmark name is required!");
         setLoading({ ...loading, main: true });
@@ -118,6 +118,7 @@ export default function UpdateCommunity({ id, closeEditModal, refetchData }: Pro
                 headers,
                 body: JSON.stringify({ community_id: communityData.id, name: landmark_name })
             });
+            shouldKick(res);
 
             const data = await res.json();
             if (res.status !== 200 || !data?.success) {
@@ -139,6 +140,33 @@ export default function UpdateCommunity({ id, closeEditModal, refetchData }: Pro
     }
 
 
+    async function handleUploadCoverImage() {
+        try {
+            const formData = new FormData();
+            coverImage?.file && formData.append('cover_image', coverImage?.file);
+
+            const formDataHeaders = {
+                "Accept": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/communities/${id}/cover-update`, {
+                method: "POST",
+                headers: formDataHeaders,
+                body: formData
+            });
+
+            const data = await res.json();
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            return { success: true, url: data?.data?.url }
+        } catch(err: any) {
+            return { success: false, msg: err?.message }
+        }
+    }
+
     async function handleSubmitCommunityEdit() {
         if (!communityData.image) return toast.error("Community name is required!");
         if (!communityData.description) return toast.error("Community description is required!");
@@ -147,18 +175,26 @@ export default function UpdateCommunity({ id, closeEditModal, refetchData }: Pro
         setLoading({ ...loading, modal: true });
 
         try {
+            if(coverImage?.file) {
+                const result = await handleUploadCoverImage();
+                if(!result.success) throw new Error("Error uploading cover image")
+                setCoverImage(result.url)
+            }
+
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/communities/${id}`, {
                 method: "PUT",
                 headers,
                 body: JSON.stringify({ name: communityData?.name, description: communityData.description })
             });
+            shouldKick(res);
 
             const data = await res.json();
             if (res.status !== 200 || !data?.success) {
                 throw new Error(data?.error?.message);
             }
 
-            toast.success("Edited Successfully!")
+            toast.success("Edited Successfully!");
+            setCommunityData(data?.data)
             closeEditModal();
         } catch(err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;

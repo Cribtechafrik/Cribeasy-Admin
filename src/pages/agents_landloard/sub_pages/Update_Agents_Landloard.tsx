@@ -90,7 +90,7 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
                     company_name: agent_landlord?.company_name || "",
                     identity_type_id: agent_landlord?.identity_type_id || "",
                     is_active: +agent_landlord?.is_active,
-                    has_verified_docs: 0
+                    has_verified_docs: +agent_landlord?.has_verified_docs
                 });
 
                 setProfileImage({ file: null, preview: agent_landlord?.profile_image ?? "" })
@@ -258,7 +258,7 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
 
                                 <div className="form--item">
                                     <label htmlFor="company_name" className="form--label">Company Name <Asterisk /></label>
-                                    <input type="text" className="form--input" name="company_name" id="company_name" placeholder="BuildSig Ng" value={agent_landlord_data.company_name} onChange={handleUsersDataChange} />
+                                    <input type="text" className="form--input" name="company_name" id="company_name" placeholder="BuildSpire Ng" value={agent_landlord_data.company_name} onChange={handleUsersDataChange} />
                                 </div>
                             </div>
 

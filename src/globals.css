@@ -480,6 +480,19 @@ body:has(.global--overlay) {
 }
 
 
+.modal--list {
+	display: flex;
+	flex-direction: column;
+	align-self: flex-start;
+	align-items: flex-start;
+	gap: 0.48rem;
+}
+.modal--list p {
+	font-weight: 600;
+	font-size: 1.46rem;
+}
+
+
 .modal--actions {
 	width: 100%;
 	display: flex;
@@ -851,6 +864,21 @@ span.auth--img {
 	align-items: center;
 	justify-content: center;
 }
+.table--btn {
+	padding: 0.68rem 0.8rem;
+	font-weight: 500;
+	cursor: pointer;
+	color: var(--white);
+	border-radius: 1rem;
+}
+.table--btn.success {
+	background-color: var(--color-brand-dark);
+	margin-right: 1rem;
+}
+.table--btn.cancel {
+	background-color: #F56464;
+}
+
 
 .error--container,
 .empty--box {

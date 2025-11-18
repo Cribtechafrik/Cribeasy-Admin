@@ -6,7 +6,7 @@ import { custom_styles } from "../../utils/contants.ts";
 import Spinner, { SpinnerMini } from "../../components/elements/Spinner.tsx";
 import EmptyTable from "../../components/layout/EmptyTable.tsx";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LuCrown, LuUsers } from "react-icons/lu";
 import FilterButton from "../../components/elements/FilterButton.tsx";
 import { BsEye, BsFillFlagFill } from "react-icons/bs";
@@ -55,6 +55,11 @@ type FilterDataType = {
 }
 
 export default function index() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const detailParams = queryParams.get("id")
+
     const { headers, shouldKick } = useAuthContext();
 
     const [error, setError] = useState(false);
@@ -156,11 +161,24 @@ export default function index() {
         },
     ];
 
+    useEffect(function () {
+        if (detailParams) {
+            setSelectedId(Number(detailParams));
+            setShowModal({ ...showModal, details: true })
+        }
+    }, [detailParams]);
+
     const handleShowDetailsModal = function(id: number) {
         if(id) {
+            navigate(`?id=${id}`)
             setSelectedId(id);
             setShowModal({ ...showModal, details: true });
         }
+    }
+    const handleCloseDetailModal = function() {
+        navigate("")
+        setSelectedId(null);
+        setShowModal({ ...showModal, details: false });
     }
 
     const handleTabChange = function(tab: string) {
@@ -363,11 +381,11 @@ export default function index() {
             {mainLoading && <Spinner />}
         
             {(selectedId && showModal.details) && (
-                <HalfScreen title="Artisans Details" setClose={() => setShowModal({ ...showModal, details: false })}>
+                <HalfScreen title="Artisans Details" setClose={handleCloseDetailModal}>
                     <ArtisansDetails
                         id={selectedId}
                         handleOpenEdit={() => setShowModal({ ...showModal, details: false, edit: true })}
-                        closeDetails={() => setShowModal({ ...showModal, details: false })}
+                        closeDetails={handleCloseDetailModal}
                         refetchTable={handleFetchArtisans}
                     />
                 </HalfScreen>
@@ -377,7 +395,8 @@ export default function index() {
                 <HalfScreen title="Edit Artisans Details" setClose={() => setShowModal({ ...showModal, edit: false })}>
                     <EditArtisans
                         id={selectedId}
-                        closeEditModal={() => setShowModal({ ...showModal, details: false })}
+                        closeEditModal={() => setShowModal({ ...showModal, edit: false })}
+                        refetchData={handleFetchArtisans}
                     />
                 </HalfScreen>
             )}

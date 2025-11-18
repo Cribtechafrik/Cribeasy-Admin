@@ -101,7 +101,7 @@ export default function index() {
                         <Tab title="Transactions" active={activeTab == "transaction"} onClick={() => navigate("?tab=transaction")} />
                         {/* <Tab title="Commissions" active={activeTab == "commission"} onClick={() => navigate("?tab=commission")} /> */}
                         <Tab title="Withdrawals" active={activeTab == "withdrawal"} onClick={() => navigate("?tab=withdrawal")} />
-                        <Tab title="Sunscriptions & Boost" active={activeTab == "subscription_and_boost"} onClick={() => navigate("?tab=subscription_and_boost")} />
+                        <Tab title="Subscriptions & Boost" active={activeTab == "subscription_and_boost"} onClick={() => navigate("?tab=subscription_and_boost")} />
                         {/* <Tab title="Refund" active={activeTab == "refund"} onClick={() => navigate("?tab=refund")} /> */}
                     </div>
                 </div>

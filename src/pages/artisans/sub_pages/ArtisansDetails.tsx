@@ -265,7 +265,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Experience</p>
-                                    <p className="info">{"3 - 5 years"}</p>
+                                    <p className="info">{artisansData.years_experience ?? "--"}</p>
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Community</p>
@@ -284,7 +284,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Specific Focus</p>
-                                    {}
+                                    {/* {artisansData?.} */}
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Status</p>

@@ -56,6 +56,14 @@ export function formatDateTime(dateTimeString: string): string {
 }
 
 
+export function truncateString(input: string, num:number = 25): string {
+	if (input?.length > num) {
+		return input?.substring(0, num) + "...";
+	} else {
+		return input;
+	}
+}
+
 export function getCurrentTime() {
 	const now = new Date();
 	const hours = now.getHours().toString().padStart(2, '0');

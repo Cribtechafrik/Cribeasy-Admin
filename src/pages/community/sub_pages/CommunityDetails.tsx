@@ -48,7 +48,7 @@ export default function CommunityDetails() {
     const [showModal, setShowModal] = useState({ confirm: false, completed: false, edit: false });
     
     const [tableLoading, setTableLoading] = useState(true);
-    const [user_type, setUserType] = useState("renter");
+    const [user_type, setUserType] = useState("");
     const [communityUsers, setCommunityUsers] = useState<CommunityUserType[]>([]);
     const [paginationDetails, setPaginationDetails] = useState({
         currentPage: 1,
@@ -68,6 +68,8 @@ export default function CommunityDetails() {
             navigate("?tab=overview")
         }
     }, [tabParams]);
+
+    console.log(communityUsers)
     
     const columns = [
         {
@@ -86,8 +88,9 @@ export default function CommunityDetails() {
             name: "ACTION",
             // @ts-ignore
             selector: (row: CommunityUserType) => (
-                // <div className="table--action" onClick={() => navigate(`/dashboard/${(row?.role == "agent" || row?.role == "landlord" ? "agents-landlords" : row?.role+"s")}`)}>
-                <div className="table--action" onClick={() => {}}>
+                <div className="table--action" onClick={() =>
+                    navigate(`/dashboard/${(row?.role == "agent" || row?.role == "landlord" ? `agents-landlords/${row?.id}` : row?.role+`s/?id=${row?.id}`)}`)}
+                >
                     <BsEye />
                 </div>
             ),
@@ -289,6 +292,7 @@ export default function CommunityDetails() {
                     {activeTab === "members" && (
                         <div className="page--table">
                             <select className="form--select" value={user_type} onChange={(e) => setUserType(e.target.value)} style={{ color: "#D47C1D", marginBottom: "2rem" }}>
+                                <option selected value="">All Users</option>
                                 <option value="landlord">Landlord</option>
                                 <option value="agent">Agent</option>
                                 <option value="renter">Renter</option>
@@ -313,8 +317,6 @@ export default function CommunityDetails() {
                                     )
                                 }
                                 customStyles={custom_styles as any}
-                                // clearSelectedRows={selectedRowIsCleared}
-                                // onSelectedRowsChange={handleSelectedRow}
                                 pointerOnHover={false}
                                 selectableRows={true}
                                 progressPending={tableLoading}
@@ -325,7 +327,6 @@ export default function CommunityDetails() {
                                 }
                                 highlightOnHover={false}
                                 paginationRowsPerPageOptions={[10]}
-
                                 paginationPerPage={paginationDetails?.perPage}
                                 paginationDefaultPage={paginationDetails?.currentPage}
                                 paginationTotalRows={paginationDetails?.totalCount}

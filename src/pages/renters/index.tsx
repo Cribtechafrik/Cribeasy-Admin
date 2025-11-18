@@ -7,7 +7,7 @@ import { custom_styles } from "../../utils/contants";
 import Spinner, { SpinnerMini } from "../../components/elements/Spinner";
 import EmptyTable from "../../components/layout/EmptyTable";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUsers } from "react-icons/fa6";
 import { BsEye, BsFillFlagFill } from "react-icons/bs";
 import type { Community_Type, Count, Property_category_Type, RenterType } from "../../utils/types";
@@ -55,6 +55,11 @@ type FilterDataType = {
 }
 
 export default function index() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const detailParams = queryParams.get("id")
+
     const { width } = useWindowSize();
     const { headers, shouldKick } = useAuthContext();
 
@@ -142,11 +147,25 @@ export default function index() {
     ];
 
 
+    useEffect(function () {
+        if (detailParams) {
+            setSelectedId(Number(detailParams));
+            setShowModal({ ...showModal, details: true })
+        }
+    }, [detailParams]);
+
+
     const handleShowDetailsModal = function(id: number) {
         if(id) {
+            navigate(`?id=${id}`)
             setSelectedId(id);
             setShowModal({ ...showModal, details: true });
         }
+    }
+    const handleCloseDetailModal = function() {
+        navigate("")
+        setSelectedId(null);
+        setShowModal({ ...showModal, details: false });
     }
 
     const handleTabChange = function(tab: string) {
@@ -329,12 +348,15 @@ export default function index() {
             {(selectedId && showModal.details) && (
                 <HalfScreen
                     title="Renter Profile"
-                    setClose={() => setShowModal({ ...showModal, details: false })}
+                    setClose={handleCloseDetailModal}
                 >
                     <RenterDetails
                         id={selectedId}
-                        closeDetails={() => setShowModal({ ...showModal, details: false })}
-                        handleOpenEdit={() => setShowModal({ ...showModal, details: false, edit: true })}
+                        closeDetails={handleCloseDetailModal}
+                        handleOpenEdit={() => {
+                            navigate("")
+                            setShowModal({ ...showModal, details: false, edit: true })
+                        }}
                         refetchTable={handleFetchRenters}
                     />
                 </HalfScreen>

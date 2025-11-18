@@ -425,6 +425,11 @@ export default function CreateListing() {
         }
     }, [id]);
 
+
+    useEffect(function() {
+        // v1/admin/agents-landlords-for-property-creation
+    }, [])
+
     
     const handleSubmitListing:SubmitHandler<FormDataType> = async function(formdata) {
         if(!coverImage.file || !coverImage.preview) {
