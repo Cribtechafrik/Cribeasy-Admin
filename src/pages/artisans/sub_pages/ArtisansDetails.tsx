@@ -284,7 +284,9 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Specific Focus</p>
-                                    {/* {artisansData?.} */}
+                                    {artisansData?.userServiceFocuses?.map((focus: string, i: number) => (
+                                        <span key={i}>{focus}</span>
+                                    ))}
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Status</p>
