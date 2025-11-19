@@ -193,8 +193,6 @@ export default function index() {
                                 )
                             }
                             customStyles={custom_styles as any}
-                            // clearSelectedRows={selectedRowIsCleared}
-                            // onSelectedRowsChange={handleSelectedRow}
                             pointerOnHover={false}
                             selectableRows={true}
                             progressPending={tableLoading}

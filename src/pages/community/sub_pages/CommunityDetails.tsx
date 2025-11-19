@@ -4,7 +4,7 @@ import type { CommunityDetailType, CommunityUserType, Count } from '../../../uti
 import Breadcrumbs from '../../../components/elements/Breadcrumbs';
 import { toast } from 'sonner';
 import { useAuthContext } from '../../../context/AuthContext';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import InsightCard from '../../../components/layout/InsightCard';
 import { HiOutlineUsers } from 'react-icons/hi';
 import { FaUser } from 'react-icons/fa';
@@ -30,15 +30,15 @@ type AnalyticsType = {
 }
 
 export default function CommunityDetails() {
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const tabParams = queryParams.get("tab");
+    // const location = useLocation();
+    // const queryParams = new URLSearchParams(location.search);
+    // const tabParams = queryParams.get("tab");
 
     const { id } = useParams();
     const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
 
-    const [activeTab, setActiveTab] = useState("");
+    const [activeTab, setActiveTab] = useState("overview");
     const [period, setPeriod] = useState("all_time");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -61,16 +61,14 @@ export default function CommunityDetails() {
         { name: `${communityData?.name ?? "Details"}`, isCurrent: true },
     ];
 
-    useEffect(function () {
-        if (tabParams) {
-            setActiveTab(tabParams)
-        } else {
-            navigate("?tab=overview")
-        }
-    }, [tabParams]);
+    // useEffect(function () {
+    //     if (tabParams) {
+    //         setActiveTab(tabParams)
+    //     } else {
+    //         navigate("?tab=overview")
+    //     }
+    // }, [tabParams]);
 
-    console.log(communityUsers)
-    
     const columns = [
         {
             name: "NAME",
@@ -240,11 +238,11 @@ export default function CommunityDetails() {
                     </div>
 
                     <div className="page--tabs tabs">
-                        <Tab title="Overview" active={activeTab == "overview"} onClick={() => navigate("?tab=overview")} />
-                        <Tab title="Members" active={activeTab == "members"} onClick={() => navigate("?tab=members")} />
+                        <Tab title="Overview" active={activeTab == "overview"} onClick={() => setActiveTab("overview")} />
+                        <Tab title="Members" active={activeTab == "members"} onClick={() => setActiveTab("members")} />
                     </div>
 
-                    {activeTab === "overview" && (
+                    {activeTab == "overview" && (
                         <React.Fragment>
                             {error ? (
                                 <ErrorComponent />
@@ -289,7 +287,7 @@ export default function CommunityDetails() {
                         </React.Fragment>
                     )}
 
-                    {activeTab === "members" && (
+                    {activeTab == "members" && (
                         <div className="page--table">
                             <select className="form--select" value={user_type} onChange={(e) => setUserType(e.target.value)} style={{ color: "#D47C1D", marginBottom: "2rem" }}>
                                 <option selected value="">All Users</option>
