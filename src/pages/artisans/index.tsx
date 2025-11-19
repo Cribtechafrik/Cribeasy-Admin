@@ -392,7 +392,7 @@ export default function index() {
             )}
 
             {(selectedId && showModal.edit) && (
-                <HalfScreen title="Edit Artisans Details" setClose={() => setShowModal({ ...showModal, edit: false })}>
+                <HalfScreen title="Update Artisans Details" setClose={() => setShowModal({ ...showModal, edit: false })}>
                     <EditArtisans
                         id={selectedId}
                         closeEditModal={() => setShowModal({ ...showModal, edit: false })}

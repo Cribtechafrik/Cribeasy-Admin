@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAuthContext } from '../../../context/AuthContext';
-import type { ArtisansType } from '../../../utils/types';
+import type { ArtisansType, Service_types_Type } from '../../../utils/types';
 import { toast } from 'sonner';
 import Spinner, { SpinnerMini } from '../../../components/elements/Spinner';
 import { createPortal } from 'react-dom';
@@ -253,7 +253,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                             </div>
                         </div>
 
-                        <div className="user--info-body" style={{ maxWidth: "40rem" }}>
+                        <div className="user--info-body" style={{ maxWidth: "50rem" }}>
                             <div className="left--side">
                                 <div className="details--info">
                                     <p className="text">Company name</p>
@@ -265,7 +265,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Experience</p>
-                                    <p className="info">{artisansData.years_experience ?? "--"}</p>
+                                    <p className="info">{artisansData.years_experience ? `${artisansData.years_experience} years` : "--"}</p>
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Community</p>
@@ -284,9 +284,12 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Specific Focus</p>
-                                    {artisansData?.userServiceFocuses?.map((focus: string, i: number) => (
-                                        <span key={i}>{focus}</span>
-                                    ))}
+
+                                    <div className="services--flex">
+                                        {artisansData?.userServiceFocuses?.map(({ id, service_focus }: { id: any; service_focus: Service_types_Type}) => (
+                                            <span key={id} className="service--item">{service_focus?.name}</span>
+                                        ))}
+                                    </div>
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Status</p>
@@ -397,7 +400,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                     </div>
 
                     <div className="modal--actions">
-                        <button className="modal--btn black-outline" onClick={handleOpenEdit}>Edit</button>
+                        <button className="modal--btn black-outline" onClick={handleOpenEdit}>Update</button>
                         {/* <button className="modal--btn outline" onClick={() => {}}>Reset Creditials</button> */}
                         <button className={`modal--btn ${artisansData?.is_active == 1 ? "outline-remove" : "filled"}`} onClick={() => setShowModal({ ...showModal, confirm: true })}>
                             {artisansData?.is_active == 1 ? "Deactivate" : "Activate"}

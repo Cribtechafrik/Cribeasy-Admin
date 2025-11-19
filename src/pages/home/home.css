@@ -145,8 +145,9 @@
 }
 .listing--info .value,
 .payment--info .value {
-    font-size: 1.4rem;
+    font-size: 1.36rem;
     color: #3B82F6;
+    font-weight: 500;
 }
 .listing--info .period {
     font-size: 1rem;
