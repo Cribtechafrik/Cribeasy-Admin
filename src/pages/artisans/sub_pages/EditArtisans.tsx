@@ -232,7 +232,7 @@ export default function EditArtisans({ id, closeEditModal, refetchData }: Props)
                     </div>
 
                     <div className="form">
-                        <h4 className="form--title">Identity</h4>
+                        <h4 className="form--title">Identity & Account Status</h4>
 
                         <div className="form--flex">
                             <div className="form--item">
@@ -245,14 +245,6 @@ export default function EditArtisans({ id, closeEditModal, refetchData }: Props)
                                 </select>
                             </div>
 
-                            <div className="form--item">&nbsp;</div>
-                        </div>
-                    </div>
-
-                    <div className="form">
-                        <h4 className="form--title">Account Status</h4>
-
-                        <div className="form--flex">
                             <div className="form--item">
                                 <label htmlFor="is_active" className="form--label">Status</label>
                                 <select name="is_active" id="is_active" className="form--select" value={artisansData.is_active} onChange={handleArtisanDataChange}>
@@ -260,10 +252,9 @@ export default function EditArtisans({ id, closeEditModal, refetchData }: Props)
                                     <option value="0">Inactive</option>
                                 </select>
                             </div>
-
-                            <div className="form--item">&nbsp;</div>
                         </div>
                     </div>
+
 
                     <div className="form">
                         <h4 className="form--title">Verification</h4>

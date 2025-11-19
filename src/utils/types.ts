@@ -104,7 +104,7 @@ export type Identity_type_Type = {
 export type Service_types_Type = {
     id: number;
     name: string;
-    slug: string;
+    slug?: string;
 }
 
 export type Community_Type = {
@@ -188,7 +188,7 @@ export type ArtisansType = {
     company_name: string | null;
     service_type: string | null;
     proof_of_work: ImageUrl[];
-    userServiceFocuses: string[];
+    userServiceFocuses: any;
     revenue: number;
     years_experience: string;
 }

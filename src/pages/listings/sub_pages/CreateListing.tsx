@@ -16,10 +16,9 @@ import { customAlphabet } from 'nanoid';
 import { fetchPropertyCategories, fetchPropertyTypes } from "../../../utils/fetch";
 import { useAuthContext } from "../../../context/AuthContext";
 import type { ListingType, Property_category_Type, Property_types_Type } from "../../../utils/types";
-import Spinner from "../../../components/elements/Spinner";
+import Spinner, { SpinnerMini } from "../../../components/elements/Spinner";
 import { formatInputNumber, getCurrentTime } from "../../../utils/helper";
 import { useForm, type SubmitHandler } from "react-hook-form";
-
 
 const generateId = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 7);
 
@@ -47,9 +46,16 @@ type FormDataType = {
     property_type_id: string;
     property_category_id: string;
     service_charge: string;
-    agent: string;
+    user_name: string;
+    user_id: number;
     bedrooms: string;
     bathrooms: string;
+}
+
+type AgentNameType = {
+    first_name: string;
+    id: number;
+    last_name: string;
 }
 
 export default function CreateListing() {
@@ -57,10 +63,16 @@ export default function CreateListing() {
     const navigate = useNavigate();
     const { headers, token, shouldKick } = useAuthContext();
 
+    const [agentNameResults, setAgentNameResults] = useState<AgentNameType[]>([]);
+    const [agentNameInput, setAgentNameInput] = useState("");
+    const [showAgentNameDropdown, setShowAgentNameDropdown] = useState(false);
+
     const [propertyTypesData, setPropertyTypesData] = useState<Property_types_Type[] | []>([]);
     const [propertyCategoryData, setPropertyCategoryData] = useState<Property_category_Type[]>([]);
 
-    const [loading, setLoading] = useState(false);
+    const [mainLoading, setMainLoading] = useState(false);
+    const [tinySearchLoading, setTinySearchLoading] = useState(false);
+
     const [showScheduleModal, setShowScheduleModal] = useState(false);
     const [coverImage, setCoverImage] = useState({ preview: "", file: null });
     const [galleryImages, setGalleryImages] = useState<{
@@ -70,6 +82,11 @@ export default function CreateListing() {
     }[]>([]);
 
     const { register, handleSubmit, formState, getValues, setValue, watch } = useForm<FormDataType>();
+    const agent_Id = getValues("user_id");
+    watch("user_id");
+    watch("user_name");
+    watch("rent_price");
+    watch("service_charge");
     watch("description");
 
     const [selectedAmenities, setSelectedAmenities] = useState<AmenitiesType[]>([]);
@@ -244,7 +261,7 @@ export default function CreateListing() {
         //    console.log(schedule.timeSlots, updatedSchedules);
 
             (async function(){
-                setLoading(true);
+                setMainLoading(true);
                 try {
                     const formData = new FormData();
 
@@ -288,7 +305,7 @@ export default function CreateListing() {
                     const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
                     toast.error(message);
                 } finally {
-                    setLoading(false);
+                    setMainLoading(false);
                 }
             })();
         }
@@ -311,7 +328,7 @@ export default function CreateListing() {
             setInspectionSchedules(newSchedules);
         } else if(id && inspectionSchedules?.length > 0) {
             (async function(){
-                setLoading(true);
+                setMainLoading(true);
                 const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/slots/${slotId}`, {
                     method: "DELETE",
                     headers,
@@ -326,7 +343,7 @@ export default function CreateListing() {
                     setInspectionSchedules(newSchedules);
                     toast.success("Slot Deleted!")
                 }
-                setLoading(false);
+                setMainLoading(false);
             })();
         }
     };
@@ -349,7 +366,7 @@ export default function CreateListing() {
 
     useEffect(function() {
         async function handleFetch() {
-            setLoading(true);
+            setMainLoading(true);
 
             const [listingRes, slotsRes] = await Promise.all([
                 fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/properties/${id}?full=true`, {
@@ -377,7 +394,9 @@ export default function CreateListing() {
                 setValue("bedrooms", `${listing?.property_detail?.bedrooms}` || "");
                 setValue("bathrooms", `${listing?.property_detail?.bathrooms}` || "");
                 setValue("property_category_id", `${listing?.property_category_id}` || "");
-                setValue("agent", listing?.user_name || "");
+                setValue("user_id", +listing?.user_id);
+                setValue("user_name", listing?.user_name || "");
+                setAgentNameInput(listing?.user_name || "")
 
                 setSelectedAmenities(listing?.property_detail?.amenities);
                 setCoverImage({ ...coverImage, preview: listing?.property_cover })
@@ -417,7 +436,7 @@ export default function CreateListing() {
                     ]);
                 }
             }
-            setLoading(false);
+            setMainLoading(false);
         };
 
         if(id) {
@@ -439,7 +458,7 @@ export default function CreateListing() {
             return toast.error("At least 1 Gallery image is required");
         }
         
-        setLoading(true);
+        setMainLoading(true);
 
         try {
             const formData = new FormData();
@@ -453,14 +472,14 @@ export default function CreateListing() {
             formData.append('property_type_id', formdata.property_type_id);
             // @ts-ignore
             formData.append('service_charge', +formdata?.service_charge?.replaceAll(",", ""));
-            formData.append('agent', formdata.agent);
+            formData.append('user_name', formdata.user_name);
             formData.append('bedrooms', formdata.bedrooms);
             formData.append('bathrooms', formdata.bathrooms);
             formData.append('description', formdata.description);
             formData.append('property_category_id', formdata.property_category_id);
 
             // temps
-            formData.append('user_id', "1");
+            formData.append('user_id', `${formdata.user_id}`);
 
             if(selectedAmenities?.length > 0) {
                 selectedAmenities.forEach((data, index) => {
@@ -531,13 +550,42 @@ export default function CreateListing() {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
         } finally {
-            setLoading(false);
+            setMainLoading(false);
         }
     }
 
+
+    useEffect(function() {
+        const handleSearchName = setTimeout(async function () {
+            console.log(agentNameInput)
+            if (!agentNameInput) return;
+            setTinySearchLoading(true);
+                
+            try {
+                const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-for-property-creation?query=${agentNameInput?.toLowerCase()}`, {
+                    method: "GET",
+                    headers,
+                });
+                const data = await res.json();
+                if(!data?.success && res.status !== 200) throw new Error(data?.message);
+
+                setAgentNameResults(data?.data);
+            } catch(err: any) {
+                if (err?.name !== "AbortError") {
+					return err?.message
+				}
+            } finally {
+                setTinySearchLoading(false);
+            }
+        }, 400)
+
+		return () => clearTimeout(handleSearchName);
+
+    }, [agentNameInput])
+
 	return (
         <React.Fragment>
-            {loading && <Spinner />}
+            {mainLoading && <Spinner />}
 
             {showScheduleModal && (
                 <BasicModal title="Create Inspection Schedule" setClose={() => setShowScheduleModal(false)}>
@@ -785,12 +833,54 @@ export default function CreateListing() {
 
                                 <div className="form--item">
                                     <label htmlFor="agent" className="form--label">Agent <Asterisk /></label>
-                                    <input type="text" className="form--input" placeholder="Enter Agent" {...register("agent", {
-                                        required: "Agent is required"
-                                    })} />
-                                    <span className="form--error-message">
-                                        {formState.errors.agent && formState.errors.agent.message}
-                                    </span>
+                                    
+                                    <div className="form--input-box">
+                                        <input type="text"
+                                            className="form--input"
+                                            placeholder="Enter Agent"
+                                            value={agentNameInput ? agentNameInput : getValues("user_name")}
+                                            onChange={(e) => {
+                                                setAgentNameInput(e.target.value);
+                                                setValue("user_name", e?.target?.value)
+                                                setShowAgentNameDropdown(true);
+                                            }}
+                                            onClick={() => setShowAgentNameDropdown(!showAgentNameDropdown)}
+                                        />
+
+                                        {(agentNameInput || showAgentNameDropdown) && (
+                                            <React.Fragment>
+                                                <span className="form--input-icon" onClick={() => {
+                                                    setShowAgentNameDropdown(false);
+                                                    setAgentNameInput("");
+                                                }}>
+                                                    <AiOutlineClose style={{ color: "red"}} />
+                                                </span>
+
+                                                <span className="input-drop-body" style={{ top: "100%" }}>
+                                                    {(!tinySearchLoading && agentNameResults.length > 0) && agentNameResults?.map((agent) => (
+                                                        <span
+                                                            key={agent?.id}
+                                                            className={`input-drop-item ${agent_Id == agent?.id ? "is-selected" : ""}`}
+                                                            onClick={() => {
+                                                                setValue("user_id", agent?.id);
+                                                                setValue("user_name", `${agent?.first_name} ${agent?.last_name}`);
+                                                                setAgentNameInput("");
+                                                                setShowAgentNameDropdown(false)
+                                                            }}
+                                                        >
+                                                            {agent?.first_name} {agent?.last_name}
+                                                        </span>
+                                                    ))}
+
+                                                    {tinySearchLoading && <SpinnerMini />}
+                                                    
+                                                    {(!tinySearchLoading && agentNameResults.length < 1) && (
+                                                        <p className="no-data">{!agentNameInput ? "Enter an agent name" : "No Agent Found!"}</p>
+                                                    )}
+                                                </span>
+                                            </React.Fragment>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>

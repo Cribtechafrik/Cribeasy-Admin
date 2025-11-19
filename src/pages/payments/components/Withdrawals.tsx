@@ -15,7 +15,6 @@ import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { ImEye, ImEyeBlocked } from 'react-icons/im';
 import Asterisk from '../../../components/elements/Asterisk';
 import { toast } from 'sonner';
-// import { AiOutlineCheckCircle } from 'react-icons/ai';
 
 
 export default function Withdrawals() {
@@ -41,7 +40,7 @@ export default function Withdrawals() {
     const columns = [
         {
             name: 'WITHDRAWALS ID',
-            selector: (row: WithdrawalType) => row?.reference,
+            selector: (row: WithdrawalType) => "#"+row?.reference,
             minWidth: "14rem"
         },
         {
@@ -84,24 +83,18 @@ export default function Withdrawals() {
         },
         {
             name: "ACTIONS",
-            selector: (row: WithdrawalType) => {
-                // if(!row?.status) {
-                    return (
-                        <div className="table--action">
-                            <button className="table--btn success" onClick={() => {
-                                setSelectedWithdrawal(row)
-                                setShowModal({ ...showModal, approve_confirm: true })
-                            }}>Approved</button>
-                            <button className="table--btn cancel" onClick={() => {
-                                setSelectedWithdrawal(row)
-                                setShowModal({ ...showModal, reject_confirm: true })
-                            }}>Reject</button>
-                        </div>
-                    )
-                // } else {
-                //     return <AiOutlineCheckCircle />
-                // }
-            },
+            selector: (row: WithdrawalType) => (
+                <div className="table--action">
+                    <button className="table--btn success" disabled={row?.status !== "pending"} onClick={() => {
+                        setSelectedWithdrawal(row)
+                        setShowModal({ ...showModal, approve_confirm: true })
+                    }}>Approved</button>
+                    <button className="table--btn cancel" disabled={row?.status !== "pending"} onClick={() => {
+                        setSelectedWithdrawal(row)
+                        setShowModal({ ...showModal, reject_confirm: true })
+                    }}>Reject</button>
+                </div>
+            ),
             minWidth: "18rem"
         },
     ];

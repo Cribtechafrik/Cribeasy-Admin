@@ -878,6 +878,24 @@ span.auth--img {
 .table--btn.cancel {
 	background-color: #F56464;
 }
+.table--btn:disabled {
+	opacity: 0.6;
+}
+
+.services--flex {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.68rem;
+	width: 25rem;
+}
+.service--item {
+	padding: 0.4rem 0.8rem;
+	font-size: 1.28rem;
+	font-weight: 600;
+	background-color: rgba(233, 233, 233, 1);
+	border-radius: 1rem;
+}
 
 
 .error--container,

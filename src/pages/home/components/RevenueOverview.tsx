@@ -83,7 +83,7 @@ export default function RevenueOverview() {
         },
         tooltip: {
             y: {
-                formatter: (val: number) => "₦" + formatNumber(val),
+                formatter: (val: number) => formatNumber(val),
             },
         },
         xaxis: {

@@ -383,10 +383,13 @@
 .input-drop-body {
     position: absolute;
     width: 100%;
-    height: auto;
+    /* height: auto; */
+    max-height: 25rem;
+    overflow-y: auto;
     background-color: #fff;
     border: 1.4px solid #eee;
     z-index: 2;
+    left: 0;
 }
 .input-drop-item {
     padding: 0.68rem;
@@ -401,7 +404,8 @@
     width: 1.5rem;
     height: 1.5rem;
 }
-.input-drop-item:hover {
+.input-drop-item:hover,
+.input-drop-item.is-selected {
     background-color: #eee;
     cursor: pointer;
 }
