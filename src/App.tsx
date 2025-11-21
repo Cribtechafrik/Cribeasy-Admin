@@ -34,6 +34,7 @@ import CreateCommunity from "./pages/community/sub_pages/CreateCommunity";
 import Create_Agents_Landloard from "./pages/agents_landloard/sub_pages/Create_Agents_Landloard"
 import Agents_Landloard_Details from "./pages/agents_landloard/sub_pages/Agents_Landloard_Details"
 import InspectionDetails from "./pages/inspection/sub_pages/InspectionDetails"
+// import NotificationDetails from "./pages/notifications/sub_pages/NotificationDetails"
 
 // import ResetArtisantsCredential from "./pages/artisans/sub_pages/ResetArtisantsCredential"
 // import ResetRentersCredentials from "./pages/renters/sub_pages/ResetRenterCredential"
@@ -88,6 +89,7 @@ export default function App() {
 						<Route path="/dashboard/community/id?edit" element={<Community />}></Route>
 
 						<Route path="/dashboard/notifications" element={<Notifications />}></Route>
+						{/* <Route path="/dashboard/notifications/:id" element={<NotificationDetails />}></Route> */}
 						{/* <Route path="/dashboard/analytics" element={<Analytics />}></Route> */}
 						{/* <Route path="/dashboard/ratings-reviews" element={<Ratings_reviews />}></Route> */}
 						{/* <Route path="/dashboard/coupons" element={<Coupons />}></Route> */}

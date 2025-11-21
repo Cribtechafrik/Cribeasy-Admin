@@ -75,3 +75,27 @@ export function getCurrentTime() {
 export function formatInputNumber(value: string) {
 	return value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+
+export function getPages(totalPages: number, currentPage: number) {
+	const pages = [];
+	if (totalPages <= 7) {
+		for (let i = 1; i <= totalPages; i++) {
+			pages.push(i);
+		}
+	} else {
+		pages.push(1);
+		if (currentPage > 4) {
+			pages.push("...");
+		}
+		const start = Math.max(2, currentPage - 2);
+		const end = Math.min(totalPages - 1, currentPage + 2);
+		for (let i = start; i <= end; i++) {
+			pages.push(i);
+		}
+		if (currentPage < totalPages - 3) {
+			pages.push("...");
+		}
+		pages.push(totalPages);
+	}
+	return pages;
+}

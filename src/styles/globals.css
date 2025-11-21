@@ -940,6 +940,51 @@ span.auth--img {
 
 
 
+.pagination {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    margin: 2rem 0 8rem;
+}
+
+.pagination_btn {
+    background-color: var(--brand-color-opc0_0_8);
+    color: var(--brand-color);
+    font-weight: 600;
+    border: none;
+    padding: .8rem 1.2rem;
+    border-radius: .28rem;
+    font-size: 1.48rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    cursor: pointer;
+}
+.pagination_btn svg {
+    font-size: 1.8rem;
+}
+.pagination_btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.pagination_el {
+    width: 3.4rem;
+    height: 3.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.pagination_el.active {
+    font-weight: 600;
+    background-color: var(--brand-color-opc0_0_8);
+    color: var(--brand-color);
+}
+
+
 /* ================================================== */
 /* MEDIA QUERIES */
 /* ================================================== */

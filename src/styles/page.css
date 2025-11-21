@@ -859,12 +859,15 @@
     gap: 0.48rem;
 }
 .notification--details .title {
-    font-size: 1.6rem;
+    font-size: 1.58rem;
     font-weight: 600;
 }
 .notification--details .description {
-    font-size: 1.4rem;
+    font-size: 1.32rem;
     color: #727272;
+}
+.notification--details .description svg {
+    font-size: 1.24rem;
 }
 
 
@@ -919,6 +922,10 @@
 .notification--btn.outline {
     color: var(--color-brand-primary);
     box-shadow: inset 0 0 0 0.1rem #E4E4E4;
+}
+.notification--btn.remove {
+	color: #fff;
+	background-color: #F56464;
 }
 
 
