@@ -354,8 +354,38 @@ export type LandmarkType = {
 
 
 export type CommunityUserType = {
-    "id": number;
-    "name": string;
-    "role": string;
-    "joined_community_at": string | null;
+    id: number;
+    name: string;
+    role: string;
+    joined_community_at: string | null;
+}
+
+export type NotificationType = {
+    created_at: string;
+    data: {
+        action_text: string;
+        action_url: string;
+        created_at: string;
+        data: {
+            property_id?: number;
+            property_title?: string;
+            owner_id?: number;
+            owner_name?: string;
+            owner_role?: string;
+            property_cover?: string;
+            email?: string
+            role?: string;
+            user_id?: number;
+            user_name?: string;
+        },
+        message: string;
+        title: string;
+        type: string;
+    },
+    id: string;
+    notifiable_id: number;
+    notifiable_type: string;
+    read_at: string | null;
+    type: string;
+    updated_at: string;
 }

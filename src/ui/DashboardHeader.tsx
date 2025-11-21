@@ -2,7 +2,7 @@ import { FiBell } from "react-icons/fi";
 import { LuSearch } from "react-icons/lu";
 import IntialsImage from "../components/layout/IntialsImage";
 import Logo from "../assets/logo/logo.png"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RiMenu3Fill } from "react-icons/ri";
 import { useAuthContext } from "../context/AuthContext";
 import React, { useState } from "react";
@@ -14,6 +14,7 @@ import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 
 export default function DashboardHeader() {
+    const navigate = useNavigate();
     const { auth } = useAuthContext();
     const [loading, setLoading] = useState(false)
     const [isShownDropdown, setIsShownDropdown] = useState(false);
@@ -46,7 +47,7 @@ export default function DashboardHeader() {
                     <span className="nav--search">
                         <LuSearch />
                     </span>
-                    <span className="nav--notification">
+                    <span className="nav--notification" onClick={() => navigate("/dashboard/notifications")}>
                         <FiBell />
                     </span>
 
