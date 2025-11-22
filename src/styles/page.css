@@ -859,11 +859,11 @@
     gap: 0.48rem;
 }
 .notification--details .title {
-    font-size: 1.58rem;
+    font-size: 1.52rem;
     font-weight: 600;
 }
 .notification--details .description {
-    font-size: 1.32rem;
+    font-size: 1.3rem;
     color: #727272;
 }
 .notification--details .description svg {

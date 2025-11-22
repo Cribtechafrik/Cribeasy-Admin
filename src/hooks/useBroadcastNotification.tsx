@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Pusher from "pusher-js";
+import type { NotificationType } from "../utils/types";
 // import Echo from "laravel-echo";
 // import axios from "axios"
 
@@ -13,6 +14,7 @@ declare global {
 
 export function useBroadcastNotification() {
   const { auth, token } = useAuthContext();
+  const [newNotification, setNewNotification] = useState<NotificationType[] | []>([])
 
 	useEffect(() => {
 		// if (auth?.id) {
@@ -106,7 +108,9 @@ export function useBroadcastNotification() {
 
 			channel.bind(`admin.notification`, (data?: any) => {
 				// console.log("🔔 admin.notification received", 'success');
+
 				console.log(data);
+				setNewNotification([...data]);
 			});
 
 			channel.bind_global((eventName: any) => {
@@ -117,4 +121,6 @@ export function useBroadcastNotification() {
 		}
 
 	}, [auth?.id]);
+
+	return { incomingNotification: newNotification }
 }

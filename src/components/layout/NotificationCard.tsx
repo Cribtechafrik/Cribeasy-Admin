@@ -12,6 +12,7 @@ import Spinner from '../elements/Spinner'
 import Confirm from '../modals/Confirm'
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { IoCheckmarkCircle } from 'react-icons/io5'
+import { BsFillInfoCircleFill } from 'react-icons/bs'
 
 
 export default function NotificationCard({ notification }: { notification: NotificationType }) {
@@ -110,10 +111,14 @@ export default function NotificationCard({ notification }: { notification: Notif
             </Confirm>
         )}
 
-            {notification?.data.type === "property_created" && (
+            {(notification?.data.type === "info" || notification?.data.type === "property_created") && (
                 <div className="notification--card property-created">
                     <span className="notification--icon">
-                        <MdHome />
+                        {notification?.data?.type == "info" ? (
+                            <BsFillInfoCircleFill />
+                        ) : (
+                            <MdHome />
+                        )}
                     </span>
                     <div className="notification--details">
                         <p className='title'>{notification?.data?.title}</p>
@@ -132,7 +137,9 @@ export default function NotificationCard({ notification }: { notification: Notif
 
                     <div className="notification--actions">
                         <button className='notification--btn remove' onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
-                        <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>{notification?.read_at ? "Already seen" : "Mark as Read"}</button>
+                        {!notification?.read_at && (
+                            <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>Mark as Read</button>
+                        )}
                     </div>
                 </div>
             )}
@@ -159,7 +166,9 @@ export default function NotificationCard({ notification }: { notification: Notif
 
                     <div className="notification--actions">
                         <button className='notification--btn remove' onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
-                        <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>{notification?.read_at ? "Already seen" : "Mark as Read"}</button>
+                        {!notification?.read_at && (
+                            <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>Mark as Read</button>
+                        )}
                     </div>
                 </div>
             )}
@@ -186,7 +195,9 @@ export default function NotificationCard({ notification }: { notification: Notif
 
                     <div className="notification--actions">
                         <button className='notification--btn remove' onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
-                        <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>{notification?.read_at ? "Already seen" : "Mark as Read"}</button>
+                        {!notification?.read_at && (
+                            <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>Mark as Read</button>
+                        )}
                     </div>
                 </div>
             )}
@@ -213,7 +224,9 @@ export default function NotificationCard({ notification }: { notification: Notif
 
                     <div className="notification--actions">
                         <button className='notification--btn remove' onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
-                        <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>{notification?.read_at ? "Already seen" : "Mark as Read"}</button>
+                        {!notification?.read_at && (
+                            <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>Mark as Read</button>
+                        )}
                     </div>
                 </div>
             )}
@@ -240,7 +253,9 @@ export default function NotificationCard({ notification }: { notification: Notif
 
                     <div className="notification--actions">
                         <button className='notification--btn remove' onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
-                        <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>{notification?.read_at ? "Already seen" : "Mark as Read"}</button>
+                        {!notification?.read_at && (
+                            <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>Mark as Read</button>
+                        )}
                     </div>
                 </div>
             )}
@@ -267,7 +282,9 @@ export default function NotificationCard({ notification }: { notification: Notif
 
                     <div className="notification--actions">
                         <button className='notification--btn remove' onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
-                        <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>{notification?.read_at ? "Already seen" : "Mark as Read"}</button>
+                        {!notification?.read_at && (
+                            <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>Mark as Read</button>
+                        )}
                     </div>
                 </div>
             )}
@@ -294,7 +311,9 @@ export default function NotificationCard({ notification }: { notification: Notif
 
                     <div className="notification--actions">
                         <button className='notification--btn remove' onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
-                        <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>{notification?.read_at ? "Already seen" : "Mark as Read"}</button>
+                        {!notification?.read_at && (
+                            <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>Mark as Read</button>
+                        )}
                     </div>
                 </div>
             )}
@@ -321,7 +340,9 @@ export default function NotificationCard({ notification }: { notification: Notif
 
                     <div className="notification--actions">
                         <button className='notification--btn remove' onClick={() => setShowModal({ ...showModal, delete_confirm: true })}>Delete</button>
-                        <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>{notification?.read_at ? "Already seen" : "Mark as Read"}</button>
+                        {!notification?.read_at && (
+                            <button className='notification--btn outline' disabled={!!notification?.read_at} onClick={handleMarkasRead}>Mark as Read</button>
+                        )}
                     </div>
                 </div>
             )}

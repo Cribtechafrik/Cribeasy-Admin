@@ -26,7 +26,7 @@ type FilterDataType = {
 
 
 export default function index() {
-    useBroadcastNotification();
+    const { incomingNotification } = useBroadcastNotification();
     const { headers, shouldKick } = useAuthContext();
 
     const [loading, setLoading] = useState(false);
@@ -35,7 +35,7 @@ export default function index() {
 
     const [paginationDetails, setPaginationDetails] = useState({
         currentPage: 1,
-        perPage: 10,
+        perPage: 0,
         totalCount: 0,
         lastPage: 0,
     });
@@ -72,6 +72,10 @@ export default function index() {
         setFilterUnsavedData({ ...filterUnsavedData, [name]: value });
     }
 
+    useEffect(function() {
+        setNotifications(prev => [...prev, ...incomingNotification])
+    }, [incomingNotification]);
+
     async function handleFetchNotification() {
         setLoading(true);
         setError(false);
@@ -90,7 +94,7 @@ export default function index() {
 
             console.log(data?.data);
             setNotifications(data?.data);
-            setPaginationDetails({ ...paginationDetails, totalCount: data?.total, perPage: data?.per_page, lastPage: data?.last_page })
+            setPaginationDetails({ ...paginationDetails, totalCount: data?.total, perPage: data?.to, lastPage: data?.last_page })
 
         } catch (err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
@@ -220,9 +224,13 @@ export default function index() {
                                 ))}
                             </div>
 
-                            {(paginationDetails && !loading && paginationDetails.lastPage > 0) && (
+                            <div className="flex-align-justify-spabtw" style={{ margin: "2rem 0 8rem" }}>
+                                <span className="pagination_info">
+                                    showing {paginationDetails?.currentPage * paginationDetails?.perPage} of {paginationDetails?.totalCount}
+                                </span>
+
                                 <Pagination paginationDetails={paginationDetails} setPaginationDetails={setPaginationDetails} />
-                            )}
+                            </div>
                         </React.Fragment>
                     ) : (
                         <p className="no-data">No notification found</p>

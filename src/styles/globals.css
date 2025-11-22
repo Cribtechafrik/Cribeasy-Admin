@@ -941,47 +941,53 @@ span.auth--img {
 
 
 .pagination {
-    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1.2rem;
-    margin: 2rem 0 8rem;
+}
+.pagination_info {
+	font-size: 1.3rem;
+	color: #696969;
 }
 
 .pagination_btn {
-    background-color: var(--brand-color-opc0_0_8);
-    color: var(--brand-color);
+    background-color: transparent;
     font-weight: 600;
     border: none;
-    padding: .8rem 1.2rem;
+    padding: 0.68rem;
     border-radius: .28rem;
     font-size: 1.48rem;
     display: flex;
     align-items: center;
     gap: .4rem;
     cursor: pointer;
+	border: 1px solid #888;
 }
 .pagination_btn svg {
-    font-size: 1.8rem;
+	font-size: 1.8rem;
 }
 .pagination_btn:disabled {
-    opacity: 0.3;
+	opacity: 0.3;
     cursor: not-allowed;
 }
 
-.pagination_el {
-    width: 3.4rem;
-    height: 3.4rem;
+span.pagination_el {
+	border-radius: .28rem;
+    width: 3.2rem;
+    height: 3.2rem;
+	font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+	border: 1px solid #888;
+	color: #555;
 }
 .pagination_el.active {
     font-weight: 600;
-    background-color: var(--brand-color-opc0_0_8);
-    color: var(--brand-color);
+    background-color: var(--color-brand-primary);
+    color: #fff;
 }
 
 
