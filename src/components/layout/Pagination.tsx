@@ -24,12 +24,12 @@ export default function Pagination({ paginationDetails, setPaginationDetails }: 
 	return (
 		<div className="pagination">
 			<button onClick={() => setPaginationDetails({...paginationDetails, currentPage: paginationDetails.currentPage - 1 })} disabled={paginationDetails?.lastPage == 1} className="pagination_btn">
-				<IoChevronBackSharp /> Prev
+				<IoChevronBackSharp />
 			</button>
-			{getPages(paginationDetails?.lastPage, page).map((p: any, i: number) => (
+			{getPages(10, page).map((p: any, i: number) => (
 				<React.Fragment key={i}>
 					{p === "..." ? (
-						<span className="pagination_el">...</span>
+						<div className="pagination_el">...</div>
 					) : (
 						<span className={`pagination_el ${p === page ? "active" : ""} value `} onClick={() => setPaginationDetails({...paginationDetails, currentPage: p })}>
 							{p}
@@ -38,7 +38,7 @@ export default function Pagination({ paginationDetails, setPaginationDetails }: 
 				</React.Fragment>
 			))}
 			<button onClick={() => setPaginationDetails({...paginationDetails, currentPage: paginationDetails.currentPage + 1 })} disabled={paginationDetails?.lastPage <= page} className="pagination_btn">
-				Next <IoChevronForwardSharp />
+				<IoChevronForwardSharp />
 			</button>
 		</div>
 	);
