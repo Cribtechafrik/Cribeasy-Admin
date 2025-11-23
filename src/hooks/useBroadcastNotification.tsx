@@ -13,48 +13,10 @@ declare global {
 }
 
 export function useBroadcastNotification() {
-  const { auth, token } = useAuthContext();
-  const [newNotification, setNewNotification] = useState<NotificationType[] | []>([])
+	const { auth, token } = useAuthContext();
+	const [newNotification, setNewNotification] = useState<NotificationType[] | []>([])
 
 	useEffect(() => {
-		// if (auth?.id) {
-			// window.Pusher = Pusher;
-
-			// window.Echo = new Echo({
-			// 	broadcaster: "reverb",
-			// 	key: import.meta.env.VITE_REVERB_APP_KEY,
-			// 	wsHost: import.meta.env.VITE_REVERB_HOST,
-			// 	wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-			// 	wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-			// 	forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
-			// 	enabledTransports: ["ws", "wss"],
-            //     authEndpoint: `${import.meta.env.VITE_API_URL}/broadcasting/auth`,
-            //     auth: {
-            //         headers: {
-            //             'Authorization': `Bearer ${token}`,
-            //             'Accept': 'application/json',
-            //             'Content-Type': 'application/json'
-            //         }
-            //     },
-			// });
-			
-			// window.Echo.private(`admins.${auth.id}`).subscribed(() => {
-			// 	console.log("✅ Successfully subscribed to notifications channel!", 'success');
-			// });
-
-            // window.Echo.private(`admins.${auth.id}`).error((error: any) => {
-            //     console.log(`❌ Channel error: ${JSON.stringify(error)}`, 'error');
-                
-            //     if (error.type === 'AuthError') {
-            //         console.log(`💡 Run "Test Auth First" to diagnose the issue`, 'error');
-            //     }
-            // });
-
-            // window.Echo.private(`admins.${auth.id}`).notification((notification: any) => {
-			// 	console.log(`🔔 Notification received: ${notification}`, 'success');
-			// });
-		// }
-		
 		if (auth?.id) {
 			const pusher = new Pusher(import.meta.env.VITE_REVERB_APP_KEY, {
 				cluster: "mt1",
@@ -107,9 +69,7 @@ export function useBroadcastNotification() {
             });
 
 			channel.bind(`admin.notification`, (data?: any) => {
-				// console.log("🔔 admin.notification received", 'success');
-
-				console.log(data);
+				console.log("🔔 admin.notification received", 'success');
 				setNewNotification([...data]);
 			});
 

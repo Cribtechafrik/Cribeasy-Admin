@@ -24,12 +24,11 @@ type FilterDataType = {
 }
 
 
-
 export default function index() {
     const { incomingNotification } = useBroadcastNotification();
     const { headers, shouldKick } = useAuthContext();
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
@@ -75,6 +74,72 @@ export default function index() {
     useEffect(function() {
         setNotifications(prev => [...prev, ...incomingNotification])
     }, [incomingNotification]);
+
+
+    /////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////
+
+    const handleMarkasRead = async function(id: string) {
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/notifications/${id}/mark-as-read`, {
+                method: "POST",
+                headers: headers,
+            });
+            shouldKick(res);
+
+            const data = await res.json();
+            if (res.status !== 200 || !data?.success) {
+                if(data?.error?.validation_errors) {
+                    const message = Object.entries(data?.error?.validation_errors)?.[0]?.[1]
+                    throw new Error((message ?? "Something went wrong!") as string);
+                } else {
+                    throw new Error(data?.error?.message);
+                }
+            }
+
+            toast.success(`Successful!`);
+        } catch(err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleDeleteNotification = async function(id: string) {
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/notifications/${id}`, {
+                method: "DELETE",
+                headers: headers,
+            });
+            shouldKick(res);
+
+            const data = await res.json();
+            if (res.status !== 200 || !data?.success) {
+                if(data?.error?.validation_errors) {
+                    const message = Object.entries(data?.error?.validation_errors)?.[0]?.[1]
+                    throw new Error((message ?? "Something went wrong!") as string);
+                } else {
+                    throw new Error(data?.error?.message);
+                }
+            }
+
+            toast.success(`Successfully Deleted!`);
+            handleFetchNotification();
+        } catch(err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    /////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////
 
     async function handleFetchNotification() {
         setLoading(true);
@@ -183,7 +248,7 @@ export default function index() {
                                 </select>
                             </div>
 
-                            <div />
+                            <div className="form--item" />
                         </div>
                     </div>
 
@@ -219,7 +284,11 @@ export default function index() {
                             <div className="notifications--container">
                                 {notifications?.map((n, i) => (
                                     <div key={i}>
-                                        <NotificationCard notification={n} />
+                                        <NotificationCard
+                                            notification={n}
+                                            handleRead={handleMarkasRead}
+                                            handleDelete={handleDeleteNotification}
+                                        />
                                     </div>
                                 ))}
                             </div>

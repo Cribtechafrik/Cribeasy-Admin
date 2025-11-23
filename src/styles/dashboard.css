@@ -86,6 +86,29 @@ body:has(.dashboard--base) {
     color: #545454;
 }
 
+.nav--notification.notification {
+    position: relative;
+}
+.nav--notification.notification::after {
+    /* content: ""; */
+    content: attr(data-count);
+    display: inline-block;
+    width: 1.42rem;
+    height: 1.42rem;
+    border-radius: 50%;
+    background-color: red;
+    color: #fff;
+    position: absolute;
+    top: 0;
+    right: 0;
+    /*  */
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .nav--auth {
     display: flex;
     align-items: center;

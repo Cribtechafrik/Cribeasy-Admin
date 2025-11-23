@@ -843,6 +843,9 @@
     gap: 2rem;
     padding: 2rem;
 }
+.notification--card.read {
+    opacity: 0.9;
+}
 .notification--icon {
     width: 3rem;
     height: 3rem;
