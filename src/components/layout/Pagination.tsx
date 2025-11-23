@@ -26,7 +26,7 @@ export default function Pagination({ paginationDetails, setPaginationDetails }: 
 			<button onClick={() => setPaginationDetails({...paginationDetails, currentPage: paginationDetails.currentPage - 1 })} disabled={paginationDetails?.lastPage == 1} className="pagination_btn">
 				<IoChevronBackSharp />
 			</button>
-			{getPages(10, page).map((p: any, i: number) => (
+			{getPages(paginationDetails?.lastPage, page).map((p: any, i: number) => (
 				<React.Fragment key={i}>
 					{p === "..." ? (
 						<div className="pagination_el">...</div>
