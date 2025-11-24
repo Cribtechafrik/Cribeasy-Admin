@@ -103,6 +103,10 @@
     transition: all 0.3s;
     position: relative;
 }
+.community.section--page .page--tab {
+    color: rgba(113, 118, 128, 1);
+}
+
 .page--tab::after {
     content: "";
     display: inline-block;
@@ -929,6 +933,186 @@
 .notification--btn.remove {
 	color: #fff;
 	background-color: #F56464;
+}
+
+
+
+
+
+
+
+
+
+
+.announcement--container {
+    width: 100%;
+    position: relative;
+    padding-bottom: 1.4rem;
+}
+
+.annoucement--top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1.2px solid #e9eaeb;
+    margin-top: -1rem;
+    padding: 1rem;
+    border-radius: 0.48rem;
+    background-color: #fff;
+}
+.annoucement--top .img {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+}
+.annoucement--top .title {
+    font-size: 1.58rem;
+    font-weight: 600;
+}
+.announcement--chat {
+    height: 30rem;
+    overflow: auto;
+    position: relative;
+}
+.announcement--chat .chat-day {
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.24rem;
+    color: rgba(83, 88, 98, 1);
+}
+.announcement--chat .chat-day span {
+    min-width: max-content;
+}
+.announcement--chat .chat-day::before,
+.announcement--chat .chat-day::after {
+    content: "";
+    display: inline-block;
+    width: 100%;
+    height: 0.14rem;
+    background-color: #eee;
+}
+
+.announcement--chat .chats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.announcement--attachments {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.68rem;
+    margin-bottom: 0.28rem;
+}
+.announcement--attachment {
+    position: relative;
+    width: 100%;
+    min-height: 9rem;
+    border: 1px solid #eee;
+}
+.announcement--attachment img {
+    height: 100%;
+    object-fit: contain;
+    background-color: #fff;
+}
+.delete--attachment {
+    width: 2.6rem;
+    height: 2.6rem;
+    font-size: 1.8rem;
+    border-radius: 50%;
+    background-color: red;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 2.5%; 
+    right: 2.5%; 
+}
+
+.announcement--textarea {
+    position: sticky;
+    top: 100%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+.announcement--textarea textarea {
+    height: 10rem;
+    scrollbar-width: auto;
+}
+.announcement--elements {
+    position: absolute;
+    bottom: 4.5rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #fff;
+    font-size: 1.8rem;
+}
+.announcement--elements svg {
+    cursor: pointer;
+}
+
+
+
+.chat--attachments {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.68rem;
+    margin-bottom: 0.28rem;
+}
+
+.chat--attachments img {
+    height: 100%;
+    object-fit: contain;
+    background-color: #eee;
+    border-radius: 0.4rem;
+}
+
+.admin--chat,
+.thridparty--chat {
+    width: 40rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 0.8rem;
+}
+.admin--chat {
+    margin-left: auto;
+}
+.chat--top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.chat--top .title {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+.chat--top .date {
+    font-size: 1.16rem;
+    color: #535862;
+}
+.chat--content {
+    padding: 1rem;
+    border-radius: 0.48rem;
+    border: 1.4px solid rgba(233, 234, 235, 1);
+}
+.chat--content .content {
+    font-size: 1.48rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+.admin--chat .chat--content {
+    background-color: rgba(232, 240, 255, 1);
+    color: var(--color-brand-dark);
+}
+.thridparty--chat .chat--content {
+    background-color: rgba(228, 228, 228, 1);
 }
 
 

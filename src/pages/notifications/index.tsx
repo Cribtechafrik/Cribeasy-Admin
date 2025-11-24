@@ -25,10 +25,10 @@ type FilterDataType = {
 
 
 export default function index() {
-    const { incomingNotification } = useBroadcastNotification();
     const { headers, shouldKick } = useAuthContext();
+    const { incomingNotification, notificationCount, handleFetchNotificationCount } = useBroadcastNotification();
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
@@ -72,7 +72,7 @@ export default function index() {
     }
 
     useEffect(function() {
-        setNotifications(prev => [...prev, ...incomingNotification])
+        setNotifications(prev => [...prev, ...(incomingNotification ? Array.isArray(incomingNotification) ? incomingNotification : [incomingNotification] : [])])
     }, [incomingNotification]);
 
 
@@ -98,8 +98,10 @@ export default function index() {
                     throw new Error(data?.error?.message);
                 }
             }
+            handleFetchNotificationCount();
 
             toast.success(`Successful!`);
+            handleFetchNotification();
         } catch(err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
@@ -130,6 +132,7 @@ export default function index() {
 
             toast.success(`Successfully Deleted!`);
             handleFetchNotification();
+            handleFetchNotificationCount();
         } catch(err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
@@ -146,7 +149,21 @@ export default function index() {
         setError(false);
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/notifications`, {
+            const params = new URLSearchParams({
+                period: filterSavedData?.period || "all",
+                type: filterSavedData?.type || "all",
+                status: filterSavedData?.status || "all",
+            });
+    
+            if(filterSavedData !== null) {
+                Object.entries(filterSavedData).forEach(([key, value]) => {
+                    if (value !== "" && value !== null && value !== undefined) {
+                        params.append(key, value);
+                    }
+                });
+            }
+
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/notifications?${params.toString()}`, {
                 method: "GET",
                 headers,
             });
@@ -157,7 +174,6 @@ export default function index() {
                 throw new Error(data?.error?.message);
             }
 
-            console.log(data?.data);
             setNotifications(data?.data);
             setPaginationDetails({ ...paginationDetails, totalCount: data?.total, perPage: data?.to, lastPage: data?.last_page })
 
@@ -198,6 +214,7 @@ export default function index() {
 
             toast.success(`Successful!`);
             handleFetchNotification();
+            handleFetchNotificationCount();
         } catch(err: any) {
             const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
             toast.error(message);
@@ -274,8 +291,13 @@ export default function index() {
                         </div>
 
                         <div className="flex-align-cen gap-1" style={{ flexWrap: "wrap" }}>
+                            {filterSavedData !== null && (
+                                <button className="page--btn remove" onClick={handleResetFilter}>Clear Filter</button>
+                            )}
                             <button className="page--btn outline" onClick={() => setShowModal({ ...showModal, filters: true })}><IoOptionsOutline /> Filters</button>
-                            <button className="page--btn filled" onClick={handleMarkAllAsRead}><BiCheckDouble /> Mark All</button>
+                            {notificationCount !== 0 && (
+                                <button className="page--btn filled" disabled={notificationCount === 0} onClick={handleMarkAllAsRead}><BiCheckDouble /> Mark All</button>
+                            )}
                         </div>
                     </div>
 

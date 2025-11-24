@@ -20,6 +20,7 @@ import ErrorComponent from '../../../components/layout/ErrorComponent';
 import { custom_styles } from '../../../utils/contants';
 import { capAllFirstLetters, formatDate } from '../../../utils/helper';
 import { BsEye } from 'react-icons/bs';
+import CommunityAnnouncement from '../../../components/layout/CommunityAnnouncement';
 
 
 type AnalyticsType = {
@@ -213,7 +214,7 @@ export default function CommunityDetails() {
         )}
 
         {(!loading && communityData?.id) && (
-            <section className="section--page">
+            <section className="section--page community">
                 <div className="page--top">
                     <div className="page--heading">
                         <h4 className="title">Community Details</h4>
@@ -240,6 +241,7 @@ export default function CommunityDetails() {
                     <div className="page--tabs tabs">
                         <Tab title="Overview" active={activeTab == "overview"} onClick={() => setActiveTab("overview")} />
                         <Tab title="Members" active={activeTab == "members"} onClick={() => setActiveTab("members")} />
+                        <Tab title="Announcement" active={activeTab == "announcement"} onClick={() => setActiveTab("announcement")} />
                     </div>
 
                     {activeTab == "overview" && (
@@ -337,6 +339,10 @@ export default function CommunityDetails() {
                                 }}
                             />
                         </div>
+                    )}
+
+                    {activeTab == "announcement" && (
+                        <CommunityAnnouncement community={communityData} />
                     )}
                 </div>
 

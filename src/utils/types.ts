@@ -149,18 +149,18 @@ export type Agent_Landlord_Type = {
     has_verified_docs: number;
     properties_count: number;
     plan: number | null;
-    company_name: string | null,
-    company_email: string | null,
-    company_phone: string | null,
-    company_address: string | null,
+    company_name: string | null;
+    company_email: string | null;
+    company_phone: string | null;
+    company_address: string | null;
     identity_type: string;
     performance_overview: {
-        total_properties: number,
-        active_properties: number,
-        inspection_completed: number,
-        property_rating: number,
+        total_properties: number;
+        active_properties: number;
+        inspection_completed: number;
+        property_rating: number;
         property_rating_is_based_on: number
-    },
+    };
     joined: string;
     updated_at: string;
 }
@@ -377,15 +377,50 @@ export type NotificationType = {
             role?: string;
             user_id?: number;
             user_name?: string;
-        },
+        };
         message: string;
         title: string;
         type: string;
-    },
+    };
     id: string;
     notifiable_id: number;
     notifiable_type: string;
     read_at: string | null;
     type: string;
     updated_at: string;
+}
+
+export type AnnouncementType = {
+    chat_id?: number;
+    user_id: number | string;
+    content: string;
+    type: string;
+    is_announcement: boolean;
+    attachments?: {
+        public_id?: string;
+        url: string;
+        size?: number;
+        mime_type?: string;
+        resource_type?: string;
+        original_name?: string
+    }[] | null;
+    updated_at?: string;
+    created_at: string;
+    id?: number;
+    is_read?: boolean;
+    user?: {
+        id: number;
+        first_name: string;
+        email: string;
+        profile_image: string | null;
+        has_completed_profile: number
+    };
+    chat?: {
+        id: number;
+        type: string;
+        community_id: number;
+        name: string;
+        created_at: string;
+        updated_at: string
+    }
 }

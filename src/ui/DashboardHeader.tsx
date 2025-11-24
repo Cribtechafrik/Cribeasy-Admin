@@ -5,7 +5,7 @@ import Logo from "../assets/logo/logo.png"
 import { Link, useNavigate } from "react-router-dom";
 import { RiMenu3Fill } from "react-icons/ri";
 import { useAuthContext } from "../context/AuthContext";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Dropdown from "../components/layout/Dropdown";
 import { createPortal } from "react-dom";
 import Spinner from "../components/elements/Spinner";
@@ -16,39 +16,15 @@ import { useBroadcastNotification } from "../hooks/useBroadcastNotification";
 
 export default function DashboardHeader() {
     const navigate = useNavigate();
-    const { auth, headers, shouldKick } = useAuthContext();
+    const { auth } = useAuthContext();
     const [loading, setLoading] = useState(false)
     const [isShownDropdown, setIsShownDropdown] = useState(false);
     const { handleToggleSidemenu } = useDataContext();
-    const { incomingNotification } = useBroadcastNotification();
-    const [notificationCount, setNotificationCount] = useState(0);
+    const { notificationCount } = useBroadcastNotification();
 
     const handleToggleDropdown = function () {
         setIsShownDropdown(!isShownDropdown);
     }
-
-    const handleFetchNotificationCount = async function() {
-        try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/notifications/unread-count`, {
-                method: "GET",
-                headers,
-            });
-            shouldKick(res);
-
-            const data = await res.json();
-            if (res.status !== 200 || !data?.success) {
-                throw new Error(data?.error?.message);
-            }
-
-            setNotificationCount(data?.data);
-        } catch (err: any) {
-            setNotificationCount(0);
-        }
-    }
-
-    useEffect(function() {
-        handleFetchNotificationCount();
-    }, [incomingNotification]);
 
     return (
         <React.Fragment>
