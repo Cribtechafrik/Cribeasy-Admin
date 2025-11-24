@@ -535,10 +535,6 @@ body:has(.global--overlay) {
 }
 
 
-
-
-
-
 .breadcrums {
 	display: flex;
 	align-items: center;
@@ -813,6 +809,7 @@ span.auth--img {
 	color: #067647;
 }
 
+.status--unread,
 .status--meduim,
 .status--pending,
 .status--unverified,
@@ -821,6 +818,7 @@ span.auth--img {
 	border-color: #FEDF89;
 	background-color: #FFFAEB;
 }
+.status--unread p,
 .status--medium p,
 .status--pending p,
 .status--unverified p,
@@ -830,6 +828,7 @@ span.auth--img {
 }
 
 .status--free,
+.status--read,
 .status--default {
 	background-color: #eee;
 	border-color: #ccc;
@@ -846,6 +845,7 @@ span.auth--img {
 	color: #132B4B;
 }
 
+.status--read p,
 .status--default p {
 	color: #444;
 }

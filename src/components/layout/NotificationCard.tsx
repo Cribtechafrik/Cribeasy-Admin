@@ -67,7 +67,7 @@ export default function NotificationCard({ notification, handleRead, handleDelet
                                 <p>{notification?.data?.data?.owner_name} {notification?.data?.data?.owner_role ? `(${notification?.data?.data?.owner_role})` : ""}</p>
                             </div>
                             <p>{formatDate(notification?.created_at)}</p>
-                            <span className={`${notification?.read_at ? "read" : "unread"}`}>
+                            <span className={`status status--${notification?.read_at ? "read" : "unread"}`}>
                                 <p>{notification?.read_at ? "Read" : "Unread"}</p>
                             </span>
                         </span>
@@ -96,7 +96,7 @@ export default function NotificationCard({ notification, handleRead, handleDelet
                                 <p>{notification?.data?.data?.user_name} ({notification?.data?.data?.role})</p>
                             </div>
                             <p>{formatDate(notification?.created_at)}</p>
-                            <span className={`${notification?.read_at ? "read" : "unread"}`}>
+                            <span className={`status status--${notification?.read_at ? "read" : "unread"}`}>
                                 <p>{notification?.read_at ? "Read" : "Unread"}</p>
                             </span>
                         </span>
@@ -122,10 +122,10 @@ export default function NotificationCard({ notification, handleRead, handleDelet
                         <span className="flex-align-cen gap-1 description">
                             <div className="flex-align-cen">
                                 <FaRegUser />
-                                <p>{notification?.data?.data?.user_name} ({notification?.data?.data?.role})</p>
+                                <p>{notification?.data?.data?.user_name} {notification?.data?.data?.role ? (notification?.data?.data?.role) : ""}</p>
                             </div>
                             <p>{formatDate(notification?.created_at)}</p>
-                            <span className={`${notification?.read_at ? "read" : "unread"}`}>
+                            <span className={`status status--${notification?.read_at ? "read" : "unread"}`}>
                                 <p>{notification?.read_at ? "Read" : "Unread"}</p>
                             </span>
                         </span>
@@ -154,7 +154,7 @@ export default function NotificationCard({ notification, handleRead, handleDelet
                                 <p>{notification?.data?.data?.user_name} ({notification?.data?.data?.role})</p>
                             </div>
                             <p>{formatDate(notification?.created_at)}</p>
-                            <span className={`${notification?.read_at ? "read" : "unread"}`}>
+                            <span className={`status status--${notification?.read_at ? "read" : "unread"}`}>
                                 <p>{notification?.read_at ? "Read" : "Unread"}</p>
                             </span>
                         </span>
@@ -178,12 +178,8 @@ export default function NotificationCard({ notification, handleRead, handleDelet
                         <p className='title'>{notification?.data?.title}</p>
                         <p className='description'>{notification?.data?.message}</p>
                         <span className="flex-align-cen gap-1 description">
-                            <div className="flex-align-cen">
-                                <FaRegUser />
-                                <p>{notification?.data?.data?.user_name} ({notification?.data?.data?.role})</p>
-                            </div>
                             <p>{formatDate(notification?.created_at)}</p>
-                            <span className={`${notification?.read_at ? "read" : "unread"}`}>
+                            <span className={`status status--${notification?.read_at ? "read" : "unread"}`}>
                                 <p>{notification?.read_at ? "Read" : "Unread"}</p>
                             </span>
                         </span>
@@ -212,7 +208,7 @@ export default function NotificationCard({ notification, handleRead, handleDelet
                                 <p>{notification?.data?.data?.user_name} ({notification?.data?.data?.role})</p>
                             </div>
                             <p>{formatDate(notification?.created_at)}</p>
-                            <span className={`${notification?.read_at ? "read" : "unread"}`}>
+                            <span className={`status status--${notification?.read_at ? "read" : "unread"}`}>
                                 <p>{notification?.read_at ? "Read" : "Unread"}</p>
                             </span>
                         </span>
@@ -241,7 +237,7 @@ export default function NotificationCard({ notification, handleRead, handleDelet
                                 <p>{notification?.data?.data?.user_name} ({notification?.data?.data?.role})</p>
                             </div>
                             <p>{formatDate(notification?.created_at)}</p>
-                            <span className={`${notification?.read_at ? "read" : "unread"}`}>
+                            <span className={`status status--${notification?.read_at ? "read" : "unread"}`}>
                                 <p>{notification?.read_at ? "Read" : "Unread"}</p>
                             </span>
                         </span>
@@ -270,7 +266,7 @@ export default function NotificationCard({ notification, handleRead, handleDelet
                                 <p>{notification?.data?.data?.user_name} ({notification?.data?.data?.role})</p>
                             </div>
                             <p>{formatDate(notification?.created_at)}</p>
-                            <span className={`${notification?.read_at ? "read" : "unread"}`}>
+                            <span className={`status status--${notification?.read_at ? "read" : "unread"}`}>
                                 <p>{notification?.read_at ? "Read" : "Unread"}</p>
                             </span>
                         </span>

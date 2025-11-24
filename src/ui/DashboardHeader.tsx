@@ -12,6 +12,8 @@ import Spinner from "../components/elements/Spinner";
 import { useDataContext } from "../context/DataContext";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useBroadcastNotification } from "../hooks/useBroadcastNotification";
+import useGlobalSearch from "../hooks/useGlobalSearch";
+import { AiOutlineClose } from "react-icons/ai";
 
 
 export default function DashboardHeader() {
@@ -21,6 +23,7 @@ export default function DashboardHeader() {
     const [isShownDropdown, setIsShownDropdown] = useState(false);
     const { handleToggleSidemenu } = useDataContext();
     const { notificationCount } = useBroadcastNotification();
+    const { searchQuery, setSearchQuery, SearchDropdownUI, setShowsearched, showSearched } = useGlobalSearch();
 
     const handleToggleDropdown = function () {
         setIsShownDropdown(!isShownDropdown);
@@ -41,10 +44,20 @@ export default function DashboardHeader() {
                 </Link>
 
                 <div className="nav--container">
-                    <div className="nav--input">
+                    <div className={`nav--input ${searchQuery ? "max" : ""}`} onClick={() => (!showSearched && searchQuery) ? setShowsearched(true) : setShowsearched(false)}>
                         <LuSearch />
-                        <input type="text" placeholder="Search" />
+                        <input type="text" placeholder="Search" onChange={(e) => setSearchQuery(e?.target?.value)} value={searchQuery} />
+
+                        {searchQuery && (
+                            <span className="form--input-box" onClick={() => {
+                                setSearchQuery("")
+                                setShowsearched(false);
+                            }}>
+                                <AiOutlineClose style={{ cursor: "pointer", color: "red" }} />
+                            </span>
+                        )}
                     </div>
+                    {(showSearched && searchQuery) && <SearchDropdownUI />}
 
                     <span className="nav--search">
                         <LuSearch />
