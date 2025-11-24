@@ -935,7 +935,10 @@
 	background-color: #F56464;
 }
 
-
+.notification--card .status {
+	padding: 0.4rem 0.6rem;
+    border-radius: 0.28rem;
+}
 
 
 

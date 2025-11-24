@@ -9,7 +9,7 @@ import Spinner, { SpinnerMini } from "../../components/elements/Spinner";
 import EmptyTable from "../../components/layout/EmptyTable";
 import { GoListUnordered } from "react-icons/go";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import FilterButton from "../../components/elements/FilterButton";
 import { toast } from "sonner";
 import { useAuthContext } from "../../context/AuthContext";
@@ -52,6 +52,11 @@ type FilterDataType = {
 }
 
 export default function index() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const detailParams = queryParams.get("id")
+
     const { width } = useWindowSize();
     const { headers, shouldKick } = useAuthContext();
     const [activeTab, setActiveTab] = useState("total_properties");
@@ -132,11 +137,25 @@ export default function index() {
         },
     ];
 
+    useEffect(function () {
+        if (detailParams) {
+            setSelectedId(Number(detailParams));
+            setShowModal({ ...showModal, details: true })
+        }
+    }, [detailParams]);
+
     const handleShowDetailsModal = function(id: number) {
         if(id) {
+            navigate(`?id=${id}`)
             setSelectedId(id);
             setShowModal({ ...showModal, details: true });
         }
+    }
+
+    const handleCloseDetailModal = function() {
+        navigate("")
+        setSelectedId(null);
+        setShowModal({ ...showModal, details: false });
     }
 
     const handleTabChange = function(tab: string) {
@@ -278,7 +297,7 @@ export default function index() {
             {mainLoading && <Spinner />}
 
             {(selectedId && showModal.details) && (
-                <HalfScreen title="Listing Details" setClose={() => setShowModal({ ...showModal, details: false })}>
+                <HalfScreen title="Listing Details" setClose={handleCloseDetailModal}>
                     <ListingDetails id={selectedId} refetchTable={handleFetchListings} />
                 </HalfScreen>
             )}
