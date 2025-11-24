@@ -2,7 +2,7 @@ import React from "react";
 import { toast } from "sonner";
 import { useAuthContext } from "../../context/AuthContext";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { IoLogOutOutline } from "react-icons/io5";
 import { HiUser } from "react-icons/hi";
 
@@ -37,7 +37,8 @@ export default function Dropdown({ handleToggle, setLoading }: Props) {
 
     return (
         <div className="dropdown" ref={ref}>
-            <Link className="dropdown--item" to='/dashboard/profile'><HiUser /> Profile</Link>
+            {/* <Link className="dropdown--item" to='/dashboard/profile'><HiUser /> Profile</Link> */}
+            <div className="dropdown--item"><HiUser /> Profile</div>
             <div className="dropdown--item" onClick={handleLogout}><IoLogOutOutline /> Logout</div>
         </div>
     )

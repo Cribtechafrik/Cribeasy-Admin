@@ -17,16 +17,16 @@ export default function Spinner() {
     )
 }
 
-export function SpinnerMini() {
+export function SpinnerMini({ size, color, stroke }: { size?: number; color?: string, stroke?: number }) {
     return (
         <div className="flex-align-justify-center">
             <Ring2
-                size="30"
-                stroke="5"
+                size={size || "30"}
+                stroke={stroke || "5"}
                 strokeLength="0.25"
                 bgOpacity="0.1"
                 speed="0.8"
-                color="#00419C" 
+                color={color || "#00419C"} 
             />
         </div>
     )

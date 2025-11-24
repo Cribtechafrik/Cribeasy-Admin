@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import Pusher from "pusher-js";
 import type { NotificationType } from "../utils/types";
+import { toast } from "sonner";
 // import Echo from "laravel-echo";
 // import axios from "axios"
 
@@ -13,8 +14,28 @@ declare global {
 }
 
 export function useBroadcastNotification() {
-	const { auth, token } = useAuthContext();
-	const [newNotification, setNewNotification] = useState<NotificationType[] | []>([])
+	const { auth, token, headers, shouldKick } = useAuthContext();
+	const [newNotification, setNewNotification] = useState<NotificationType[] | NotificationType>();
+	const [notificationCount, setNotificationCount] = useState(0);
+
+	const handleFetchNotificationCount = async function() {
+		try {
+			const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/notifications/unread-count`, {
+				method: "GET",
+				headers,
+			});
+			shouldKick(res);
+
+			const data = await res.json();
+			if (res.status !== 200 || !data?.success) {
+				throw new Error(data?.error?.message);
+			}
+
+			setNotificationCount(data?.data || 0);
+		} catch (err: any) {
+			setNotificationCount(0);
+		}
+	}
 
 	useEffect(() => {
 		if (auth?.id) {
@@ -29,7 +50,6 @@ export function useBroadcastNotification() {
 					headers: {
 						'Authorization': `Bearer ${token}`,
 						'Accept': 'application/json',
-						// 'Content-Type': 'application/json',
 					}
 				},
 			});
@@ -63,14 +83,23 @@ export function useBroadcastNotification() {
 			channel.bind('pusher:subscription_error', (status: any) => {
                 console.log(`❌ Subscription error: ${JSON.stringify(status)}`, 'error');
 
-                if (status.status === 403) {
-                    console.log('💡 403 Error - Check routes/channels.php authorization', 'warning');
-                }
+                // if (status.status === 403) {
+                //     console.log('💡 403 Error - Check routes/channels.php authorization', 'warning');
+                // }
             });
 
 			channel.bind(`admin.notification`, (data?: any) => {
 				console.log("🔔 admin.notification received", 'success');
-				setNewNotification([...data]);
+				toast.success("New Notification");
+				// console.log(data);
+
+				if (Array.isArray(data)) {
+					setNewNotification([...data]);
+				} else {
+					setNewNotification(data);
+				}
+
+				handleFetchNotificationCount();
 			});
 
 			channel.bind_global((eventName: any) => {
@@ -82,5 +111,11 @@ export function useBroadcastNotification() {
 
 	}, [auth?.id]);
 
-	return { incomingNotification: newNotification }
+
+	// count the notification
+	useEffect(function() {
+		handleFetchNotificationCount();
+	}, [newNotification]);
+
+	return { incomingNotification: newNotification, notificationCount, handleFetchNotificationCount }
 }
