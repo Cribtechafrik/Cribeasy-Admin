@@ -976,6 +976,7 @@
     height: 30rem;
     overflow: auto;
     position: relative;
+    padding-right: 1rem;
 }
 .announcement--chat .chat-day {
     margin: 1rem 0;
