@@ -38,7 +38,6 @@ export default function Dropdown({ handleToggle, setLoading }: Props) {
     return (
         <div className="dropdown" ref={ref}>
             {/* <Link className="dropdown--item" to='/dashboard/profile'><HiUser /> Profile</Link> */}
-            <div className="dropdown--item"><HiUser /> Profile</div>
             <div className="dropdown--item" onClick={handleLogout}><IoLogOutOutline /> Logout</div>
         </div>
     )
