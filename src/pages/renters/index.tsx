@@ -10,19 +10,17 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUsers } from "react-icons/fa6";
 import { BsEye, BsFillFlagFill } from "react-icons/bs";
-import type { Community_Type, Count, Property_category_Type, RenterType } from "../../utils/types";
+import type { Community_Type, Count, RenterType } from "../../utils/types";
 import { FaUserCheck } from "react-icons/fa";
 import { useAuthContext } from "../../context/AuthContext";
 import { toast } from "sonner";
 import { Intials } from "../../components/layout/IntialsImage";
 import FilterButton from "../../components/elements/FilterButton";
 import BasicModal from "../../components/modals/Basic";
-import ReactCurrencyInput from 'react-currency-input-field';
-import { useWindowSize } from "react-use";
 import HalfScreen from "../../components/modals/HalfScreen";
 import RenterDetails from "./sub_pages/RenterDetails";
 import EditRenters from "./sub_pages/EditRenters";
-import { fetchCommunities, fetchPropertyCategories } from "../../utils/fetch";
+import { fetchCommunities } from "../../utils/fetch";
 import ErrorComponent from "../../components/layout/ErrorComponent";
 import Confirm from "../../components/modals/Confirm";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
@@ -59,12 +57,9 @@ export default function index() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const detailParams = queryParams.get("id")
-
-    const { width } = useWindowSize();
     const { headers, shouldKick } = useAuthContext();
 
     const [error, setError] = useState(false);
-    const [propertyCategoryData, setPropertyCategoryData] = useState<Property_category_Type[]>([]);
     const [communities, setCommunities] = useState<Community_Type[]>([]);
 
     const [mainLoading, setMainLoading] = useState(true);
@@ -327,19 +322,17 @@ export default function index() {
 
     useEffect(function() {
         const fetchData = async function() {
-            const [categoryData, communities] = await Promise.all([
-                fetchPropertyCategories(headers),
+            const [communities] = await Promise.all([
                 fetchCommunities(headers),
             ]);
 
-            if(categoryData?.success) setPropertyCategoryData(categoryData?.data[0])
             if(communities?.success) setCommunities(communities?.data[0])
         }
         
         if(showModal.filters) {
             fetchData();
         }
-    }, [showModal.filters])
+    }, [showModal.filters]);
 
 	return (
         <React.Fragment>
@@ -367,16 +360,6 @@ export default function index() {
                     <div className="modal--content">
                         <div className="form--flex">
                             <div className="form--item">
-                                <label htmlFor="category_id" className="form--label colored">Category</label>
-                                <select className="form--select" name="category_id" id="category_id" value={filterUnsavedData?.category_id} onChange={handleFilterDataChange}>
-                                    <option selected value="">All</option>
-                                    {propertyCategoryData && propertyCategoryData?.map((pc, i) => (
-                                        <option value={pc?.slug} key={i}>{pc.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="form--item">
                                 <label htmlFor="community_id" className="form--label colored">Community</label>
                                 <select className="form--select" name="community_id" id="community_id" value={filterUnsavedData.community_id} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
@@ -385,40 +368,8 @@ export default function index() {
                                     ))}
                                 </select>
                             </div>
-                        </div>
 
-                        <div className="form--flex">
-                            <div className="form--item">
-                                <label htmlFor="min_price" className="form--label colored">Price Range</label>
-                                <div className="form--input-box">
-                                    <ReactCurrencyInput
-                                        id="min_price"
-                                        name="min_price"
-                                        className="form--input"
-                                        placeholder="Min Price"
-                                        prefix="₦"
-                                        value={filterUnsavedData.min_price}
-                                        onValueChange={(value) => setFilterUnsavedData({ ...filterUnsavedData, min_price: value ?? "" })}
-                                    />
-                                    <span className="form--input-icon">Min</span>
-                                </div>
-                            </div>
-
-                            <div className="form--item">
-                                {width > 850 && <label htmlFor="max_price" className="form--label">&nbsp;</label>}
-                                <div className="form--input-box">
-                                    <ReactCurrencyInput
-                                        id="max_price"
-                                        name="max_price"
-                                        className="form--input"
-                                        placeholder="Max Price"
-                                        prefix="₦"
-                                        value={filterUnsavedData.max_price}
-                                        onValueChange={(value) => setFilterUnsavedData({ ...filterUnsavedData, max_price: value ?? "" })}
-                                    />
-                                    <span className="form--input-icon">Max</span>
-                                </div>
-                            </div>
+                            <div className="form--item" />
                         </div>
                     </div>
 

@@ -48,7 +48,7 @@ type FilterDataType = {
     max_price: string;
     min_price: string;
     bedroom_min: string;
-    community_id: string;
+    community: string;
 }
 
 export default function index() {
@@ -88,7 +88,7 @@ export default function index() {
         max_price: "",
         min_price: "",
         bedroom_min: "",
-        community_id: "",
+        community: "",
     });
     const [filterSavedData, setFilterSavedData] = useState<FilterDataType | null>(null)
 
@@ -174,7 +174,7 @@ export default function index() {
             max_price: "",
             min_price: "",
             bedroom_min: "",
-            community_id: "",
+            community: "",
         });
         setFilterSavedData(null)
     }
@@ -374,8 +374,8 @@ export default function index() {
                             </div>
 
                             <div className="form--item">
-                                <label htmlFor="community_id" className="form--label colored">Community</label>
-                                <select className="form--select" name="community_id" id="community_id" value={filterUnsavedData.community_id} onChange={handleFilterDataChange}>
+                                <label htmlFor="community" className="form--label colored">Community</label>
+                                <select className="form--select" name="community" id="community" value={filterUnsavedData.community} onChange={handleFilterDataChange}>
                                     <option selected value="">All</option>
                                     {communities && communities?.map((c, i) => (
                                         <option value={c?.id} key={i}>{c.name}</option>
