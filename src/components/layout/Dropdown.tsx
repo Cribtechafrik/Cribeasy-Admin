@@ -4,8 +4,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 // import { Link } from "react-router-dom";
 import { IoLogOutOutline } from "react-icons/io5";
-import { HiUser } from "react-icons/hi";
-
+// import { HiUser } from "react-icons/hi";
 
 
 interface Props {

@@ -53,8 +53,7 @@ export default function CreateArtisans() {
 	const [loading, setLoading] = useState({ main: false, focus: false });
     const [showPassword, setShowPassword] = useState(false);
     
-    // const [workingHours, setWorkingHours] = useState<{
-    const [workingHours, _] = useState<{
+    const [workingHours, setWorkingHours] = useState<{
         Mon: boolean;
         Tues: boolean;
         Wed: boolean;
@@ -71,6 +70,8 @@ export default function CreateArtisans() {
         Sat: false,
         Sun: false,
     })
+    // console.log(Object.keys(workingHours).filter((day: any) => workingHours[day]).length)
+
     const [profileImage, setProfileImage] = useState({ preview: "", file: null });
     const [idUpload, setIdUpload] = useState({ preview: "", file: null });
     const [proofOfWorksGallery, setProofOfWorksGallery] = useState<{
@@ -196,7 +197,8 @@ export default function CreateArtisans() {
             formData.append('service_description', formdata?.service_description);
             formData.append('bio_description', formdata?.bio_description);
             formData.append('years_experience', formdata?.years_experience);
-            formData.append('working_hours', `${Object.keys(workingHours)?.filter(val => val)?.length}`);
+            // @ts-ignore (nothing's actually that wrong here)
+            formData.append('working_hours', `${Object.keys(workingHours).filter((day: any) => workingHours[day]).length}`);
 
             if(profileImage?.file) {
                 formData.append('profile_image', profileImage?.file);
@@ -458,13 +460,13 @@ export default function CreateArtisans() {
                                 <label className="form--label">Working Hours</label>
                                 
                                 <div className="flex-align-justify-spabtw" style={{ width: "100%" }}>
-                                    <WorkingHour day="Mon" />
-                                    <WorkingHour day="Tues" />
-                                    <WorkingHour day="Wed" />
-                                    <WorkingHour day="Thur" />
-                                    <WorkingHour day="Fri" />
-                                    <WorkingHour day="Sat" />
-                                    <WorkingHour day="Sun" />
+                                    <WorkingHour day="Mon" handleClick={() => setWorkingHours({ ...workingHours, Mon: !workingHours.Mon})} isChecked={workingHours.Mon === true} />
+                                    <WorkingHour day="Tues" handleClick={() => setWorkingHours({ ...workingHours, Tues: !workingHours.Tues})} isChecked={workingHours.Tues === true} />
+                                    <WorkingHour day="Wed" handleClick={() => setWorkingHours({ ...workingHours, Wed: !workingHours.Wed})} isChecked={workingHours.Wed === true} />
+                                    <WorkingHour day="Thur" handleClick={() => setWorkingHours({ ...workingHours, Thur: !workingHours.Thur})} isChecked={workingHours.Thur === true} />
+                                    <WorkingHour day="Fri" handleClick={() => setWorkingHours({ ...workingHours, Fri: !workingHours.Fri})} isChecked={workingHours.Fri === true} />
+                                    <WorkingHour day="Sat" handleClick={() => setWorkingHours({ ...workingHours, Sat: !workingHours.Sat})} isChecked={workingHours.Sat === true} />
+                                    <WorkingHour day="Sun" handleClick={() => setWorkingHours({ ...workingHours, Sun: !workingHours.Sun})} isChecked={workingHours.Sun === true} />
                                 </div>
                             </div>
 
