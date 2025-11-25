@@ -451,7 +451,7 @@ export default function CreateListing() {
 
     
     const handleSubmitListing:SubmitHandler<FormDataType> = async function(formdata) {
-        if(!coverImage.file || !coverImage.preview) {
+        if(!id && !coverImage.file) {
             return toast.error("Property cover image is required");
         }
         if(galleryImages.length < 1) {
@@ -477,8 +477,6 @@ export default function CreateListing() {
             formData.append('bathrooms', formdata.bathrooms);
             formData.append('description', formdata.description);
             formData.append('property_category_id', formdata.property_category_id);
-
-            // temps
             formData.append('user_id', `${formdata.user_id}`);
 
             if(selectedAmenities?.length > 0) {
@@ -596,7 +594,6 @@ export default function CreateListing() {
                             <input
                                 type="text"
                                 className="form--input"
-                                // value={formData.property_title}
                                 value={getValues("property_title")}
                                 readOnly
                             />
