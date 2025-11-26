@@ -164,7 +164,7 @@ export default function CreateRenters() {
             <section className="">
                 <div className="page--top">
                     <div className="page--heading">
-                        <h4 className="title">New Artisans</h4>
+                        <h4 className="title">New Renter</h4>
                         <Breadcrumbs breadcrumArr={breadCrumbs} />
                     </div>
                 </div>

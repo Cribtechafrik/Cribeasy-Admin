@@ -598,8 +598,9 @@ a.dropdown--item {
     border-radius: 50%;
 }
 img.auth--img {
-    object-fit: 100%;
+    /* object-fit: 100%; */
     background-color: #eee;
+	object-fit: contain;
 }
 span.auth--img {
     display: flex;
