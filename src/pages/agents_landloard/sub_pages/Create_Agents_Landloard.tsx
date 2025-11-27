@@ -321,8 +321,10 @@ export default function Create_Agents_Landloard() {
                                     <label htmlFor="lasrera" className="form--label colored">LASRERA Number <Asterisk /></label>
                                     <input type="number" className="form--input" id="lasrera" placeholder="Enter a LASRERA number" {...register("lasrera", {
                                         required: "LASRERA number is required!",
-                                        maxLength: 7,
-                                        max: 7
+                                        minLength: {
+                                            value: 7,
+                                            message: "LASRERA must be up to 7 numbers"
+                                        }
                                     })} />
                                     <span className="form--error-message">
                                         {formState.errors.lasrera && formState.errors.lasrera.message}
