@@ -555,6 +555,44 @@ body:has(.global--overlay) {
 }
 
 
+
+
+/* ===================================== */
+/* ERROR COMPONENT */
+/* ===================================== */
+
+.error_container {
+    max-width: 45rem;
+    margin: 10rem auto;
+    padding: 0 2.8rem;
+    height: 70vh;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4rem;
+}
+
+.error_heading {
+    font-size: 6rem;
+    font-weight: 500;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+.error_heading svg {
+    font-size: 4.8rem;
+}
+
+.error_text {
+    font-size: 1.6rem;
+    line-height: 1.4;
+}
+
+
 /* ========================================== */
 /*  */
 /* ========================================== */

@@ -46,7 +46,7 @@ export default function App() {
 		<React.Fragment>
 			<Toaster />
 
-			<BrowserRouter>
+			<BrowserRouter basename="/admin">
 				<Routes>
 					{/* UNPROTECTED ROUTES */}
 					<Route path="/login" element={<Login />}></Route>
