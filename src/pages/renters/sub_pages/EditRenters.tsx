@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { SpinnerMini } from "../../../components/elements/Spinner";
-import { IntialsAndUploader } from "../../../components/layout/IntialsImage";
+import { Intials } from "../../../components/layout/IntialsImage";
 import { useAuthContext } from "../../../context/AuthContext";
 import type { Community_Type, Employment_Status_Type, Identity_type_Type } from "../../../utils/types";
 import Asterisk from "../../../components/elements/Asterisk";
 import { fetchCommunities, fetchEmploymentStatuses, fetchIdentityTypes } from "../../../utils/fetch";
-import { ImCheckboxChecked } from "react-icons/im";
-import { FaWindowClose } from "react-icons/fa";
+// import { ImCheckboxChecked } from "react-icons/im";
+// import { FaWindowClose } from "react-icons/fa";
 import { toast } from "sonner";
 
 
@@ -46,18 +46,18 @@ export default function EditRenters({ id, closeEditModal, refetchTable }: Props)
         setRenterData({ ...renterData, [name]: value });
     }
 
-    const handleImageChange = function(event: { target: { files: any[]; } }) {
-        const file = event.target.files[0];
+    // const handleImageChange = function(event: { target: { files: any[]; } }) {
+    //     const file = event.target.files[0];
 
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setProfileImage({ preview: imageUrl, file });
-        }
-    }
+    //     if (file) {
+    //         const imageUrl = URL.createObjectURL(file);
+    //         setProfileImage({ preview: imageUrl, file });
+    //     }
+    // }
 
-    const handleRemoveImage = function() {
-        setProfileImage({ preview: "", file: null });
-    }
+    // const handleRemoveImage = function() {
+    //     setProfileImage({ preview: "", file: null });
+    // }
     
 
     useEffect(function() {
@@ -175,13 +175,13 @@ export default function EditRenters({ id, closeEditModal, refetchTable }: Props)
                 <div className="details--container flex-col-3">
                     <div className="flex-col-1 details--top" style={{ alignItems: "center", textAlign: "center" }}>
                         <div className="details--profile-img">
-                            <IntialsAndUploader
+                            <Intials
                                 hasImage={!!profileImage?.preview}
                                 imageUrl={profileImage?.preview}
                                 names={[renterData?.first_name, renterData?.last_name]}
-                                handleChange={handleImageChange}
-                                handleRemove={handleRemoveImage}
-                                isPreview={(!!profileImage?.file && !!profileImage?.preview)}
+                                // handleChange={handleImageChange}
+                                // handleRemove={handleRemoveImage}
+                                // isPreview={(!!profileImage?.file && !!profileImage?.preview)}
                             />
                         </div>
 
@@ -267,7 +267,7 @@ export default function EditRenters({ id, closeEditModal, refetchTable }: Props)
                             </div>
                         </div>
 
-                        <div className="form">
+                        {/* <div className="form">
                             <h4 className="form--title">Verification</h4>
                             
                             <div className="form--input flex-align-justify-spabtw">
@@ -287,7 +287,7 @@ export default function EditRenters({ id, closeEditModal, refetchTable }: Props)
                                     )}
                                 </React.Fragment>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="modal--actions" style={{ maxWidth: "40rem" }}>

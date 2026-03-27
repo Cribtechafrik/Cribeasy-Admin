@@ -21,9 +21,10 @@ interface Props {
     closeDetails: () => void;
     handleOpenEdit: () => void;
     refetchTable: () => void;
+    refetchStats: () => void;
 }
 
-export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refetchTable }: Props) {
+export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refetchTable, refetchStats }: Props) {
     const { headers, shouldKick } = useAuthContext();
     const [loading, setLoading] = useState({ modal: false, main: false })
     const [showModal, setShowModal] = useState({ confirm: false, completed: false, delete_confirm: false, delete_completed: false });
@@ -31,6 +32,9 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
     const [adminPassword, setAdminPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [artisansData, setArtisansData] = useState<ArtisansType | null>(null);
+
+    const [verifyStatus, setVerifyStatus] = useState("0");
+    const [isVerifying, setIsVerifying] = useState(false);
 
 
     async function handleFetchArtisan() {
@@ -62,6 +66,44 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
     useEffect(function() {
         handleFetchArtisan();
     }, [id]);
+
+    useEffect(function() {
+        setVerifyStatus(`${artisansData?.has_verified_docs || 0}`);
+    }, []);
+    
+    useEffect(function() {
+        if(verifyStatus !== `${artisansData?.has_verified_docs || 0}`) {
+            handleToggleVerified();
+        }
+    }, [verifyStatus]);
+
+    async function handleToggleVerified() {
+        setIsVerifying(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/toggle-users-verification/${id}`, {
+                method: "PATCH",
+                headers,
+            });
+            shouldKick(res);
+
+            const data = await res.json();
+            console.log(data)
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            toast.success(data?.message);
+            handleFetchArtisan();
+            refetchTable();
+            refetchStats();
+        } catch (err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setIsVerifying(false);
+        }
+    }
 
     async function handleToggleActivation() {
         setLoading({ ...loading, main: true });
@@ -271,6 +313,14 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                     <p className="text">Community</p>
                                     <p className="info">{artisansData?.community ?? "--"}</p>
                                 </div>
+
+                                <div className="details--info">
+                                    <p className="text">Verification Status</p>
+                                    <select className={`status status--${(artisansData?.has_verified_docs == 1 || verifyStatus == "1") ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
+                                        <option value="0">Unverified Identity</option>
+                                        <option value="1">Verified Identity</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div className="right--side">
@@ -356,7 +406,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                 <label className="form--label">Identity:</label>
                                 
                                 <React.Fragment>
-                                    {artisansData?.has_verified_docs == 1 ? (
+                                    {(artisansData?.has_verified_docs == 1 || verifyStatus == "1") ? (
                                         <span className="flex-align-cen verified-true">
                                             <ImCheckboxChecked />
                                             Verified

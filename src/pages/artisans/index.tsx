@@ -387,6 +387,7 @@ export default function index() {
                         handleOpenEdit={() => setShowModal({ ...showModal, details: false, edit: true })}
                         closeDetails={handleCloseDetailModal}
                         refetchTable={handleFetchArtisans}
+                        refetchStats={handleFetchAnalytics}
                     />
                 </HalfScreen>
             )}

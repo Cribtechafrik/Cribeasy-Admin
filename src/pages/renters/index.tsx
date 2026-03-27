@@ -350,6 +350,7 @@ export default function index() {
                             navigate("")
                             setShowModal({ ...showModal, details: false, edit: true })
                         }}
+                        refetchStats={handleFetchAnalytics}
                         refetchTable={handleFetchRenters}
                     />
                 </HalfScreen>

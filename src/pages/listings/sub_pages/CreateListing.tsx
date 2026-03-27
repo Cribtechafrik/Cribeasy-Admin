@@ -890,20 +890,22 @@ export default function CreateListing() {
 
                     <Line />
 
-                    <div className="flex-col-gap">
-                        <h4 className="form--title">Inspection Slot (optional)</h4>
+                    {!id && (
+                        <div className="flex-col-gap">
+                            <h4 className="form--title">Inspection Slot (optional)</h4>
 
-                        <div className="flex-align-cen">
-                            <p className="form--info" style={{ marginRight: "4rem" }}>{id ? "Edit" : "Add New"} Time Slot</p>
-                            <button type="button" className="page--btn-sm" onClick={handleShowScheduleModal}><AiOutlinePlus /> Add</button>
+                            <div className="flex-align-cen">
+                                <p className="form--info" style={{ marginRight: "4rem" }}>{id ? "Edit" : "Add New"} Time Slot</p>
+                                <button type="button" className="page--btn-sm" onClick={handleShowScheduleModal}><AiOutlinePlus /> Add</button>
+                            </div>
+
+                            <ScheduleTable
+                                isEdit={!!id}
+                                schedules={inspectionSchedules}
+                                handleRemoveSchedule={handleRemoveSchedule}
+                            />
                         </div>
-
-                        <ScheduleTable
-                            isEdit={!!id}
-                            schedules={inspectionSchedules}
-                            handleRemoveSchedule={handleRemoveSchedule}
-                        />
-                    </div>
+                    )}
 
                     <div className="form--actions">
                         <button className="form--submit filled" type="submit">{id ? "Edit" : "Add New"}</button>

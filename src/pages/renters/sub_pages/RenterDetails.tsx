@@ -19,9 +19,10 @@ interface Props {
     closeDetails: () => void;
     handleOpenEdit: () => void;
     refetchTable: () => void;
+    refetchStats: () => void;
 }
 
-export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetchTable }: Props) {
+export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetchTable, refetchStats }: Props) {
     // const navigate = useNavigate();
     const { headers, shouldKick } = useAuthContext();
     const [loading, setLoading] = useState({ modal: false, main: false, booking: false })
@@ -31,6 +32,9 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
     const [showPassword, setShowPassword] = useState(false);
     const [renterData, setRenterData] = useState<RenterType | null>(null);
     const [bookingsData, setBookingsData] = useState<InspectionType[]>([]);
+
+    const [verifyStatus, setVerifyStatus] = useState("0");
+    const [isVerifying, setIsVerifying] = useState(false);
 
 
     async function handleFetchRenter() {
@@ -64,6 +68,44 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
         handleFetchRenterBooking();
     }, [id]);
 
+    useEffect(function() {
+        setVerifyStatus(`${renterData?.has_verified_docs || 0}`);
+    }, []);
+    
+    useEffect(function() {
+        if(verifyStatus !== `${renterData?.has_verified_docs || 0}`) {
+            handleToggleVerified();
+        }
+
+    }, [verifyStatus]);
+
+    async function handleToggleVerified() {
+        setIsVerifying(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/toggle-users-verification/${id}`, {
+                method: "PATCH",
+                headers,
+            });
+            shouldKick(res);
+
+            const data = await res.json();
+            console.log(data)
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            toast.success(data?.message);
+            handleFetchRenter();
+            refetchStats();
+            refetchTable();
+        } catch (err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setIsVerifying(false);
+        }
+    }
 
     async function handleFetchRenterBooking() {
         setLoading({ ...loading, modal: true, booking: true });
@@ -194,9 +236,9 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
                                 <span className={`status status--${renterData?.is_active == 1 ? "active" : "inactive"}`}>
                                     <p>{renterData?.is_active == 1 ? "Active" : "Inactive"}</p>
                                 </span>
-                                <span className={`status status--${renterData?.has_verified_docs == 1 ? "completed" : "unverified"}`}>
-                                    <p>{renterData?.has_verified_docs == 1 ? "Verified" : "Unverified"}</p>
-                                </span>
+                                {/* <span className={`status status--${(renterData?.has_verified_docs == 1 || verifyStatus == "1") ? "completed" : "unverified"}`}>
+                                    <p>{(renterData?.has_verified_docs == 1 || verifyStatus == "1") ? "Verified" : "Unverified"}</p>
+                                </span> */}
                                 <span className={`status status--${renterData?.plan !== 1 ? "free" : "premium"}`}>
                                     <p>{renterData?.plan !== 1 ? "free" : "premium"}</p>
                                 </span>
@@ -257,6 +299,13 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
                                     <p className="text">Total Inspections</p>
                                     <p className="info">{renterData?.total_inspections ?? "0"}</p>
                                 </div>
+                                <div className="details--info">
+                                    <p className="text">Verification Status</p>
+                                    <select className={`status status--${(renterData?.has_verified_docs == 1 || verifyStatus == "1") ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
+                                        <option value="0">Unverified Identity</option>
+                                        <option value="1">Verified Identity</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -273,7 +322,7 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
                                 <label className="form--label">Identity</label>
                                 
                                 <React.Fragment>
-                                    {renterData?.has_verified_docs == 1 ? (
+                                    {(renterData?.has_verified_docs == 1 || verifyStatus == "1") ? (
                                         <span className="flex-align-cen verified-true">
                                             <ImCheckboxChecked />
                                             Verified

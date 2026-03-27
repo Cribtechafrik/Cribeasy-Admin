@@ -58,6 +58,8 @@ export default function Agents_Landloard_Details() {
 
     const [adminPassword, setAdminPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [verifyStatus, setVerifyStatus] = useState("0");
+    const [isVerifying, setIsVerifying] = useState(false);
 
     const phone_number = agent_landlordData?.phone_number?.startsWith("234") ? "+" + agent_landlordData?.phone_number : agent_landlordData?.phone_number
 
@@ -203,6 +205,31 @@ export default function Agents_Landloard_Details() {
         }
     }
 
+    async function handleToggleVerified() {
+        setIsVerifying(true);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/toggle-users-verification/${id}`, {
+                method: "PATCH",
+                headers,
+            });
+            shouldKick(res);
+
+            const data = await res.json();
+            console.log(data)
+            if (res.status !== 200 || !data?.success) {
+                throw new Error(data?.error?.message);
+            }
+
+            toast.success(data?.message)
+        } catch (err: any) {
+            const message = err?.message == "Failed to fetch" ? "Check Internet Connection!" : err?.message;
+            toast.error(message);
+        } finally {
+            setIsVerifying(false);
+        }
+    }
+
     async function handleDelection() {
         if(!adminPassword) {
             toast.error("Password is Required!")
@@ -232,6 +259,16 @@ export default function Agents_Landloard_Details() {
         }
     }
   
+    useEffect(function() {
+        setVerifyStatus(`${agent_landlordData?.has_verified_docs || 0}`);
+    }, []);
+    
+    useEffect(function() {
+        if(verifyStatus !== `${agent_landlordData?.has_verified_docs || 0}`) {
+            handleToggleVerified();
+        }
+    }, [verifyStatus])
+
     useEffect(function() {
         handleFetchData();
         handleFetchUserReport();
@@ -406,9 +443,10 @@ export default function Agents_Landloard_Details() {
                                     </div>
                                     <div className="details--info">
                                         <p className="text">Verification Status</p>
-                                        <span className={`status status--${agent_landlordData?.has_verified_docs == 1 ? "success" : "pending"}`}>
-                                            <p>{agent_landlordData?.has_verified_docs == 1 ? "Identity Verified" : "Identity Unverified"}</p>
-                                        </span>
+                                        <select className={`status status--${(agent_landlordData?.has_verified_docs == 1 || verifyStatus == "1") ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
+                                            <option value="0">Unverified Identity</option>
+                                            <option value="1">Verified Identity</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

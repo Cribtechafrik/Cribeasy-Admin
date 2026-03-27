@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { SpinnerMini } from "../../../components/elements/Spinner";
 import { useAuthContext } from "../../../context/AuthContext";
-import { IntialsAndUploader } from "../../../components/layout/IntialsImage";
+import { Intials } from "../../../components/layout/IntialsImage";
 import Asterisk from "../../../components/elements/Asterisk";
 import type { Community_Type, Identity_type_Type } from "../../../utils/types";
 import { fetchCommunities, fetchIdentityTypes } from "../../../utils/fetch";
-import { ImCheckboxChecked } from "react-icons/im";
-import { FaWindowClose } from "react-icons/fa";
+// import { ImCheckboxChecked } from "react-icons/im";
+// import { FaWindowClose } from "react-icons/fa";
 import { toast } from "sonner";
 
 interface Props {
@@ -44,18 +44,18 @@ export default function EditArtisans({ id, closeEditModal, refetchData }: Props)
         setArtisansData({ ...artisansData, [name]: value });
     }
 
-    const handleImageChange = function(event: { target: { files: any[]; } }) {
-        const file = event.target.files[0];
+    // const handleImageChange = function(event: { target: { files: any[]; } }) {
+    //     const file = event.target.files[0];
 
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setProfileImage({ preview: imageUrl, file });
-        }
-    }
+    //     if (file) {
+    //         const imageUrl = URL.createObjectURL(file);
+    //         setProfileImage({ preview: imageUrl, file });
+    //     }
+    // }
 
-    const handleRemoveImage = function() {
-        setProfileImage({ preview: "", file: null });
-    }
+    // const handleRemoveImage = function() {
+    //     setProfileImage({ preview: "", file: null });
+    // }
 
     useEffect(function() {
         async function handleFetch() {
@@ -159,13 +159,13 @@ export default function EditArtisans({ id, closeEditModal, refetchData }: Props)
             <div className="details--container flex-col-3">
                 <div className="flex-col-1 details--top" style={{ alignItems: "center", textAlign: "center" }}>
                     <div className="details--profile-img">
-                        <IntialsAndUploader
+                        <Intials
                             hasImage={!!profileImage?.preview}
                             imageUrl={profileImage?.preview}
                             names={[artisansData?.first_name, artisansData?.last_name]}
-                            handleChange={handleImageChange}
-                            handleRemove={handleRemoveImage}
-                            isPreview={(!!profileImage?.file && !!profileImage?.preview)}
+                            // handleChange={handleImageChange}
+                            // handleRemove={handleRemoveImage}
+                            // isPreview={(!!profileImage?.file && !!profileImage?.preview)}
                         />
                     </div>
 
@@ -256,7 +256,7 @@ export default function EditArtisans({ id, closeEditModal, refetchData }: Props)
                     </div>
 
 
-                    <div className="form">
+                    {/* <div className="form">
                         <h4 className="form--title">Verification</h4>
                         
                         <div className="form--input flex-align-justify-spabtw">
@@ -293,7 +293,7 @@ export default function EditArtisans({ id, closeEditModal, refetchData }: Props)
                                 )}
                             </React.Fragment>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="modal--actions" style={{ maxWidth: "40rem" }}>

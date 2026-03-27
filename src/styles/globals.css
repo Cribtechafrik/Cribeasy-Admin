@@ -844,8 +844,14 @@ span.auth--img {
 .status--completed p,
 .status--published p,
 .status--available p,
-.status--success p {
+.status--success p,
+select.status--success {
 	color: #067647;
+}
+select.status {
+	font-size: 1.2rem;
+	margin-left: -0.6rem;
+	font-weight: 500;
 }
 
 .status--unread,
@@ -860,6 +866,7 @@ span.auth--img {
 .status--unread p,
 .status--medium p,
 .status--pending p,
+select.status--pending,
 .status--unverified p,
 .status--unpublished p,
 .status--processing p {

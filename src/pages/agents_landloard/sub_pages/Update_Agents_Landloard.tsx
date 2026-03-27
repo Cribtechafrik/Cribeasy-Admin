@@ -11,9 +11,9 @@ import { capAllFirstLetters } from "../../../utils/helper";
 import { toast } from "sonner";
 import { fetchCommunities, fetchIdentityTypes } from "../../../utils/fetch";
 import Asterisk from "../../../components/elements/Asterisk";
-import { IntialsAndUploader } from "../../../components/layout/IntialsImage";
-import { ImCheckboxChecked } from "react-icons/im";
-import { FaWindowClose } from "react-icons/fa";
+import { Intials } from "../../../components/layout/IntialsImage";
+// import { ImCheckboxChecked } from "react-icons/im";
+// import { FaWindowClose } from "react-icons/fa";
 
 interface Props {
     id: string;
@@ -53,18 +53,18 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
         set_agent_landlord_data({ ...agent_landlord_data, [name]: value });
     }
 
-    const handleImageChange = function(event: { target: { files: any[]; } }) {
-        const file = event.target.files[0];
+    // const handleImageChange = function(event: { target: { files: any[]; } }) {
+    //     const file = event.target.files[0];
 
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setProfileImage({ preview: imageUrl, file });
-        }
-    }
+    //     if (file) {
+    //         const imageUrl = URL.createObjectURL(file);
+    //         setProfileImage({ preview: imageUrl, file });
+    //     }
+    // }
 
-    const handleRemoveImage = function() {
-        setProfileImage({ preview: "", file: null });
-    }
+    // const handleRemoveImage = function() {
+    //     setProfileImage({ preview: "", file: null });
+    // }
 
     useEffect(function() {
         async function handleFetch() {
@@ -219,13 +219,13 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
                 <div className="details--container flex-col-3">
                     <div className="flex-col-1 details--top" style={{ alignItems: "center", textAlign: "center" }}>
                         <div className="details--profile-img">
-                            <IntialsAndUploader
+                            <Intials
                                 hasImage={!!profileImage?.preview}
                                 imageUrl={profileImage?.preview}
                                 names={[agent_landlord_data?.first_name, agent_landlord_data?.last_name]}
-                                handleChange={handleImageChange}
-                                handleRemove={handleRemoveImage}
-                                isPreview={(!!profileImage?.file && !!profileImage?.preview)}
+                                // handleChange={handleImageChange}
+                                // handleRemove={handleRemoveImage}
+                                // isPreview={(!!profileImage?.file && !!profileImage?.preview)}
                             />
                         </div>
 
@@ -315,7 +315,7 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
                             </div>
                         </div>
 
-                        <div className="form">
+                        {/* <div className="form">
                             <h4 className="form--title">Verification</h4>
                             
                             <div className="form--input flex-align-justify-spabtw">
@@ -335,7 +335,7 @@ export default function Update_Agents_Landlord({ id, closeEditModal, refetchData
                                     )}
                                 </React.Fragment>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="modal--actions" style={{ maxWidth: "55rem" }}>
