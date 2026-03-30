@@ -41,7 +41,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
         setLoading({ ...loading, modal: true });
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/artisans/${id}?full=true`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/artisans/${id}?full=true&withIdentification=true`, {
             	method: "GET",
             	headers,
             });
@@ -68,8 +68,10 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
     }, [id]);
 
     useEffect(function() {
-        setVerifyStatus(`${artisansData?.has_verified_docs || 0}`);
-    }, []);
+        if (artisansData !== null) {
+            setVerifyStatus(`${artisansData.has_verified_docs ?? 0}`);
+        }
+    }, [artisansData]);
     
     useEffect(function() {
         if(verifyStatus !== `${artisansData?.has_verified_docs || 0}`) {
@@ -316,7 +318,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
 
                                 <div className="details--info">
                                     <p className="text">Verification Status</p>
-                                    <select className={`status status--${(artisansData?.has_verified_docs == 1 || verifyStatus == "1") ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
+                                    <select className={`status status--${verifyStatus == "1" ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
                                         <option value="0">Unverified Identity</option>
                                         <option value="1">Verified Identity</option>
                                     </select>
@@ -402,6 +404,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                     )}
                                 </React.Fragment>
                             </div>
+
                             <div className="form--input flex-align-justify-spabtw">
                                 <label className="form--label">Identity:</label>
                                 
@@ -418,6 +421,26 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                         </span>
                                     )}
                                 </React.Fragment>
+                            </div>
+
+                            <div style={{ marginTop: "2rem", width: "100%" }}>
+                                {artisansData?.proof_of_identity ? (
+                                    <Gallery options={{ zoom: true, counter: true, bgOpacity: 1, zoomAnimationDuration: 1 }}>
+                                        <Item
+                                            sourceId={artisansData?.proof_of_identity}
+                                            original={artisansData?.proof_of_identity}
+                                            thumbnail={artisansData?.proof_of_identity}
+                                            width="1024"
+                                            height="768"
+                                        >
+                                            {({ ref, open }) => (
+                                                <img ref={ref} onClick={open} src={artisansData?.proof_of_identity} style={{ width: "100%" }} alt={artisansData?.full_name + "'s proof of identity"} />
+                                            )}
+                                        </Item>
+                                    </Gallery>
+                                ) : (
+                                    <p className="no-data">No verification document uploaded</p>
+                                )}
                             </div>
                         </div>
                     </div>

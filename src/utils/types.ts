@@ -163,6 +163,14 @@ export type Agent_Landlord_Type = {
     };
     joined: string;
     updated_at: string;
+    proof_of_identity?: {
+        cloudinary_id: string;
+        cloudinary_path: string;
+    }
+    cac?: {
+        cloudinary_id: string;
+        cloudinary_path: string;
+    }
 }
 
 
@@ -191,6 +199,7 @@ export type ArtisansType = {
     userServiceFocuses: any;
     revenue: number;
     years_experience: string;
+    proof_of_identity?: string;
 }
 
 
@@ -208,6 +217,7 @@ export type RenterType = {
     profile_image: string | null;
     role: string;
     plan: number;
+    proof_of_identity?: string;
 
     completed_jobs: number;
     employment_status_id: number | null;

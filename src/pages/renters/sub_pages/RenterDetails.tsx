@@ -13,6 +13,7 @@ import Confirm from '../../../components/modals/Confirm';
 import { IoCheckmarkCircle } from 'react-icons/io5';
 import Asterisk from '../../../components/elements/Asterisk';
 import { formatDate, formatDateTime } from '../../../utils/helper';
+import { Gallery, Item } from 'react-photoswipe-gallery';
 
 interface Props {
     id: number;
@@ -41,7 +42,7 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
         setLoading({ ...loading, modal: true });
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/renters/${id}?full=true`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/renters/${id}?full=true&withIdentification=true`, {
                 method: "GET",
                 headers,
             });
@@ -69,8 +70,10 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
     }, [id]);
 
     useEffect(function() {
-        setVerifyStatus(`${renterData?.has_verified_docs || 0}`);
-    }, []);
+        if (renterData !== null) {
+            setVerifyStatus(`${renterData.has_verified_docs ?? 0}`);
+        }
+    }, [renterData]);
     
     useEffect(function() {
         if(verifyStatus !== `${renterData?.has_verified_docs || 0}`) {
@@ -301,7 +304,7 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
                                 </div>
                                 <div className="details--info">
                                     <p className="text">Verification Status</p>
-                                    <select className={`status status--${(renterData?.has_verified_docs == 1 || verifyStatus == "1") ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
+                                    <select className={`status status--${verifyStatus == "1" ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
                                         <option value="0">Unverified Identity</option>
                                         <option value="1">Verified Identity</option>
                                     </select>
@@ -334,6 +337,26 @@ export default function RenterDetails({ id, closeDetails, handleOpenEdit, refetc
                                         </span>
                                     )}
                                 </React.Fragment>
+                            </div>
+
+                            <div style={{ marginTop: "2rem", width: "100%" }}>
+                                {renterData?.proof_of_identity ? (
+                                    <Gallery options={{ zoom: true, counter: true, bgOpacity: 1, zoomAnimationDuration: 1 }}>
+                                        <Item
+                                            sourceId={renterData?.proof_of_identity}
+                                            original={renterData?.proof_of_identity}
+                                            thumbnail={renterData?.proof_of_identity}
+                                            width="1024"
+                                            height="768"
+                                        >
+                                            {({ ref, open }) => (
+                                                <img ref={ref} onClick={open} src={renterData?.proof_of_identity} style={{ width: "100%" }} alt={renterData?.full_name + "'s proof of identity"} />
+                                            )}
+                                        </Item>
+                                    </Gallery>
+                                ) : (
+                                    <p className="no-data">No verification document uploaded</p>
+                                )}
                             </div>
                         </div>
                     </div>

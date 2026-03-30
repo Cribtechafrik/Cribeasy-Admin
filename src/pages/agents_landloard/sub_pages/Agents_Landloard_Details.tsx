@@ -24,6 +24,7 @@ import { generateStars } from "../../../utils/data.tsx";
 import HalfScreen from '../../../components/modals/HalfScreen.tsx';
 import Update_Agents_Landloard from "./Update_Agents_Landloard.tsx";
 import { PiDotOutlineFill } from 'react-icons/pi';
+import { Gallery, Item } from 'react-photoswipe-gallery';
 
 
 type User_Report_Type = {
@@ -114,7 +115,7 @@ export default function Agents_Landloard_Details() {
         setLoading(true);
   
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords/${id}?full=true`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/admin/agents-landlords/${id}?full=true&withIdentification=true`, {
                 method: "GET",
                 headers,
             })
@@ -260,8 +261,11 @@ export default function Agents_Landloard_Details() {
     }
   
     useEffect(function() {
-        setVerifyStatus(`${agent_landlordData?.has_verified_docs || 0}`);
-    }, []);
+        if (agent_landlordData !== null) {
+            setVerifyStatus(`${agent_landlordData.has_verified_docs ?? 0}`);
+        }
+    }, [agent_landlordData]);
+    
     
     useEffect(function() {
         if(verifyStatus !== `${agent_landlordData?.has_verified_docs || 0}`) {
@@ -443,11 +447,65 @@ export default function Agents_Landloard_Details() {
                                     </div>
                                     <div className="details--info">
                                         <p className="text">Verification Status</p>
-                                        <select className={`status status--${(agent_landlordData?.has_verified_docs == 1 || verifyStatus == "1") ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
+                                        <select className={`status status--${verifyStatus == "1" ? "success" : "pending"}`} onChange={(e) => setVerifyStatus(e.target.value)} value={verifyStatus} disabled={isVerifying}>
                                             <option value="0">Unverified Identity</option>
                                             <option value="1">Verified Identity</option>
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="card" style={{ display: "flex", alignItems: "center", gap: "2rem", justifyContent: "space-between", flexWrap: "wrap" }}>
+                            <div className="">
+                                <div className="section--heading">
+                                    <h2>Proof of Identity</h2>
+                                </div>
+
+                                <div style={{ marginTop: "2rem", width: "100%" }}>
+                                    {agent_landlordData?.proof_of_identity ? (
+                                        <Gallery options={{ zoom: true, counter: true, bgOpacity: 1, zoomAnimationDuration: 1 }}>
+                                            <Item
+                                                sourceId={agent_landlordData?.proof_of_identity?.cloudinary_id}
+                                                original={agent_landlordData?.proof_of_identity?.cloudinary_path}
+                                                thumbnail={agent_landlordData?.proof_of_identity?.cloudinary_path}
+                                                width="1024"
+                                                height="768"
+                                            >
+                                                {({ ref, open }) => (
+                                                    <img ref={ref} onClick={open} src={agent_landlordData?.proof_of_identity?.cloudinary_path} style={{ width: "100%" }} alt={agent_landlordData?.full_name + "'s proof of identity"} />
+                                                )}
+                                            </Item>
+                                        </Gallery>
+                                    ) : (
+                                        <p className="no-data">No verification document uploaded</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="">
+                                <div className="section--heading">
+                                    <h2>CAC</h2>
+                                </div>
+
+                                <div style={{ marginTop: "2rem", width: "100%" }}>
+                                    {agent_landlordData?.cac ? (
+                                        <Gallery options={{ zoom: true, counter: true, bgOpacity: 1, zoomAnimationDuration: 1 }}>
+                                            <Item
+                                                sourceId={agent_landlordData?.cac?.cloudinary_id}
+                                                original={agent_landlordData?.cac?.cloudinary_path}
+                                                thumbnail={agent_landlordData?.cac?.cloudinary_path}
+                                                width="1024"
+                                                height="768"
+                                            >
+                                                {({ ref, open }) => (
+                                                    <img ref={ref} onClick={open} src={agent_landlordData?.cac?.cloudinary_path} style={{ width: "100%" }} alt={agent_landlordData?.full_name + "'s cac"} />
+                                                )}
+                                            </Item>
+                                        </Gallery>
+                                    ) : (
+                                        <p className="no-data">No CAC uploaded</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
