@@ -434,7 +434,7 @@ export default function ArtisansDetails({ id, closeDetails, handleOpenEdit, refe
                                             height="768"
                                         >
                                             {({ ref, open }) => (
-                                                <img ref={ref} onClick={open} src={artisansData?.proof_of_identity} style={{ width: "100%" }} alt={artisansData?.full_name + "'s proof of identity"} />
+                                                <img ref={ref} onClick={open} src={artisansData?.proof_of_identity} style={{ width: "100%", cursor: "pointer" }} alt={artisansData?.full_name + "'s proof of identity"} />
                                             )}
                                         </Item>
                                     </Gallery>

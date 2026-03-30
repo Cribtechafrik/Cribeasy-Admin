@@ -473,7 +473,7 @@ export default function Agents_Landloard_Details() {
                                                 height="768"
                                             >
                                                 {({ ref, open }) => (
-                                                    <img ref={ref} onClick={open} src={agent_landlordData?.proof_of_identity?.cloudinary_path} style={{ width: "100%" }} alt={agent_landlordData?.full_name + "'s proof of identity"} />
+                                                    <img ref={ref} onClick={open} src={agent_landlordData?.proof_of_identity?.cloudinary_path} style={{ width: "100%", cursor: "pointer" }} alt={agent_landlordData?.full_name + "'s proof of identity"} />
                                                 )}
                                             </Item>
                                         </Gallery>
@@ -499,7 +499,7 @@ export default function Agents_Landloard_Details() {
                                                 height="768"
                                             >
                                                 {({ ref, open }) => (
-                                                    <img ref={ref} onClick={open} src={agent_landlordData?.cac?.cloudinary_path} style={{ width: "100%" }} alt={agent_landlordData?.full_name + "'s cac"} />
+                                                    <img ref={ref} onClick={open} src={agent_landlordData?.cac?.cloudinary_path} style={{ width: "100%", cursor: "pointer" }} alt={agent_landlordData?.full_name + "'s cac"} />
                                                 )}
                                             </Item>
                                         </Gallery>
